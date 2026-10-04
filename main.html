@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>SIU METRO</title>
+<style>
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f4f5f7;color:#17181c;font-family:"Pretendard","Noto Sans KR",Arial,sans-serif}.phone{width:100%;max-width:430px;margin:auto;min-height:100vh;background:#fff}.top{position:sticky;top:0;z-index:20;height:58px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 17px;border-bottom:1px solid #eee}.logo{font-size:19px;font-weight:950;letter-spacing:-.06em}.logo em{font-style:normal;color:#7654e8}.stamps{font-size:9px;font-weight:900}.stamp-num{display:inline-grid;place-items:center;width:27px;height:27px;margin-left:6px;border-radius:50%;background:#17181c;color:#fff}
+.route-preview{padding:11px 13px 9px;background:#fff;border-bottom:1px solid #e5e6e9}.preview-map{height:235px;position:relative;overflow:hidden;border:1px solid #ececef;border-radius:14px;background:#f8f9fa}.preview-map:after{content:"";position:absolute;inset:0;background:linear-gradient(25deg,transparent 0 30%,#e5e7e9 30.3% 31%,transparent 31.3%),linear-gradient(155deg,transparent 0 45%,#e6e8ea 45.3% 46%,transparent 46.3%)}.map-title{position:absolute;z-index:5;left:11px;top:11px;padding:7px 9px;border-radius:9px;background:#fff;font-size:10px;font-weight:950;box-shadow:0 2px 8px #0001}.route-line{position:absolute;z-index:2;width:7px;border-radius:10px}.purple{background:#7654e8}.yellow{background:#ffd447}.blue{background:#4389f4}.r1{height:190px;left:43%;top:28px;transform:rotate(20deg)}.r2{height:150px;left:55%;top:50px;transform:rotate(-36deg)}.r3{height:125px;left:29%;top:72px;transform:rotate(67deg)}.mini{position:absolute;z-index:4;width:12px;height:12px;background:#fff;border:3px solid #7654e8;border-radius:50%}.m1{left:35%;top:69px}.m2{left:47%;top:121px}.m3{left:61%;top:85px}.m4{left:48%;top:183px}.you{position:absolute;z-index:6;left:47%;top:120px;width:27px;height:27px;border-radius:50%;background:#fff;border:4px solid #f04f52;color:#f04f52;display:grid;place-items:center;font-size:8px;font-weight:950;box-shadow:0 2px 8px #0003}.label{position:absolute;z-index:5;font-size:8px;font-weight:800;background:#fffffff0;padding:3px 5px;border-radius:5px}.a{left:12%;top:92px}.b{right:9%;top:140px}.c{left:9%;bottom:17px}.d{right:12%;top:36px}.zoom{position:absolute;z-index:7;right:9px;top:50%;width:31px;height:62px;border:1px solid #ddd;border-radius:9px;background:#fff;display:flex;flex-direction:column;justify-content:space-around;align-items:center;font-size:17px}.current{position:absolute;z-index:7;left:9px;bottom:9px;width:30px;height:30px;border:1px solid #ddd;border-radius:50%;background:#fff}
+.summary{padding:9px 14px 12px;border-bottom:1px solid #e5e6e9}.summary-top,.summary-bottom{display:flex;justify-content:space-between;font-size:9px;color:#858991}.summary-bar{height:8px;margin:7px 0 5px;background:#e9e9ec;border-radius:99px;overflow:hidden}.summary-bar i{display:block;height:100%;width:0;background:#7654e8;border-radius:99px;transition:.4s}.summary-bottom b{color:#7654e8}.scroll-hint{text-align:center;padding:11px 0 6px;color:#9da0a6;font-size:9px}.scroll-hint span{display:block;font-size:17px;line-height:12px;animation:bounce 1.5s infinite}@keyframes bounce{50%{transform:translateY(4px)}}
+.content{background:#f5f6f8;padding-bottom:40px}.hero{padding:23px 18px 14px}.eyebrow{font-size:9px;font-weight:950;color:#7654e8;letter-spacing:.12em}.hero h1{font-size:25px;line-height:1.18;letter-spacing:-.06em;margin:6px 0 8px}.hero p{font-size:11px;line-height:1.65;color:#70747c;margin:0}
+.card{margin:0 12px 13px;background:#fff;border:1px solid #e4e5e9;border-radius:17px;overflow:hidden;box-shadow:0 5px 18px #1b1d2308}.card-head{padding:14px 15px 11px;display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f2}.card-head b{font-size:12px}.card-head span{font-size:9px;color:#9b9ea5}.route-block{padding:2px 15px 17px}
+.line-title{display:flex;align-items:center;gap:7px;padding:14px 0 5px;font-size:10px;font-weight:950}.train{width:18px;height:12px;border:2px solid currentColor;border-radius:4px;position:relative}.train:after{content:"";position:absolute;bottom:-5px;left:2px;width:4px;height:4px;border-radius:50%;background:currentColor;box-shadow:8px 0 currentColor}
+.line{position:relative;margin-left:8px;padding-left:30px}.line:before{content:"";position:absolute;left:7px;top:10px;bottom:10px;width:5px;border-radius:99px;background:#858991}.line.purple-line:before{background:#7654e8}.station{position:relative;min-height:66px;display:flex;align-items:center;cursor:pointer}.circle{position:absolute;left:-30px;width:19px;height:19px;border-radius:50%;background:#fff;border:4px solid #7654e8}.start .circle{width:23px;height:23px;left:-32px;border-color:#17181c}.transfer .circle{width:22px;height:22px;left:-32px;border-color:#ffd447}.done .circle{background:#7654e8}.station-info{flex:1}.station-name{font-size:13px;font-weight:950;letter-spacing:-.04em}.station-desc{font-size:9px;color:#94979e;margin-top:3px}.action{width:29px;height:29px;border:1px solid #dddfe4;background:#fff;border-radius:8px;color:#777}.done .action{background:#17181c;color:#fff;border-color:#17181c}
+.walk{height:52px;margin-left:7px;border-left:3px dashed #c8cbd1;position:relative}.walker{position:absolute;left:-10px;top:7px;font-size:17px;animation:walk 1.7s infinite}.walk span{position:absolute;left:13px;top:14px;font-size:9px;color:#9a9da4;font-weight:800}@keyframes walk{50%{top:15px}}
+.note{margin:3px 0 6px;padding:11px 12px;border-radius:12px;background:#fff9dc;border:1px solid #f0df9b;font-size:9px;line-height:1.55;color:#716840}.note b{font-size:10px;color:#4c4630}
+.stamp-title{padding:18px 18px 10px;font-size:17px;font-weight:950}.stamp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:0 12px}.stamp{aspect-ratio:1;border:1px dashed #d6d8dd;border-radius:13px;background:#fafafa;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#b4b7be;gap:5px}.s-circle{width:31px;height:31px;border:2px solid currentColor;border-radius:50%;display:grid;place-items:center;font-size:13px}.stamp small{font-size:7px;font-weight:900;text-align:center}.stamp.on{border-style:solid;color:#17181c;background:#fff}
+.modal-bg{position:fixed;inset:0;z-index:100;background:#10111566;display:none;align-items:flex-end}.modal-bg.show{display:flex}.modal{width:100%;max-width:430px;margin:auto;background:#fff;border-radius:23px 23px 0 0;padding:19px 17px 24px}.modal-top{display:flex;justify-content:space-between}.tag{font-size:8px;font-weight:950;color:#7654e8;letter-spacing:.12em}.modal h2{font-size:20px;margin:5px 0 7px}.modal p{font-size:11px;line-height:1.6;color:#6f737b;margin:0 0 12px}.close{border:0;background:#f1f2f4;border-radius:50%;width:31px;height:31px}.answers{display:grid;gap:6px}.answer{border:1px solid #e0e1e5;background:#fff;border-radius:11px;text-align:left;padding:11px;font-size:11px}.answer.selected{background:#17181c;color:#fff;border-color:#17181c}.complete{width:100%;border:0;background:#17181c;color:#fff;border-radius:12px;padding:12px;margin-top:9px;font-size:11px;font-weight:900}.complete:disabled{background:#ddd;color:#aaa}
+</style>
+</head>
+<body>
+<div class="phone">
+<header class="top"><div class="logo">SIU <em>METRO</em></div><div class="stamps">STAMPS <span class="stamp-num" id="stampNum">0</span></div></header>
+
+<section class="route-preview">
+<div class="preview-map">
+<div class="map-title">SIU METRO · 전체 노선</div>
+<div class="route-line purple r1"></div><div class="route-line yellow r2"></div><div class="route-line blue r3"></div>
+<div class="mini m1"></div><div class="mini m2"></div><div class="mini m3"></div><div class="mini m4"></div>
+<div class="you">YOU</div>
+<div class="label a">관심분야역</div><div class="label b">시니어역</div><div class="label c">문화콘텐츠역</div><div class="label d">환승역</div>
+<div class="zoom"><b>+</b><span>−</span></div><button class="current">⌾</button>
+</div>
+</section>
+
+<section class="summary">
+<div class="summary-top"><span>● SIU METRO</span><span id="countText">0 / 7역 완료</span></div>
+<div class="summary-bar"><i id="progress"></i></div>
+<div class="summary-bottom"><span>관심분야역에서 출발</span><b>스탬프 모으기</b></div>
+</section>
+<div class="scroll-hint">아래로 내려 상세 노선을 확인하세요<span>⌄</span></div>
+
+<main class="content">
+<section class="hero"><div class="eyebrow">EXHIBITION WAYFINDING</div><h1>나의 전시 여정을<br>따라가 보세요.</h1><p>위에서 전체 노선을 확인하고<br>아래에서 실제 이동 순서대로 역을 따라가세요.</p></section>
+
+<section class="card">
+<div class="card-head"><b>내 이동 경로</b><span>역을 누르면 질문이 열립니다</span></div>
+<div class="route-block">
+
+<div class="line-title"><span class="train" style="color:#17181c"></span> 진로 탐색행</div>
+<div class="line">
+<div class="station start" data-id="interest" onclick="openStation('interest')"><span class="circle"></span><div class="station-info"><div class="station-name">관심분야역</div><div class="station-desc">나의 관심에서 출발</div></div><button class="action">＋</button></div>
+</div>
+
+<div class="walk"><span>걸어서 이동</span><b class="walker">🚶</b></div>
+
+<div class="line">
+<div class="station" data-id="career" onclick="openStation('career')"><span class="circle"></span><div class="station-info"><div class="station-name">진로발견역</div><div class="station-desc">나의 관심과 강점을 진로와 연결</div></div><button class="action">＋</button></div>
+</div>
+
+<div class="walk"><span>걸어서 환승하기</span><b class="walker">🚶</b></div>
+
+<div class="line-title" style="color:#7654e8"><span class="train"></span> 시니어비즈니스행</div>
+<div class="line purple-line">
+<div class="station" data-id="senior" onclick="openStation('senior')"><span class="circle"></span><div class="station-info"><div class="station-name">시니어역</div><div class="station-desc">시니어 비즈니스의 출발점</div></div><button class="action">＋</button></div>
+<div class="station transfer" data-id="transfer" onclick="openStation('transfer')"><span class="circle"></span><div class="station-info"><div class="station-name">환승역</div><div class="station-desc">나의 관심과 시니어비즈니스를 연결</div></div><button class="action">＋</button></div>
+<div class="note"><b>환승역</b> · 다른 활동과 연결해 새로운 경로를 확인해 보세요.</div>
+<div class="station" data-id="business" onclick="openStation('business')"><span class="circle"></span><div class="station-info"><div class="station-name">경영역</div><div class="station-desc">시장·소비자·비즈니스 관점</div></div><button class="action">＋</button></div>
+<div class="station" data-id="culture" onclick="openStation('culture')"><span class="circle"></span><div class="station-info"><div class="station-name">문화콘텐츠역</div><div class="station-desc">문화·콘텐츠와 시니어의 접점</div></div><button class="action">＋</button></div>
+<div class="station" data-id="welfare" onclick="openStation('welfare')"><span class="circle"></span><div class="station-info"><div class="station-name">사회복지역</div><div class="station-desc">사회문제와 비즈니스를 연결</div></div><button class="action">＋</button></div>
+</div>
+
+</div>
+</section>
+
+<div class="stamp-title">내 스탬프</div><div class="stamp-grid" id="stampGrid"></div>
+</main>
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><div class="modal-top"><div><div class="tag" id="tag"></div><h2 id="modalTitle"></h2></div><button class="close" onclick="closeModal()">×</button></div><p id="question"></p><div class="answers" id="answers"></div><button class="complete" id="complete" disabled onclick="completeStation()">답변하고 스탬프 받기</button></div></div>
+
+<script>
+const stations={
+interest:{title:"관심분야역",tag:"START STATION",q:"지금 내가 가장 자연스럽게 관심이 가는 것은 무엇인가요?",a:["사람과 소통하고 관계를 만드는 것","무언가를 기획하고 만들어내는 것","새로운 정보와 현상을 알아가는 것","아직 모르지만 궁금한 것을 찾아보는 것"]},
+career:{title:"진로발견역",tag:"CAREER METRO",q:"나의 관심과 강점을 앞으로 어떤 방향으로 연결해 보고 싶나요?",a:["기획하고 새로운 경험을 만드는 일","콘텐츠를 만들고 전달하는 일","사람과 사회의 문제를 해결하는 일","여러 분야를 연결하는 융합 활동"]},
+senior:{title:"시니어역",tag:"SENIOR BUSINESS",q:"시니어를 바라보는 새로운 관점은 무엇일까요?",a:["나이와 관계없이 다양한 취향을 가진 소비자","새로운 상품과 서비스를 선택하는 소비자","각자의 라이프스타일이 다른 한 명의 고객","더 알아보고 싶은 새로운 시장의 소비자"]},
+transfer:{title:"환승역",tag:"TRANSFER",q:"내가 관심 있는 분야와 시니어비즈니스를 연결한다면 어디에서 만날 수 있을까요?",a:["콘텐츠와 문화","마케팅과 경영","복지와 사회문제","기술과 새로운 서비스"]},
+business:{title:"경영역",tag:"SENIOR BUSINESS LINE",q:"시니어 비즈니스에서 가장 먼저 살펴보고 싶은 것은 무엇인가요?",a:["시니어 소비자의 필요와 취향","새로운 시장과 비즈니스 모델","브랜드와 마케팅","기업과 지역사회의 연결"]},
+culture:{title:"문화콘텐츠역",tag:"SENIOR BUSINESS LINE",q:"시니어에게 새로운 문화콘텐츠 경험을 만든다면 어떤 모습일까요?",a:["취향을 발견하는 콘텐츠","함께 참여하는 문화 프로그램","이야기를 기록하고 공유하는 콘텐츠","세대가 함께 즐기는 콘텐츠"]},
+welfare:{title:"사회복지역",tag:"SENIOR BUSINESS LINE",q:"사회복지와 비즈니스가 만날 수 있는 지점은 무엇일까요?",a:["일상 속 불편을 해결하는 서비스","지역사회와 연결하는 서비스","누구나 이용하기 쉬운 서비스","삶의 선택과 경험을 넓혀주는 서비스"]}};
+let done=JSON.parse(localStorage.getItem("siuMetroMobile")||"[]"),current=null,selected=null;
+function render(){document.getElementById("stampNum").textContent=done.length;document.getElementById("countText").textContent=done.length+" / 7역 완료";document.getElementById("progress").style.width=(done.length/7*100)+"%";Object.keys(stations).forEach(id=>document.querySelector('[data-id="'+id+'"]')?.classList.toggle("done",done.includes(id)));document.getElementById("stampGrid").innerHTML=Object.entries(stations).map(([id,s])=>'<div class="stamp '+(done.includes(id)?"on":"")+'"><div class="s-circle">'+(done.includes(id)?"✓":"+")+ '</div><small>'+s.title+'</small></div>').join("")}
+function openStation(id){current=id;selected=null;let s=stations[id];document.getElementById("tag").textContent=s.tag;document.getElementById("modalTitle").textContent=s.title;document.getElementById("question").textContent=s.q;document.getElementById("answers").innerHTML=s.a.map((a,i)=>'<button class="answer" onclick="selectAnswer(this,'+i+')">'+a+'</button>').join("");let b=document.getElementById("complete");b.disabled=done.includes(id);b.textContent=done.includes(id)?"이미 획득한 스탬프":"답변하고 스탬프 받기";document.getElementById("modalBg").classList.add("show")}
+function selectAnswer(el,i){selected=i;document.querySelectorAll(".answer").forEach(x=>x.classList.remove("selected"));el.classList.add("selected");document.getElementById("complete").disabled=false}
+function completeStation(){if(!current||selected===null)return;if(!done.includes(current))done.push(current);localStorage.setItem("siuMetroMobile",JSON.stringify(done));closeModal();render()}
+function closeModal(e){if(!e||e.target===document.getElementById("modalBg"))document.getElementById("modalBg").classList.remove("show")}
+render();
+</script>
+</body>
+</html>
