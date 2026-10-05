@@ -107,7 +107,7 @@ button{font:inherit}
 .segment{height:31px;border-radius:7px;display:flex;align-items:center;justify-content:center;gap:5px;color:#fff;font-size:11px;font-weight:900;white-space:nowrap}
 .segment.walk{background:#7fc85d;width:17%}
 .segment.senior{background:var(--purple);width:49%}
-.segment.career{background:#565d68;width:34%}
+.segment.career{background:#2f6fed;width:34%}
 .transit-dot{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:6px;background:#fff;color:inherit}
 
 /* ===== 본문 길찾기 ===== */
@@ -130,10 +130,9 @@ button{font:inherit}
   display:grid;place-items:center;background:#fff;border:3px solid #a8abb1;
   color:#777;font-size:9px;font-weight:950;margin-left:5px
 }
-.marker.start{width:28px;height:28px;border:0;background:var(--blue);color:#fff;border-radius:50% 50% 50% 8%;transform:rotate(-45deg)}
-.marker.start span{transform:rotate(45deg)}
-.marker.arrive{width:28px;height:28px;border:0;background:var(--red);color:#fff;border-radius:50% 50% 50% 8%;transform:rotate(-45deg)}
-.marker.arrive span{transform:rotate(45deg)}
+.marker.start{width:26px;height:26px;border:0;background:var(--blue);color:#fff;border-radius:50%;margin:0}
+.marker.start span,.marker.arrive span{font-size:7px}
+.marker.arrive{width:26px;height:26px;border:0;background:var(--red);color:#fff;border-radius:50%;margin:0}
 .route-name{font-size:17px;font-weight:950;letter-spacing:-.05em;line-height:1.25}
 .route-sub{font-size:11px;color:#777;margin-top:6px;line-height:1.5}
 .route-btn{
@@ -317,10 +316,9 @@ body{background:#f2f3f5;overflow:hidden}
 .map img{object-fit:cover}
 .map-fallback:not(.hidden){background:linear-gradient(135deg,#e7eef0,#f5f6f2 50%,#e2ece7)}
 .result{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;margin-top:-18px;border-radius:22px 22px 0 0;padding:10px 16px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px #00000012;transition:flex-basis .32s cubic-bezier(.2,.75,.25,1)}
-.handle{flex:0 0 4px;margin:0 auto 10px;touch-action:none;cursor:grab}
-.focus-controls{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:0 0 12px}
-.focus-controls button{min-height:39px;border:1px solid #e5e7eb;border-radius:10px;background:#f7f8fa;color:#555b64;font-size:12px;font-weight:800}
-.focus-controls button:active{background:#f1edff;color:var(--purple)}
+.handle{position:relative;flex:0 0 24px;width:100%;height:24px;margin:0 auto 4px;background:transparent;touch-action:none;cursor:grab}
+.handle:after{content:"";position:absolute;left:calc(50% - 21px);top:8px;width:42px;height:4px;border-radius:99px;background:#999}
+.focus-controls{display:none}
 .result-head{flex:0 0 auto}
 .duration{font-size:23px;letter-spacing:-.04em}
 .close-map{width:34px;height:34px;font-size:23px}
@@ -329,17 +327,30 @@ body{background:#f2f3f5;overflow:hidden}
 .segment{height:29px;font-size:10px}
 .route-card{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 2px 22px 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .route-card::-webkit-scrollbar{display:none}
-.route-label{margin-top:2px}
-.route-list:before{left:17px}
-.route-item{grid-template-columns:38px 1fr auto;gap:8px}
+.route-label{margin:2px 0 4px 46px}
+.route-list:before{left:17px;width:4px;background:repeating-linear-gradient(to bottom,#c9cdd3 0 2px,transparent 2px 7px);border-radius:0}
+.route-item{grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:start;padding:14px 0}
+.marker{justify-self:center;margin:0}
 .train-block{padding-left:0}
-.train-block:before{left:19px}
-.train-head{margin:0 0 2px;padding:0 0 8px 42px}
-.station-row{grid-template-columns:38px 1fr auto;gap:8px}
-.station-dot,.station-dot.transfer{justify-self:center}
-.walk-block{padding-left:38px}
-.walk-block:before{left:17px}
-.walk-person{animation:none;transform:none}
+.train-block:before{left:16px;width:6px;margin-left:0;background:var(--line-color,var(--purple));border-radius:99px}
+.train-head{display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:8px;margin:0;padding:9px 0 8px}
+.train-bar{width:100%;min-height:40px;padding:0 12px;gap:8px;border:0;border-radius:8px;background:var(--line-color,var(--purple));color:#fff;box-shadow:0 2px 5px #0002;font-size:12px;white-space:nowrap}
+.train-bar.career{--line-color:#2f6fed;background:#2f6fed}
+.train-bar.senior{--line-color:#7654e8;background:#7654e8}
+.career-line{--line-color:#2f6fed}.senior-line{--line-color:#7654e8}
+.career-line .station-dot{border-color:#2f6fed}.senior-line .station-dot{border-color:#7654e8}.station-dot.transfer{border-color:var(--yellow)}
+.train-bar b{font-weight:950;color:#fff}
+.line-badge{position:relative;z-index:4;justify-self:center;width:25px;height:25px;display:grid;place-items:center;border:2px solid var(--line-color);border-radius:7px;background:#fff;color:var(--line-color);font-size:12px;font-weight:950}
+.line-sep{color:#ffffffad}
+.train-note{margin-left:auto;color:#ffffffd9;font-size:9px;opacity:1}
+.train-icon{display:none}
+.station-row{grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:start;min-height:62px;padding:14px 0}
+.station-dot,.station-dot.transfer{justify-self:center;margin-top:1px}
+.station-title{font-size:15px;line-height:20px}
+.station-desc{margin-top:3px}
+.walk-block{padding-left:46px;min-height:58px}
+.walk-block:before{left:17.5px;top:0;bottom:0;width:3px;background:repeating-linear-gradient(to bottom,#c9cdd3 0 2px,transparent 2px 7px);border:0}
+.walk-person{left:19px;top:50%;transform:translate(-50%,-50%);width:auto;height:auto;border-radius:0;background:transparent;box-shadow:none;font-size:17px;line-height:1;animation:none}
 .stamp-title{padding:12px 2px 8px}
 .stamp-grid{padding:0 0 20px}
 .phone.map-focus .map-wrap{flex-basis:70%}
@@ -349,7 +360,7 @@ body{background:#f2f3f5;overflow:hidden}
 @media(max-width:360px){
   .map-wrap{min-height:130px}.phone.map-focus .map-wrap{flex-basis:64%}
   .phone.map-focus .result{flex-basis:36%;min-height:185px}
-  .focus-controls button{font-size:11px}.meta{font-size:10px}
+  .meta{font-size:10px}.train-note{display:none}.train-bar{padding-left:8px;gap:5px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
@@ -382,13 +393,8 @@ body{background:#f2f3f5;overflow:hidden}
 <!-- ===== 카카오맵 느낌의 길찾기 결과 상단 ===== -->
 <section class="result">
   <div class="handle" id="sheetHandle" aria-label="위아래로 밀어 화면 전환"></div>
-  <div class="focus-controls" role="group" aria-label="화면 보기">
-    <button type="button" onclick="setFocus('map')">지도 크게 보기</button>
-    <button type="button" onclick="setFocus('route')">길찾기 자세히 보기</button>
-  </div>
   <div class="result-head">
     <div class="duration">전시 여정</div>
-    <button class="close-map" onclick="window.scrollTo({top:0,behavior:'smooth'})">×</button>
   </div>
   <div class="meta"><b>관심분야역</b> → <b>시니어비즈니스행</b> · 환승 1회 · 전시 이동 경로</div>
 
@@ -415,12 +421,12 @@ body{background:#f2f3f5;overflow:hidden}
       </div>
 
       <!-- 진로 탐색행 -->
-      <div class="train-block">
+      <div class="train-block career-line">
         <div class="train-head">
+          <span class="line-badge">진</span>
           <div class="train-bar career">
-            <span class="train-icon"></span>
-            진로 탐색행
-            <span class="train-note">1개 역 이동</span>
+            <span>관심분야역</span><span class="line-sep">|</span>
+            <b>진로 탐색행 열차</b><span class="train-note">1개 역</span>
           </div>
         </div>
 
@@ -441,12 +447,12 @@ body{background:#f2f3f5;overflow:hidden}
       </div>
 
       <!-- 시니어비즈니스행 -->
-      <div class="train-block">
+      <div class="train-block senior-line">
         <div class="train-head">
+          <span class="line-badge">시</span>
           <div class="train-bar senior">
-            <span class="train-icon"></span>
-            시니어비즈니스행
-            <span class="train-note">4개 역 이동</span>
+            <span>진로발견역</span><span class="line-sep">|</span>
+            <b>시니어비즈니스행</b><span class="train-note">4개 역</span>
           </div>
         </div>
 
@@ -640,7 +646,7 @@ function closeModal(e){
 render();
 
 /* ===== 지도와 길찾기 패널 전환 =====
-   손가락으로 패널 손잡이를 밀거나 보기 버튼을 눌러 화면 비중을 바꿉니다.
+   손가락으로 패널 손잡이를 밀어 화면 비중을 바꿉니다.
    페이지 스크롤에는 반응하지 않습니다.
 */
 const phone = document.querySelector(".phone");
