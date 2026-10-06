@@ -76,7 +76,7 @@ button{font:inherit}
 }
 
 /* 지도 위의 가상 출발/도착 */
-.map-pin{position:absolute;z-index:4;display:grid;place-items:center;color:#fff;font-size:9px;font-weight:900}
+/* .map-pin{position:absolute;z-index:4;display:grid;place-items:center;color:#fff;font-size:9px;font-weight:900}
 .map-pin.start{
   right:22%;bottom:25%;width:62px;height:62px;border-radius:50% 50% 50% 8%;
   transform:rotate(-45deg);background:var(--blue);box-shadow:0 3px 9px #0002
@@ -90,7 +90,7 @@ button{font:inherit}
   position:absolute;z-index:2;left:35%;top:22%;width:37%;height:53%;
   border-left:8px solid var(--purple);border-bottom:8px solid var(--purple);
   border-radius:0 0 0 80px;transform:rotate(-8deg);opacity:.92
-}
+} */
 
 /* ===== 길찾기 결과 헤더 ===== */
 .result{
@@ -259,10 +259,11 @@ button{font:inherit}
 
 /* ===== 환승/활동 안내 ===== */
 .transfer-card{
-  margin:7px 0 9px;padding:13px 14px;border:1px solid #ece0a9;background:#fff9df;
-  border-radius:12px
+  margin:-3px 0 7px 42px;padding:6px 9px;width:fit-content;max-width:calc(100% - 58px);
+  border:1px solid #ece0a9;background:#fff9df;border-radius:8px;color:#756d4d;
+  /* 환승역 아래 노란 안내 문구 글씨 크기 조절 */
+  font-size:10px;line-height:1.4;white-space:nowrap
 }
-.transfer-card strong{font-size:11px}.transfer-card p{margin:5px 0 0;color:#756d4d;font-size:9px;line-height:1.55}
 .activity-chip{
   display:flex;align-items:center;gap:8px;margin:2px 0 8px;padding:10px 12px;
   border:1px solid #e1e3e7;border-radius:10px;background:#fff
@@ -313,7 +314,7 @@ body{background:#f2f3f5;overflow:hidden}
 .top{flex:0 0 calc(56px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);height:calc(56px + env(safe-area-inset-top))}
 .map-wrap{flex:0 0 40%;height:auto;min-height:145px;transition:flex-basis .32s cubic-bezier(.2,.75,.25,1)}
 .map{height:100%;min-height:0}
-.map img{object-fit:cover}
+.map img{object-fit:contain;background:#f2f4f1}
 .map-fallback:not(.hidden){background:linear-gradient(135deg,#e7eef0,#f5f6f2 50%,#e2ece7)}
 .result{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;margin-top:-18px;border-radius:22px 22px 0 0;padding:10px 16px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px #00000012;transition:flex-basis .32s cubic-bezier(.2,.75,.25,1)}
 .handle{position:relative;flex:0 0 24px;width:100%;height:24px;margin:0 auto 4px;background:transparent;touch-action:none;cursor:grab}
@@ -332,7 +333,7 @@ body{background:#f2f3f5;overflow:hidden}
 .route-item{grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:start;padding:14px 0}
 .marker{justify-self:center;margin:0}
 .train-block{padding-left:0}
-.train-block:before{left:16px;width:6px;margin-left:0;background:var(--line-color,var(--purple));border-radius:99px}
+.train-block:before{left:16px;width:6px;margin-left:0;top:var(--rail-start,0px);bottom:auto;height:var(--rail-length,100%);background:var(--line-color,var(--purple));border-radius:99px}
 .train-head{display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:8px;margin:0;padding:9px 0 8px}
 .train-bar{width:100%;min-height:40px;padding:0 12px;gap:8px;border:0;border-radius:8px;background:var(--line-color,var(--purple));color:#fff;box-shadow:0 2px 5px #0002;font-size:12px;white-space:nowrap}
 .train-bar.career{--line-color:#2f6fed;background:#2f6fed}
@@ -353,6 +354,11 @@ body{background:#f2f3f5;overflow:hidden}
 .walk-person{left:19px;top:50%;transform:translate(-50%,-50%);width:auto;height:auto;border-radius:0;background:transparent;box-shadow:none;font-size:17px;line-height:1;animation:none}
 .stamp-title{padding:12px 2px 8px}
 .stamp-grid{padding:0 0 20px}
+.plus{border-color:#c5b9ec;color:var(--purple)}
+.plus.done{position:relative;width:30px;height:30px;padding:0;border:0;background:transparent;box-shadow:none;overflow:visible}
+.plus.done img{position:absolute;left:50%;top:50%;display:block;width:46px;height:46px;max-width:none;object-fit:contain;transform:translate(-50%,-50%)}
+.s-circle img{display:block;width:100%;height:100%;object-fit:contain}
+.stamp.on .s-circle{width:44px;height:44px;border:0}
 .phone.map-focus .map-wrap{flex-basis:70%}
 .phone.route-focus .map-wrap{flex-basis:19%;min-height:118px}
 .phone.map-focus .result{flex-basis:30%;min-height:175px}
@@ -360,7 +366,7 @@ body{background:#f2f3f5;overflow:hidden}
 @media(max-width:360px){
   .map-wrap{min-height:130px}.phone.map-focus .map-wrap{flex-basis:64%}
   .phone.map-focus .result{flex-basis:36%;min-height:185px}
-  .meta{font-size:10px}.train-note{display:none}.train-bar{padding-left:8px;gap:5px}
+  .meta{font-size:10px}.train-note{display:none}.train-bar{padding-left:12px;gap:5px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
@@ -374,13 +380,13 @@ body{background:#f2f3f5;overflow:hidden}
   <div class="stamps">STAMPS <span class="stamp-num" id="stampNum">0</span></div>
 </header>
 
-<!-- ===== 전체 SIU METRO 노선도 =====
-     나중에 제작한 전체 노선도 파일명을 SIUMetroImage.png로 바꾸면 됩니다. -->
+<!-- ===== GitHub 저장소의 전체 SIU METRO 노선도 ===== -->
 <section class="map-wrap">
   <div class="map">
-    <img id="metroMap" src="https://euijin0.github.io/SIU_map/SIUMetroImage.png" alt="SIU METRO 전체 노선도"
+    <img id="metroMap" src="https://raw.githubusercontent.com/euijin0/SIU_map/main/SIUMetroImage.png" alt="SIU METRO 전체 노선도"
+         onload="document.getElementById('mapFallback').classList.add('hidden')"
          onerror="this.style.display='none';document.getElementById('mapFallback').classList.remove('hidden')">
-    <div id="mapFallback" class="map-fallback">
+    <div id="mapFallback" class="map-fallback hidden">
     </div>
     <div class="map-top-title">전체 노선도 · <b>SIU METRO</b></div>
     <button class="map-float" aria-label="현재 위치">◎</button>
@@ -417,7 +423,7 @@ body{background:#f2f3f5;overflow:hidden}
           <div class="route-name">관심분야역</div>
           <div class="route-sub">내가 좋아하고 관심 있는 것에서 출발합니다.</div>
         </div>
-        <button class="route-btn" onclick="openStation('interest')">질문</button>
+        <button class="plus" data-station="interest" aria-label="관심분야역 스탬프" onclick="openStation('interest')">＋</button>
       </div>
 
       <!-- 진로 탐색행 -->
@@ -436,7 +442,7 @@ body{background:#f2f3f5;overflow:hidden}
             <div class="station-title">진로발견역</div>
             <div class="station-desc">나의 관심과 강점을 진로와 연결</div>
           </div>
-          <button class="plus" onclick="event.stopPropagation();openStation('career')">＋</button>
+          <button class="plus" data-station="career" aria-label="스탬프" onclick="event.stopPropagation();openStation('career')">＋</button>
         </div>
       </div>
 
@@ -452,7 +458,7 @@ body{background:#f2f3f5;overflow:hidden}
           <span class="line-badge">시</span>
           <div class="train-bar senior">
             <span>진로발견역</span><span class="line-sep">|</span>
-            <b>시니어비즈니스행</b><span class="train-note">4개 역</span>
+            <b>시니어비즈니스행</b><span class="train-note">7개 역</span>
           </div>
         </div>
 
@@ -462,7 +468,7 @@ body{background:#f2f3f5;overflow:hidden}
             <div class="station-title">시니어역</div>
             <div class="station-desc">시니어를 새로운 소비자 관점에서 바라보기</div>
           </div>
-          <button class="plus" onclick="event.stopPropagation();openStation('senior')">＋</button>
+          <button class="plus" data-station="senior" aria-label="스탬프" onclick="event.stopPropagation();openStation('senior')">＋</button>
         </div>
 
         <div class="station-row clickable" onclick="openStation('transfer')">
@@ -471,18 +477,11 @@ body{background:#f2f3f5;overflow:hidden}
             <div class="station-title">환승역</div>
             <div class="station-desc">나의 관심 분야와 시니어비즈니스를 연결</div>
           </div>
-          <button class="plus" onclick="event.stopPropagation();openStation('transfer')">＋</button>
+          <button class="plus" data-station="transfer" aria-label="스탬프" onclick="event.stopPropagation();openStation('transfer')">＋</button>
         </div>
 
         <!-- AI 학점 계산기는 환승 구간에서 동시에 진행 -->
-        <div class="transfer-card">
-          <strong>환승 구간 · 함께 진행</strong>
-          <p>AI 학점 계산기를 확인하며 나의 대학 생활과 앞으로의 학업 경로도 함께 살펴보세요.</p>
-          <div class="activity-chip">
-            <div class="ico">AI</div>
-            <div><b>AI 학점 계산기</b><span>환승역에서 동시 진행</span></div>
-          </div>
-        </div>
+        <div class="transfer-card">AI 학점 계산기도 함께 진행해요</div>
 
         <div class="station-row clickable" onclick="openStation('business')">
           <div class="station-dot"></div>
@@ -490,7 +489,7 @@ body{background:#f2f3f5;overflow:hidden}
             <div class="station-title">경영역</div>
             <div class="station-desc">시장·소비자·비즈니스 관점으로 바라보기</div>
           </div>
-          <button class="plus" onclick="event.stopPropagation();openStation('business')">＋</button>
+          <button class="plus" data-station="business" aria-label="스탬프" onclick="event.stopPropagation();openStation('business')">＋</button>
         </div>
 
         <div class="station-row clickable" onclick="openStation('culture')">
@@ -499,7 +498,7 @@ body{background:#f2f3f5;overflow:hidden}
             <div class="station-title">문화콘텐츠역</div>
             <div class="station-desc">문화·콘텐츠와 시니어의 접점 발견</div>
           </div>
-          <button class="plus" onclick="event.stopPropagation();openStation('culture')">＋</button>
+          <button class="plus" data-station="culture" aria-label="스탬프" onclick="event.stopPropagation();openStation('culture')">＋</button>
         </div>
 
         <div class="station-row clickable" onclick="openStation('welfare')">
@@ -508,7 +507,34 @@ body{background:#f2f3f5;overflow:hidden}
             <div class="station-title">사회복지역</div>
             <div class="station-desc">사회문제와 비즈니스가 만나는 지점</div>
           </div>
-          <button class="plus" onclick="event.stopPropagation();openStation('welfare')">＋</button>
+          <button class="plus" data-station="welfare" aria-label="스탬프" onclick="event.stopPropagation();openStation('welfare')">＋</button>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('sports')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">체육역</div>
+            <div class="station-desc">운동과 건강한 생활을 위한 경험 탐색</div>
+          </div>
+          <button class="plus" data-station="sports" aria-label="체육역 스탬프" onclick="event.stopPropagation();openStation('sports')">＋</button>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('realestate')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">부동산건설역</div>
+            <div class="station-desc">모두가 편안하게 살아갈 공간과 주거 탐색</div>
+          </div>
+          <button class="plus" data-station="realestate" aria-label="부동산건설역 스탬프" onclick="event.stopPropagation();openStation('realestate')">＋</button>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('education')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">교육역</div>
+            <div class="station-desc">새로운 배움과 세대별 교육 기회 탐색</div>
+          </div>
+          <button class="plus" data-station="education" aria-label="교육역 스탬프" onclick="event.stopPropagation();openStation('education')">＋</button>
         </div>
       </div>
 
@@ -589,6 +615,21 @@ const stations={
     title:"사회복지역",tag:"SENIOR BUSINESS LINE",
     q:"사회복지와 비즈니스가 만날 수 있는 지점은 무엇일까요?",
     a:["일상 속 불편을 해결하는 서비스","지역사회와 연결하는 서비스","누구나 이용하기 쉬운 서비스","삶의 선택과 경험을 넓혀주는 서비스"]
+  },
+  sports:{
+    title:"체육역",tag:"SPORTS & WELLNESS",
+    q:"시니어가 즐겁고 건강하게 운동할 수 있도록 무엇을 만들 수 있을까요?",
+    a:["함께 즐기는 생활 체육","건강 상태에 맞춘 운동 프로그램","쉽게 참여할 수 있는 지역 활동","운동을 돕는 새로운 서비스"]
+  },
+  realestate:{
+    title:"부동산건설역",tag:"HOUSING & SPACE",
+    q:"다양한 세대가 편안하게 살아갈 공간에는 무엇이 필요할까요?",
+    a:["이동하기 편한 무장애 설계","안전하고 관리하기 쉬운 주거","이웃과 교류할 수 있는 공용 공간","생활에 맞춘 주거 서비스"]
+  },
+  education:{
+    title:"교육역",tag:"LIFELONG LEARNING",
+    q:"앞으로 새롭게 배우거나 다른 사람과 나누고 싶은 것은 무엇인가요?",
+    a:["디지털 기기와 기술","취미와 문화 활동","일과 진로에 필요한 지식","경험과 지혜를 나누는 수업"]
   }
 };
 
@@ -597,23 +638,35 @@ let current=null,selected=null;
 
 function render(){
   document.getElementById("stampNum").textContent=done.length;
-  document.querySelectorAll(".station-row").forEach(row=>{
-    const id=row.getAttribute("data-id");
-  });
-  document.querySelectorAll(".plus").forEach(btn=>{
-    const row=btn.closest(".station-row");
-    const title=row?.querySelector(".station-title")?.textContent;
-    const id=Object.keys(stations).find(k=>stations[k].title===title);
-    if(id && done.includes(id)){btn.classList.add("done");btn.textContent="✓"}
+  document.querySelectorAll(".plus[data-station]").forEach(btn=>{
+    const id=btn.dataset.station;
+    const stamped=done.includes(id);
+    btn.classList.toggle("done",stamped);
+    btn.innerHTML=stamped?'<img src="SIUStamp" alt="스탬프 완료">':"＋";
   });
 
   document.getElementById("stampGrid").innerHTML=Object.entries(stations).map(([id,s])=>`
     <div class="stamp ${done.includes(id)?"on":""}">
-      <div class="s-circle">${done.includes(id)?"✓":"+"}</div>
+      <div class="s-circle">${done.includes(id)?'<img src="SIUStamp" alt="획득한 스탬프">':"＋"}</div>
       <small>${s.title}</small>
     </div>`).join("");
+  requestAnimationFrame(alignTrainRails);
 }
 
+function alignTrainRails(){
+  document.querySelectorAll(".train-block").forEach(block=>{
+    const dots=block.querySelectorAll(".station-dot");
+    if(!dots.length)return;
+    const blockTop=block.getBoundingClientRect().top;
+    const badge=block.querySelector(".line-badge");
+    const first=badge?badge.getBoundingClientRect():dots[0].getBoundingClientRect();
+    const last=dots[dots.length-1].getBoundingClientRect();
+    const start=first.top+first.height/2-blockTop;
+    const end=last.top+last.height/2-blockTop;
+    block.style.setProperty("--rail-start",`${start}px`);
+    block.style.setProperty("--rail-length",`${Math.max(0,end-start)}px`);
+  });
+}
 function openStation(id){
   current=id;selected=null;
   const s=stations[id];
@@ -644,6 +697,7 @@ function closeModal(e){
     document.getElementById("modalBg").classList.remove("show");
 }
 render();
+window.addEventListener("resize",()=>requestAnimationFrame(alignTrainRails),{passive:true});
 
 /* ===== 지도와 길찾기 패널 전환 =====
    손가락으로 패널 손잡이를 밀어 화면 비중을 바꿉니다.
