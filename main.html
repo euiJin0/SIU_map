@@ -88,11 +88,11 @@ button{font:inherit}
 .close-map{width:39px;height:39px;border:0;border-radius:50%;background:#f5f5f6;font-size:27px;line-height:1}
 .meta{font-size:13px;color:#777;margin:8px 0 14px}
 .meta b{color:#333}
-.route-summary{display:flex;align-items:center;gap:3px;overflow:hidden;padding-bottom:15px}
+.route-summary{display:grid;grid-template-columns:.75fr 1.65fr .55fr 2.2fr;align-items:center;gap:3px;overflow:hidden;padding-bottom:15px;min-width:0;max-width:100%}
 .segment{height:31px;border-radius:7px;display:flex;align-items:center;justify-content:center;gap:5px;color:#fff;font-size:11px;font-weight:900;white-space:nowrap}
-.segment.walk{background:#7fc85d;width:17%}
-.segment.senior{background:var(--purple);width:49%}
-.segment.career{background:#2f6fed;width:34%}
+.segment.walk{background:#7fc85d;width:auto;min-width:0;overflow:hidden}
+.segment.senior{background:var(--purple);width:auto;min-width:0;overflow:hidden}
+.segment.career{background:#2f6fed;width:auto;min-width:0;overflow:hidden}
 .transit-dot{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:6px;background:#fff;color:inherit}
 
 /* ===== 본문 길찾기 ===== */
@@ -247,7 +247,7 @@ button{font:inherit}
   margin:2px 0 7px 58px;padding:6px 9px;width:fit-content;max-width:calc(100% - 58px);
   border:1px solid #ece0a9;background:#fff9df;border-radius:8px;color:#756d4d;
   /* 환승역 아래 노란 안내 문구 글씨 크기 조절 */
-  font-size:10px;line-height:1.4;white-space:nowrap
+  font-size:10px;line-height:1.4;white-space:normal;overflow-wrap:anywhere
 }
 .activity-chip{
   display:flex;align-items:center;gap:8px;margin:2px 0 8px;padding:10px 12px;
@@ -293,9 +293,9 @@ button{font:inherit}
 }
 
 /* ===== 모바일 지도/길찾기 슬라이드 ===== */
-html,body{height:100%;overscroll-behavior:none}
-body{background:#f2f3f5;overflow:hidden}
-.phone{position:relative;height:100dvh;min-height:0;display:flex;flex-direction:column;max-width:430px;box-shadow:0 0 28px #00000012}
+html,body{width:100%;max-width:100%;height:100%;overflow-x:hidden;overscroll-behavior:none}
+body{background:#f2f3f5;overflow-y:hidden}
+.phone{position:relative;width:100%;max-width:430px;min-width:0;height:100dvh;min-height:0;margin:0 auto;display:flex;flex-direction:column;overflow-x:hidden;box-shadow:0 0 28px #00000012}
 .top{flex:0 0 calc(56px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);height:calc(56px + env(safe-area-inset-top))}
 .map-wrap{flex:0 0 40%;height:auto;min-height:145px;transition:flex-basis .32s cubic-bezier(.2,.75,.25,1)}
 .map{height:100%;min-height:0}
@@ -320,7 +320,7 @@ body{background:#f2f3f5;overflow:hidden}
 .train-block{padding-left:0}
 .train-block:before{left:16px;width:6px;margin-left:0;top:var(--rail-start,0px);bottom:auto;height:var(--rail-length,100%);background:var(--line-color,var(--purple));border-radius:99px}
 .train-head{display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:8px;margin:0;padding:9px 0 8px}
-.train-bar{width:100%;min-height:40px;padding:0 12px;gap:8px;border:0;border-radius:8px;background:var(--line-color,var(--purple));color:#fff;box-shadow:0 2px 5px #0002;font-size:12px;white-space:nowrap}
+.train-bar{width:100%;min-width:0;max-width:100%;min-height:40px;padding:0 12px;gap:8px;border:0;border-radius:8px;background:var(--line-color,var(--purple));color:#fff;box-shadow:0 2px 5px #0002;font-size:12px;white-space:nowrap;overflow:hidden}
 .train-bar.career{--line-color:#2f6fed;background:#2f6fed}
 .train-bar.senior{--line-color:#7654e8;background:#7654e8}
 .career-line{--line-color:#2f6fed}.senior-line{--line-color:#7654e8}
@@ -353,7 +353,7 @@ body{background:#f2f3f5;overflow:hidden}
 .essay-answer{width:100%;min-height:90px;resize:vertical;border:1px solid #ddd;border-radius:11px;padding:11px;font:inherit;font-size:12px;line-height:1.5}
 .essay-answer:focus{outline:2px solid #7654e855;border-color:#7654e8}
 /* 도슨트 오디오 도크는 질문 창과 별도로 고정되어 재생 중에도 접근 가능합니다. */
-.audio-dock{position:absolute;z-index:110;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));display:none;align-items:center;gap:10px;padding:9px 11px;border:1px solid #e5e1f1;border-radius:15px;background:#fff;box-shadow:0 5px 24px #0002;max-width:410px}
+.audio-dock{position:fixed;z-index:110;left:50%;right:auto;bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%);width:calc(100vw - 20px);max-width:410px;min-width:0;display:none;align-items:center;gap:10px;padding:9px 11px;border:1px solid #e5e1f1;border-radius:15px;background:#fff;box-shadow:0 5px 24px #0002}
 .audio-dock.show{display:flex}
 .dock-play{width:36px;height:36px;flex:none;border:0;border-radius:50%;background:#7654e8;color:#fff;font-size:15px}
 .dock-copy{min-width:0;flex:1}.dock-copy b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dock-copy span{display:block;color:#777;font-size:9px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -600,6 +600,7 @@ body{background:#f2f3f5;overflow:hidden}
 <script>
 /* 질문과 선택지는 아래 stations에서 수정하세요. a는 객관식 선택지이며, 서술형 모드를 함께 제공합니다.
    Google Sheets 연결 주소는 GOOGLE_SHEETS_WEB_APP_URL에 Apps Script 웹 앱 URL을 넣으면 됩니다. */
+// 질문 문구와 선택지를 수정할 때는 이 stations 객체의 각 역 q(질문), a(선택지)를 바꾸세요.
 const stations={
   interest:{
     title:"관심분야역",tag:"START STATION",
@@ -661,7 +662,7 @@ let flushingResponses=false;
 const GOOGLE_SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbwF3C7yJDPxYbCeO5PNFlAzMFW-XwdTQ6ZGtxBznDXqPg56QZ7Ude9OTb38makPPMpn/exec";
 const RESPONSE_QUEUE_KEY="siuMetroResponses";
 const PARTICIPANT_ID_KEY="siuMetroParticipantId";
-// 같은 브라우저/기기에서는 익명 참여자 ID를 유지해 여러 역의 응답을 묶습니다.
+// 같은 브라우저/기기의 응답을 묶습니다. 시트에는 Apps Script가 P001 같은 짧은 ID로 표시합니다.
 function getParticipantId(){
   let id=localStorage.getItem(PARTICIPANT_ID_KEY);
   if(!id){id=`P-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`.toUpperCase();localStorage.setItem(PARTICIPANT_ID_KEY,id)}
