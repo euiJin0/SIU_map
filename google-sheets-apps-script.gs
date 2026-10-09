@@ -6,7 +6,8 @@
  * Execute as: Me. Access: Anyone.
  */
 const RAW_HEADERS = ['응답시각', '참여자 아이디', '역 이름', '질문', '답변 유형', '답변'];
-const SUMMARY_HEADERS = ['참여자 아이디', '기기 키', '첫 응답', '최근 응답'];
+const SUMMARY_HEADERS = ['참여자 아이디', '응답 시각', '기기 키'];
+const SHEET_DATE_FORMAT = 'yyyy-mm-dd hh:mm';
 
 function doPost(e) {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -19,26 +20,28 @@ function doPost(e) {
   const participantId = getOrCreateParticipant(summary, deviceKey, submittedAt);
   migrateRawSheet(rawSheet, summary);
 
+  const responseRow = rawSheet.getLastRow() + 1;
   rawSheet.appendRow([
-    submittedAt,
+    toSheetDate(submittedAt),
     participantId,
     response.stationTitle || '',
     response.question || '',
     response.answerType || '',
     asPlainText(response.answer || '')
   ]);
+  rawSheet.getRange(responseRow, 1).setNumberFormat(SHEET_DATE_FORMAT);
   updateParticipantSummary(summary, response, participantId, submittedAt);
   return ContentService.createTextOutput(JSON.stringify({ ok: true, participantId: participantId }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// Existing summary rows are preserved. Old long IDs become short P001-style IDs;
-// the original browser key remains in the hidden "기기 키" column for matching.
+// Keep the compact participant ID and response time visible. "기기 키" stays hidden.
+// Each answer column is explicitly labeled so its value cannot be mistaken for a station name.
 function ensureSummarySchema(spreadsheet) {
   const sheet = spreadsheet.getSheetByName('참여자별 보기') || spreadsheet.insertSheet('참여자별 보기');
   if (sheet.getLastRow() === 0) {
     sheet.getRange(1, 1, 1, SUMMARY_HEADERS.length).setValues([SUMMARY_HEADERS]);
-    sheet.hideColumns(2);
+    sheet.hideColumns(3);
     return sheet;
   }
 
@@ -46,40 +49,63 @@ function ensureSummarySchema(spreadsheet) {
   const oldHeaders = oldValues[0].map(String);
   const hasKey = oldHeaders.indexOf('기기 키') !== -1;
   const hasNewId = oldHeaders.indexOf('참여자 아이디') !== -1;
-  if (hasKey && hasNewId && oldHeaders[0] === '참여자 아이디') return sheet;
+  const answerHeaders = oldHeaders.slice(3);
+  const schemaIsCurrent = hasKey && hasNewId &&
+    oldHeaders[0] === SUMMARY_HEADERS[0] &&
+    oldHeaders[1] === SUMMARY_HEADERS[1] &&
+    oldHeaders[2] === SUMMARY_HEADERS[2] &&
+    answerHeaders.every(function (header) { return header.indexOf('답변 | ') === 0; });
 
-  const stationHeaders = oldHeaders.filter(function (header) {
-    return ['참여자 ID', '참여자 아이디', '첫 응답', '최근 응답', '기기 키'].indexOf(header) === -1;
-  });
-  const headers = SUMMARY_HEADERS.concat(stationHeaders);
-  const rows = [];
-  for (let i = 1; i < oldValues.length; i++) {
-    const oldRow = oldValues[i];
-    const oldIdIndex = oldHeaders.indexOf('참여자 아이디') !== -1 ? oldHeaders.indexOf('참여자 아이디') : oldHeaders.indexOf('참여자 ID');
-    const oldId = oldIdIndex >= 0 ? String(oldRow[oldIdIndex] || '') : '';
-    if (!oldId) continue;
-    const compactId = formatParticipantId(rows.length + 1);
-    const row = new Array(headers.length).fill('');
-    row[0] = compactId;
-    row[1] = hasKey ? oldRow[oldHeaders.indexOf('기기 키')] : oldId;
+  if (!schemaIsCurrent) {
+    const idIndex = oldHeaders.indexOf('참여자 아이디') !== -1
+      ? oldHeaders.indexOf('참여자 아이디')
+      : oldHeaders.indexOf('참여자 ID');
+    const keyIndex = oldHeaders.indexOf('기기 키');
+    const timeIndex = oldHeaders.indexOf('응답 시각');
+    const recentIndex = oldHeaders.indexOf('최근 응답');
     const firstIndex = oldHeaders.indexOf('첫 응답');
-    const lastIndex = oldHeaders.indexOf('최근 응답');
-    if (firstIndex >= 0) row[2] = oldRow[firstIndex];
-    if (lastIndex >= 0) row[3] = oldRow[lastIndex];
-    stationHeaders.forEach(function (header, index) {
-      const oldIndex = oldHeaders.indexOf(header);
-      if (oldIndex >= 0) row[SUMMARY_HEADERS.length + index] = oldRow[oldIndex];
+    const oldAnswerHeaders = oldHeaders.filter(function (header) {
+      return ['참여자 ID', '참여자 아이디', '응답 시각', '첫 응답', '최근 응답', '기기 키'].indexOf(header) === -1;
     });
-    rows.push(row);
+    const newAnswerHeaders = oldAnswerHeaders.map(function (header) {
+      return header.indexOf('답변 | ') === 0 ? header : '답변 | ' + header;
+    });
+    const headers = SUMMARY_HEADERS.concat(newAnswerHeaders);
+    const rows = [];
+
+    for (let i = 1; i < oldValues.length; i++) {
+      const oldRow = oldValues[i];
+      const oldId = idIndex >= 0 ? String(oldRow[idIndex] || '') : '';
+      if (!oldId) continue;
+      const row = new Array(headers.length).fill('');
+      row[0] = formatParticipantId(rows.length + 1);
+      row[1] = toSheetDate(
+        timeIndex >= 0 ? oldRow[timeIndex] :
+          (recentIndex >= 0 && oldRow[recentIndex] ? oldRow[recentIndex] :
+            (firstIndex >= 0 ? oldRow[firstIndex] : ''))
+      );
+      row[2] = keyIndex >= 0 ? oldRow[keyIndex] : oldId;
+      oldAnswerHeaders.forEach(function (oldHeader, index) {
+        const oldColumn = oldHeaders.indexOf(oldHeader);
+        if (oldColumn >= 0) row[SUMMARY_HEADERS.length + index] = oldRow[oldColumn];
+      });
+      rows.push(row);
+    }
+
+    sheet.clearContents();
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    if (rows.length) sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
   }
-  sheet.clearContents();
-  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-  if (rows.length) sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
-  sheet.hideColumns(2);
+
+  if (sheet.getMaxColumns() >= 3) {
+    sheet.showColumns(1, 2);
+    sheet.hideColumns(3);
+  }
+  formatSummaryTimes(sheet);
   return sheet;
 }
 
-// Reorders the existing response history once and preserves every available field.
+// Reorder legacy raw rows once, preserving their responses and converting timestamps to dates.
 function migrateRawSheet(sheet, summary) {
   if (sheet.getLastRow() === 0) {
     sheet.getRange(1, 1, 1, RAW_HEADERS.length).setValues([RAW_HEADERS]);
@@ -87,7 +113,13 @@ function migrateRawSheet(sheet, summary) {
   }
   const values = sheet.getDataRange().getValues();
   const headers = values[0].map(String);
-  if (RAW_HEADERS.every(function (header, i) { return headers[i] === header; }) && headers.length === RAW_HEADERS.length) return;
+  const isCurrent = headers.length === RAW_HEADERS.length &&
+    RAW_HEADERS.every(function (header, i) { return headers[i] === header; });
+  if (isCurrent) {
+    formatRawTimes(sheet);
+    return;
+  }
+
   const rows = [];
   for (let i = 1; i < values.length; i++) {
     const oldRow = values[i];
@@ -99,29 +131,37 @@ function migrateRawSheet(sheet, summary) {
       return '';
     };
     const oldId = String(pick(['참여자 아이디', '참여자 ID']) || '');
-    const compactId = oldId ? getOrCreateParticipant(summary, oldId, pick(['응답시각', '응답 시각'])) : '';
+    const participantId = oldId ? getOrCreateParticipant(summary, oldId, pick(['응답시각', '응답 시각'])) : '';
     rows.push([
-      pick(['응답시각', '응답 시각']), compactId,
-      pick(['역 이름']), pick(['질문']), pick(['답변 유형']), pick(['답변'])
+      toSheetDate(pick(['응답시각', '응답 시각'])),
+      participantId,
+      pick(['역 이름']),
+      pick(['질문']),
+      pick(['답변 유형']),
+      pick(['답변'])
     ]);
   }
   sheet.clearContents();
   sheet.getRange(1, 1, 1, RAW_HEADERS.length).setValues([RAW_HEADERS]);
   if (rows.length) sheet.getRange(2, 1, rows.length, RAW_HEADERS.length).setValues(rows);
+  formatRawTimes(sheet);
 }
 
 function getOrCreateParticipant(summary, deviceKey, submittedAt) {
   const key = String(deviceKey || 'ID 없음');
   const lastRow = summary.getLastRow();
   if (lastRow >= 2) {
-    const values = summary.getRange(2, 1, lastRow - 1, 4).getValues();
+    const values = summary.getRange(2, 1, lastRow - 1, Math.max(summary.getLastColumn(), 3)).getValues();
     for (let i = 0; i < values.length; i++) {
-      if (String(values[i][1]) === key) return String(values[i][0]);
+      if (String(values[i][0]) === key || String(values[i][2]) === key) return String(values[i][0]);
     }
   }
   const participantId = formatParticipantId(nextParticipantNumber(summary));
   const row = summary.getLastRow() + 1;
-  summary.getRange(row, 1, 1, 4).setValues([[participantId, key, submittedAt || '', submittedAt || '']]);
+  summary.getRange(row, 1, 1, SUMMARY_HEADERS.length).setValues([
+    [participantId, toSheetDate(submittedAt), key]
+  ]);
+  summary.getRange(row, 2).setNumberFormat(SHEET_DATE_FORMAT);
   return participantId;
 }
 
@@ -141,14 +181,14 @@ function formatParticipantId(number) {
 
 function updateParticipantSummary(summary, response, participantId, submittedAt) {
   const stationId = response.stationId || 'other';
-  const stationColumn = (response.stationTitle || stationId) + ' (' + stationId + ')';
-  const lastColumn = summary.getLastColumn();
-  const headers = summary.getRange(1, 1, 1, lastColumn).getValues()[0].map(String);
-  let stationIndex = headers.indexOf(stationColumn);
-  if (stationIndex < 0) {
-    stationIndex = headers.length;
-    summary.getRange(1, stationIndex + 1).setValue(stationColumn);
+  const answerColumn = '답변 | ' + (response.stationTitle || stationId) + ' (' + stationId + ')';
+  const headers = summary.getRange(1, 1, 1, summary.getLastColumn()).getValues()[0].map(String);
+  let answerIndex = headers.indexOf(answerColumn);
+  if (answerIndex < 0) {
+    answerIndex = headers.length;
+    summary.getRange(1, answerIndex + 1).setValue(answerColumn);
   }
+
   const lastRow = summary.getLastRow();
   const ids = lastRow >= 2 ? summary.getRange(2, 1, lastRow - 1, 1).getDisplayValues() : [];
   let rowNumber = 0;
@@ -156,13 +196,38 @@ function updateParticipantSummary(summary, response, participantId, submittedAt)
     if (ids[i][0] === participantId) { rowNumber = i + 2; break; }
   }
   if (!rowNumber) return;
-  const firstCell = summary.getRange(rowNumber, 3);
-  const lastCell = summary.getRange(rowNumber, 4);
-  const first = firstCell.getValue();
-  if (!first || toMillis(submittedAt) < toMillis(first)) firstCell.setValue(submittedAt);
-  const recent = lastCell.getValue();
-  if (!recent || toMillis(submittedAt) >= toMillis(recent)) lastCell.setValue(submittedAt);
-  summary.getRange(rowNumber, stationIndex + 1).setValue(asPlainText(response.answer || ''));
+  const responseTimeCell = summary.getRange(rowNumber, 2);
+  const existingTime = responseTimeCell.getValue();
+  if (!existingTime || toMillis(submittedAt) >= toMillis(existingTime)) {
+    responseTimeCell.setValue(toSheetDate(submittedAt));
+  }
+  responseTimeCell.setNumberFormat(SHEET_DATE_FORMAT);
+  summary.getRange(rowNumber, answerIndex + 1).setValue(asPlainText(response.answer || ''));
+}
+
+function formatSummaryTimes(sheet) {
+  const rows = sheet.getLastRow() - 1;
+  if (rows <= 0) return;
+  const range = sheet.getRange(2, 2, rows, 1);
+  const values = range.getValues().map(function (row) { return [toSheetDate(row[0])]; });
+  range.setValues(values);
+  range.setNumberFormat(SHEET_DATE_FORMAT);
+}
+
+function formatRawTimes(sheet) {
+  const rows = sheet.getLastRow() - 1;
+  if (rows <= 0) return;
+  const range = sheet.getRange(2, 1, rows, 1);
+  const values = range.getValues().map(function (row) { return [toSheetDate(row[0])]; });
+  range.setValues(values);
+  range.setNumberFormat(SHEET_DATE_FORMAT);
+}
+
+function toSheetDate(value) {
+  if (value instanceof Date) return value;
+  if (!value) return '';
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? String(value) : date;
 }
 
 function toMillis(value) {
