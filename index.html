@@ -358,8 +358,6 @@ body{background:#f2f3f5;overflow:hidden}
 .dock-play{width:36px;height:36px;flex:none;border:0;border-radius:50%;background:#7654e8;color:#fff;font-size:15px}
 .dock-copy{min-width:0;flex:1}.dock-copy b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dock-copy span{display:block;color:#777;font-size:9px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dock-open{border:0;border-radius:9px;background:#f2effa;padding:8px;font-size:10px;font-weight:800;color:#5432a7}
-.response-status{position:absolute;z-index:120;left:50%;bottom:calc(74px + env(safe-area-inset-bottom));transform:translateX(-50%);max-width:calc(100% - 28px);padding:10px 14px;border-radius:999px;background:#24212a;color:#fff;font-size:11px;text-align:center;box-shadow:0 4px 14px #0003;opacity:0;pointer-events:none;transition:opacity .2s}
-.response-status.show{opacity:1}
 .docent-modal{max-height:88vh}
 .track-list{display:grid;gap:8px;margin:12px 0}
 .track{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid #e2e1e7;border-radius:12px;text-align:left;background:#fff}
@@ -598,7 +596,6 @@ body{background:#f2f3f5;overflow:hidden}
   </div>
 </div>
 <div class="audio-dock" id="audioDock"><button class="dock-play" id="dockPlay" onclick="toggleAudio()">▶</button><div class="dock-copy"><b id="dockTitle">도슨트</b><span id="dockStatus">재생 준비됨</span></div><button class="dock-open" onclick="openDocent()">목록</button></div>
-<div class="response-status" id="responseStatus" role="status" aria-live="polite"></div>
 
 <script>
 /* 질문과 선택지는 아래 stations에서 수정하세요. a는 객관식 선택지이며, 서술형 모드를 함께 제공합니다.
@@ -659,11 +656,18 @@ const stations={
 let done=JSON.parse(localStorage.getItem("siuMetroMobile")||"[]");
 let current=null,selected=null,answerMode="choice";
 let flushingResponses=false;
-let responseStatusTimer=null;
 
 // 응답을 보낼 Google Apps Script 웹 앱 URL을 여기에 입력하세요. 빈 문자열이면 브라우저에만 저장합니다.
 const GOOGLE_SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycby0BEWDqgNjcT1-reaZ-PIpSFAQuhm_11OEVUrzUTGj0MKUrl-NE1J87NDftZX5_u-i/exec";
 const RESPONSE_QUEUE_KEY="siuMetroResponses";
+const PARTICIPANT_ID_KEY="siuMetroParticipantId";
+// 같은 브라우저/기기에서는 익명 참여자 ID를 유지해 여러 역의 응답을 묶습니다.
+function getParticipantId(){
+  let id=localStorage.getItem(PARTICIPANT_ID_KEY);
+  if(!id){id=`P-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`.toUpperCase();localStorage.setItem(PARTICIPANT_ID_KEY,id)}
+  return id;
+}
+const participantId=getParticipantId();
 // 도슨트 음원과 제목/설명은 아래 목록에서 교체하거나 항목을 추가하세요.
 const docentTracks=[
   {id:"welcome",title:"전시 여정 안내",description:"관심분야역에서 나의 다음 역까지, SIU METRO 여정을 소개합니다.",src:"docent-sample.wav"},
@@ -730,14 +734,9 @@ function setAnswerMode(mode){
 }
 document.getElementById("essayAnswer").addEventListener("input",()=>{if(answerMode==="essay")document.getElementById("complete").disabled=!document.getElementById("essayAnswer").value.trim()});
 async function submitResponse(response){
-  const record={stationId:response.stationId,stationTitle:response.stationTitle,question:response.question,answerType:response.answerType,answer:response.answer,submittedAt:new Date().toISOString()};
+  const record={participantId,stationId:response.stationId,stationTitle:response.stationTitle,question:response.question,answerType:response.answerType,answer:response.answer,submittedAt:new Date().toISOString()};
   const queue=JSON.parse(localStorage.getItem(RESPONSE_QUEUE_KEY)||"[]");queue.push(record);localStorage.setItem(RESPONSE_QUEUE_KEY,JSON.stringify(queue));
-  showResponseStatus("답변을 시트로 전송하고 있어요.");
   await flushResponseQueue();
-}
-function showResponseStatus(message){
-  const status=document.getElementById("responseStatus");status.textContent=message;status.classList.add("show");
-  clearTimeout(responseStatusTimer);responseStatusTimer=setTimeout(()=>status.classList.remove("show"),4500);
 }
 async function postResponseRecord(record){
   const body=new URLSearchParams({payload:JSON.stringify(record)});
@@ -751,15 +750,13 @@ async function flushResponseQueue(){
   flushingResponses=true;
   try{
     const queue=JSON.parse(localStorage.getItem(RESPONSE_QUEUE_KEY)||"[]");
-    let sentCount=0;
     while(queue.length){
       const record=queue[0];
       // Apps Script doPost에서 e.parameter.payload를 읽도록 URL 인코딩 폼으로 전송합니다.
       await postResponseRecord(record);
-      queue.shift();sentCount++;localStorage.setItem(RESPONSE_QUEUE_KEY,JSON.stringify(queue));
+      queue.shift();localStorage.setItem(RESPONSE_QUEUE_KEY,JSON.stringify(queue));
     }
-    if(sentCount>0)showResponseStatus("전송 요청을 보냈어요. 잠시 후 시트를 새로고침해 확인하세요.");
-  }catch(error){console.error("시트 전송 실패. 응답을 이 기기에 보관해 다시 시도합니다.",error);showResponseStatus("전송에 실패했어요. 인터넷 연결을 확인한 뒤 새로고침해 다시 시도해 주세요.")}
+  }catch(error){console.error("시트 전송 실패. 응답을 이 기기에 보관해 다시 시도합니다.",error)}
   finally{flushingResponses=false}
 }
 function completeStation(){
