@@ -111,6 +111,7 @@ button{font:inherit}
   min-height:88px;padding:13px 0;border-bottom:1px solid #f0f1f3
 }
 .route-item:last-child{border-bottom:0}
+.route-item.start-route{border-bottom:0;min-height:0;padding-bottom:2px}
 .route-item.destination-route{border-bottom:0}
 .marker{
   width:24px;height:24px;border-radius:50%;position:relative;z-index:2;
@@ -164,6 +165,7 @@ button{font:inherit}
   position:relative;z-index:3;margin:0 0 2px -38px;padding:0 0 8px 38px;
   display:flex;align-items:center;gap:8px
 }
+.career-line .train-head{padding-top:2px}
 .train-bar{
   min-height:40px;border-radius:8px;color:#fff;display:flex;align-items:center;
   padding:0 12px;gap:8px;font-size:12px;font-weight:950;box-shadow:0 2px 5px #0001
@@ -322,6 +324,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 .train-block{min-width:0;max-width:100%;padding-left:0}
 .train-block:before{left:16px;width:6px;margin-left:0;top:var(--rail-start,0px);bottom:auto;height:var(--rail-length,100%);background:var(--line-color,var(--purple));border-radius:99px}
 .train-head{display:grid;grid-template-columns:38px minmax(0,1fr);min-width:0;max-width:100%;align-items:center;gap:8px;margin:0;padding:9px 0 8px}
+.career-line .train-head{padding-top:2px}
 .train-bar{width:100%;min-width:0;max-width:100%;min-height:40px;padding:0 12px;gap:8px;border:0;border-radius:8px;background:var(--line-color,var(--purple));color:#fff;box-shadow:0 2px 5px #0002;font-size:12px;white-space:nowrap;overflow:hidden}
 .train-bar.career{--line-color:#2f6fed;background:#2f6fed}
 .train-bar.senior{--line-color:#7654e8;background:#7654e8}
@@ -379,13 +382,13 @@ body{background:#f2f3f5;overflow-y:hidden}
 .loading-content p{font-size:12px;color:#777;margin:0 0 65px}
 .train-loading-track{height:12px;position:relative;margin:0 12px;border-radius:99px;background:#e4e1ed;box-shadow:inset 0 1px 3px #00000013}
 .train-loading-fill{height:100%;width:0;border-radius:inherit;background:#7654e8;animation:loading-fill 5.2s cubic-bezier(.18,.72,.28,1) forwards}
-.loading-train{position:absolute;left:0;bottom:2px;width:116px;height:58px;transform:translateX(-4%);animation:loading-train 5.2s cubic-bezier(.18,.72,.28,1) forwards}
-.loading-train svg{position:absolute;left:0;bottom:0;width:116px;height:54px;overflow:visible}
+.loading-train{position:absolute;left:0;bottom:2px;width:140px;height:88px;transform:translateX(-2%);animation:loading-train 5.2s cubic-bezier(.18,.72,.28,1) forwards}
+.loading-train svg{position:absolute;left:0;bottom:0;width:140px;height:88px;overflow:visible}
 .steam{position:absolute;left:8px;top:6px;width:7px;height:7px;border-radius:50%;background:#c7bfd9;opacity:0;animation:steam-puff 1s ease-out infinite}
 .steam-two{left:15px;top:1px;animation-delay:.45s}
 .loading-screen:not([hidden]){display:grid}
 @keyframes loading-fill{to{width:100%}}
-@keyframes loading-train{to{left:calc(100% - 116px)}}
+@keyframes loading-train{to{left:calc(100% - 140px)}}
 @keyframes steam-puff{0%{opacity:0;transform:translate(0,5px) scale(.6)}35%{opacity:.75}100%{opacity:0;transform:translate(-10px,-13px) scale(1.7)}}
 .intro-screen[hidden],.loading-screen[hidden],[hidden]{display:none!important}
 /* 도슨트 오디오 도크는 질문 창과 별도로 고정되어 재생 중에도 접근 가능합니다. */
@@ -412,8 +415,19 @@ body{background:#f2f3f5;overflow-y:hidden}
   .result{padding-left:13px;padding-right:13px}
   .route-item{padding-top:11px;padding-bottom:11px}
   .intro-card input,.essay-answer,.self-textarea{font-size:16px}
-  .modal-bg{align-items:stretch}
-  .modal{height:100dvh;max-height:100dvh;margin:0 auto;border-radius:20px 20px 0 0;overflow-y:auto;overscroll-behavior:contain;padding:calc(12px + env(safe-area-inset-top)) 17px calc(86px + env(safe-area-inset-bottom))}
+  .modal-bg{align-items:flex-end}
+  .modal{height:80dvh;max-height:80dvh;align-self:flex-end;margin:0 auto;border-radius:20px 20px 0 0;overflow-y:auto;overscroll-behavior:contain;padding:14px 17px calc(86px + env(safe-area-inset-bottom))}
+  .modal h2{font-size:23px;margin:7px 0 9px}
+  .modal p{font-size:13px;margin-bottom:15px}
+  .modal-handle{margin-bottom:18px}
+  .close{width:36px;height:36px}
+  .answers{gap:9px}
+  .answer{min-height:52px;padding:14px;font-size:13px}
+  .complete{min-height:50px;padding:14px;font-size:13px}
+  .self-flow #selfStepPrompt{font-size:16px;margin:15px 0}
+  .self-textarea{min-height:125px}
+  .self-options{gap:9px}
+  .self-option{min-height:50px;padding:11px;font-size:12px}
 }
 @media(max-width:360px){
   .map-wrap{min-height:130px}.phone.map-focus .map-wrap{flex-basis:64%}
@@ -467,7 +481,7 @@ body{background:#f2f3f5;overflow-y:hidden}
     <div class="route-list">
 
       <!-- 출발 -->
-      <div class="route-item">
+      <div class="route-item start-route">
         <div class="marker start"><span>출발</span></div>
         <div>
           <div class="route-name" id="firstStationTitle">나의 역</div>
@@ -658,24 +672,27 @@ body{background:#f2f3f5;overflow-y:hidden}
     <div class="train-loading-track">
       <div class="train-loading-fill"></div>
       <div class="loading-train" aria-hidden="true">
-        <span class="steam steam-one"></span><span class="steam steam-two"></span>
-        <svg viewBox="0 0 132 58">
-          <!-- 전동차 지붕과 집전장치: 버스와 구분되는 지하철 외형 -->
-          <path d="M24 18l7-10h15l8 10M31 8h14M34 8V4h11v4" fill="none" stroke="#51408b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- 연결된 객차와 앞쪽 운전실 -->
-          <path d="M5 22q0-6 7-6h83q5 0 8 4l8 4q5 3 5 8v9H5z" fill="#7654e8" stroke="#51408b" stroke-width="2"/>
-          <path d="M108 25l7 3q3 2 3 5v4h-10z" fill="#eee9ff" stroke="#51408b" stroke-width="1.5"/>
-          <!-- 객차 창문, 문과 객차 연결부 -->
-          <rect x="11" y="21" width="15" height="10" rx="2" fill="#eee9ff"/>
-          <path d="M31 19v23M33 21h13v10H33z" fill="#eee9ff"/>
-          <rect x="50" y="21" width="15" height="10" rx="2" fill="#eee9ff"/>
-          <path d="M69 19v23M71 21h13v10H71z" fill="#eee9ff"/>
-          <rect x="88" y="21" width="13" height="10" rx="2" fill="#eee9ff"/>
-          <path d="M10 40h96" stroke="#f5c95b" stroke-width="3"/>
-          <!-- 대차, 바퀴와 철로 -->
-          <path d="M13 44h91m-82 0v3m70-3v3" stroke="#51408b" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="26" cy="46" r="5" fill="#28213e"/><circle cx="91" cy="46" r="5" fill="#28213e"/>
-          <path d="M3 53h124m-111 2v2m20-2v2m20-2v2m20-2v2m20-2v2m20-2v2" stroke="#9b95aa" stroke-width="1.6" stroke-linecap="round"/>
+        <svg viewBox="0 0 160 100">
+          <!-- 첨부 이미지의 옆모습 전동차 형태를 SIU 보라색 계열로 표현 -->
+          <path d="M4 14h101q15 0 25 12l19 21q8 9 7 23-1 15-15 17H4z" fill="#f2edff"/>
+          <path d="M4 75h151q-4 10-15 12H4z" fill="#7654e8"/>
+          <!-- 긴 측면 창과 전면 운전실 창 -->
+          <rect x="13" y="25" width="72" height="25" rx="8" fill="#555064"/>
+          <path d="M18 25h23v25H18q-5 0-5-6V33q0-8 5-8" fill="#69647a"/>
+          <path d="M42 25h21v25H42z" fill="#4a4658"/>
+          <path d="M65 25h13q7 0 7 8v9q0 8-7 8H65z" fill="#69647a"/>
+          <path d="M99 24h8q7 0 12 6l19 20H99z" fill="#555064"/>
+          <!-- 차체 측면 띠, 표시등과 문 표시 -->
+          <path d="M4 59h87q4 0 4 4t-4 4H4z" fill="#a98df8"/>
+          <rect x="99" y="59" width="13" height="8" rx="4" fill="#a98df8"/>
+          <rect x="126" y="58" width="17" height="10" rx="5" fill="#8e6df0"/>
+          <!-- 바퀴와 선로 -->
+          <circle cx="17" cy="87" r="11" fill="#69647a"/>
+          <circle cx="42" cy="87" r="11" fill="#555064"/>
+          <circle cx="67" cy="87" r="11" fill="#69647a"/>
+          <circle cx="105" cy="87" r="11" fill="#555064"/>
+          <circle cx="130" cy="87" r="11" fill="#69647a"/>
+          <path d="M4 96h152" stroke="#a98df8" stroke-width="5" stroke-linecap="round"/>
         </svg>
       </div>
     </div>
