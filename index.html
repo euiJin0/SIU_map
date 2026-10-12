@@ -639,7 +639,7 @@ body{background:#f2f3f5;overflow-y:hidden}
     <div class="intro-logo">SIU <em>METRO</em></div>
     <p>길찾기 여정을 시작하기 전에<br>이름이나 닉네임을 적어주세요.</p>
     <label for="participantName">이름 또는 닉네임</label>
-    <input id="participantName" maxlength="30" autocomplete="name" placeholder="예: 시우" onkeydown="if(event.key==='Enter')startJourney()">
+    <input id="participantName" maxlength="30" autocomplete="name" placeholder="예: 강씨융" onkeydown="if(event.key==='Enter')startJourney()">
     <button class="intro-submit" onclick="startJourney()">여정 시작하기</button>
   </div>
 </section>
@@ -730,7 +730,7 @@ let current=null,selected=null,answerMode="choice";
 let flushingResponses=false;
 
 // 응답을 보낼 Google Apps Script 웹 앱 URL을 여기에 입력하세요. 빈 문자열이면 브라우저에만 저장합니다.
-const GOOGLE_SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbzsD_z1j5lKNJzCbqBnEX32Jnq6rsJrtOiGNpQtthbw_tQG5TfYYBlb2VBCn2oLB59e/exec";
+const GOOGLE_SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbz5caFPW7863WGnUnKiQIilRi-iNeZFx2zzcj_AVgbuSmCQHlc_2kl6FJ9oQJ2O-_FA/exec";
 const RESPONSE_QUEUE_KEY="siuMetroResponses";
 const DONE_KEY_PREFIX="siuMetroMobile:";
 // 도슨트 음원과 제목/설명은 아래 목록에서 교체하거나 항목을 추가하세요.
