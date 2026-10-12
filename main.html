@@ -111,8 +111,8 @@ button{font:inherit}
   min-height:88px;padding:13px 0;border-bottom:1px solid #f0f1f3
 }
 .route-item:last-child{border-bottom:0}
-.route-item.start-route{border-bottom:0;min-height:0;padding-bottom:2px}
-.route-item.destination-route{border-bottom:0}
+.route-item.start-route{border-bottom:0;min-height:0;padding-bottom:6px}
+.route-item.destination-route{border-bottom:0;padding-bottom:0}
 .marker{
   width:24px;height:24px;border-radius:50%;position:relative;z-index:2;
   display:grid;place-items:center;background:#fff;border:3px solid #a8abb1;
@@ -165,7 +165,7 @@ button{font:inherit}
   position:relative;z-index:3;margin:0 0 2px -38px;padding:0 0 8px 38px;
   display:flex;align-items:center;gap:8px
 }
-.career-line .train-head{padding-top:2px}
+.career-line .train-head{padding-top:6px}
 .train-bar{
   min-height:40px;border-radius:8px;color:#fff;display:flex;align-items:center;
   padding:0 12px;gap:8px;font-size:12px;font-weight:950;box-shadow:0 2px 5px #0001
@@ -324,7 +324,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 .train-block{min-width:0;max-width:100%;padding-left:0}
 .train-block:before{left:16px;width:6px;margin-left:0;top:var(--rail-start,0px);bottom:auto;height:var(--rail-length,100%);background:var(--line-color,var(--purple));border-radius:99px}
 .train-head{display:grid;grid-template-columns:38px minmax(0,1fr);min-width:0;max-width:100%;align-items:center;gap:8px;margin:0;padding:9px 0 8px}
-.career-line .train-head{padding-top:2px}
+.career-line .train-head{padding-top:6px}
 .train-bar{width:100%;min-width:0;max-width:100%;min-height:40px;padding:0 12px;gap:8px;border:0;border-radius:8px;background:var(--line-color,var(--purple));color:#fff;box-shadow:0 2px 5px #0002;font-size:12px;white-space:nowrap;overflow:hidden}
 .train-bar.career{--line-color:#2f6fed;background:#2f6fed}
 .train-bar.senior{--line-color:#7654e8;background:#7654e8}
@@ -415,8 +415,8 @@ body{background:#f2f3f5;overflow-y:hidden}
   .result{padding-left:13px;padding-right:13px}
   .route-item{padding-top:11px;padding-bottom:11px}
   .intro-card input,.essay-answer,.self-textarea{font-size:16px}
-  .modal-bg{align-items:flex-end}
-  .modal{height:80dvh;max-height:80dvh;align-self:flex-end;margin:0 auto;border-radius:20px 20px 0 0;overflow-y:auto;overscroll-behavior:contain;padding:14px 17px calc(86px + env(safe-area-inset-bottom))}
+  .modal-bg{align-items:flex-end;overscroll-behavior:none}
+  #modalBg .modal{height:80dvh;max-height:80dvh;align-self:flex-end;margin:0 auto;border-radius:20px 20px 0 0;overflow:hidden;overscroll-behavior:none;touch-action:none;padding:14px 17px calc(66px + env(safe-area-inset-bottom))}
   .modal h2{font-size:23px;margin:7px 0 9px}
   .modal p{font-size:13px;margin-bottom:15px}
   .modal-handle{margin-bottom:18px}
@@ -428,6 +428,17 @@ body{background:#f2f3f5;overflow-y:hidden}
   .self-textarea{min-height:125px}
   .self-options{gap:9px}
   .self-option{min-height:50px;padding:11px;font-size:12px}
+  .self-options .self-option{min-height:44px;padding:8px}
+}
+@media(max-width:600px) and (max-height:700px){
+  #modalBg .modal{padding-top:10px;padding-bottom:calc(58px + env(safe-area-inset-bottom))}
+  #modalBg .modal-handle{margin-bottom:12px}
+  #modalBg .modal h2{font-size:20px;margin:4px 0 6px}
+  #modalBg .self-flow #selfStepPrompt{font-size:14px;margin:8px 0}
+  #modalBg .self-options{gap:6px}
+  #modalBg .self-options .self-option{min-height:38px;padding:6px;font-size:11px}
+  #modalBg .self-nav{margin-top:8px}
+  #modalBg .complete{min-height:42px;padding:10px;margin-top:7px}
 }
 @media(max-width:360px){
   .map-wrap{min-height:130px}.phone.map-focus .map-wrap{flex-basis:64%}
@@ -890,7 +901,7 @@ function renderSelfStep(){
   }else if(selfStep===2){
     input.innerHTML='<p class="self-note">정확히 2개를 선택해 주세요.</p><div class="self-options">'+careerCriteria.map((word,i)=>`<button type="button" class="self-option ${selfExploration.criteria.includes(word)?"selected":""}" onclick="toggleSelfChoice('criteria',${i})">${word}</button>`).join("")+'</div>';
   }else{
-    let html='<div class="self-options self-yes-no"><button type="button" class="self-option '+(selfExploration.randomDone===true?"selected":"")+'" onclick="setRandomDone(true)">했어요</button><button type="button" class="self-option '+(selfExploration.randomDone===false?"selected":"")+'" onclick="setRandomDone(false)">아직 안 했어요</button></div>';
+    let html='<div class="self-options self-yes-no"><button type="button" class="self-option '+(selfExploration.randomDone===true?"selected":"")+'" onclick="setRandomDone(true)">했어요</button><button type="button" class="self-option '+(selfExploration.randomDone===false?"selected":"")+'" onclick="setRandomDone(false)">안 했어요</button></div>';
     if(selfExploration.randomDone===true){
       html+='<p class="self-note">뽑은 랜덤 쪽지를 선택하세요.</p><div class="self-options">'+randomSlips.map((word,i)=>`<button type="button" class="self-option ${selfExploration.randomChoice===word?"selected":""}" onclick="setRandomSlip(${i})">${word}</button>`).join("")+'</div>';
     }
@@ -931,7 +942,7 @@ async function completeSelfExploration(){
     ["초중고 공통 관심사","2번에서 적은 반복해서 나타나는 관심은 무엇인가요?",selfExploration.interest,"서술형"],
     ["듣고 싶은 말","고른 사진 뒷장에 있는 키워드들을 선택하세요.",selfExploration.keywords.join(" / "),"복수 선택"],
     ["진로기준","골랐던 나의 진로 선택 기준을 2가지만 골라주세요.",selfExploration.criteria.join(" / "),"2개 선택"],
-    ["랜덤뽑기","랜덤뽑기를 했나요? 했다면 뽑은 쪽지를 선택하세요.",selfExploration.randomDone?selfExploration.randomChoice:"아직 안 했어요",selfExploration.randomDone?"랜덤 쪽지 선택":"선택"]
+    ["랜덤뽑기","랜덤뽑기를 했나요? 했다면 뽑은 쪽지를 선택하세요.",selfExploration.randomDone?selfExploration.randomChoice:"안 했어요",selfExploration.randomDone?"랜덤 쪽지 선택":"선택"]
   ];
   for(const [summaryColumn,question,answer,answerType] of entries){
     await submitResponse({stationId:"career",stationTitle:"자기탐색역",summaryColumn,question,answerType,answer});
