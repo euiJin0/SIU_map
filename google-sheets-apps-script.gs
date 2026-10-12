@@ -8,7 +8,6 @@
 const RAW_HEADERS = ['응답시각', '참여자 아이디', '역 이름', '질문', '답변 유형', '답변'];
 const SELF_FIELDS = ['초중고 공통 관심사', '듣고 싶은 말', '진로기준', '랜덤뽑기'];
 const STATION_FIELDS = [
-  '답변 | 관심분야역',
   '답변 | 시니어역',
   '답변 | 환승센터역',
   '답변 | 경영 X 시비즈역',
@@ -18,7 +17,8 @@ const STATION_FIELDS = [
   '답변 | 부동산건설 X 시비즈역',
   '답변 | 교육 X 시비즈역'
 ];
-const SUMMARY_HEADERS = ['참여자 아이디'].concat(SELF_FIELDS, ['응답 시각'], STATION_FIELDS);
+// 참여자별 보기의 열 순서: 응답시각 → 참여자 아이디 → 자기탐색 답변 → 각 역 답변.
+const SUMMARY_HEADERS = ['응답시각', '참여자 아이디'].concat(SELF_FIELDS, STATION_FIELDS);
 const SHEET_DATE_FORMAT = 'yyyy-mm-dd hh:mm';
 
 function doPost(e) {
@@ -53,7 +53,7 @@ function ensureSummarySchema(spreadsheet) {
   const sheet = spreadsheet.getSheetByName('참여자별 보기') || spreadsheet.insertSheet('참여자별 보기');
   if (sheet.getLastRow() === 0) {
     sheet.getRange(1, 1, 1, SUMMARY_HEADERS.length).setValues([SUMMARY_HEADERS]);
-    sheet.getRange('F:F').setNumberFormat(SHEET_DATE_FORMAT);
+    sheet.getRange('A:A').setNumberFormat(SHEET_DATE_FORMAT);
     return sheet;
   }
 
@@ -68,11 +68,11 @@ function ensureSummarySchema(spreadsheet) {
 
   const idIndex = oldHeaders.indexOf('참여자 아이디') >= 0 ? oldHeaders.indexOf('참여자 아이디') : oldHeaders.indexOf('참여자 ID');
   const keyIndex = oldHeaders.indexOf('기기 키');
-  const responseTimeIndex = oldHeaders.indexOf('응답 시각');
+  const responseTimeIndex = oldHeaders.indexOf('응답시각') >= 0 ? oldHeaders.indexOf('응답시각') : oldHeaders.indexOf('응답 시각');
   const recentIndex = oldHeaders.indexOf('최근 응답');
   const firstIndex = oldHeaders.indexOf('첫 응답');
   const oldAnswerHeaders = oldHeaders.filter(function (header) {
-    return ['참여자 ID', '참여자 아이디', '응답 시각', '최근 응답', '첫 응답', '기기 키'].indexOf(header) === -1;
+    return ['참여자 ID', '참여자 아이디', '응답시각', '응답 시각', '최근 응답', '첫 응답', '기기 키'].indexOf(header) === -1;
   });
   const extraHeaders = [];
   const oldHeaderMap = {};
@@ -94,15 +94,15 @@ function ensureSummarySchema(spreadsheet) {
     const oldRow = values[r];
     const oldId = idIndex >= 0 ? String(oldRow[idIndex] || '').trim() : '';
     if (!oldId) continue;
-    const row = new Array(headers.length).fill('');
-    row[0] = oldId;
-    SELF_FIELDS.forEach(function (field) {
-      const oldColumn = oldHeaders.indexOf(field);
-      if (oldColumn >= 0) row[1 + SELF_FIELDS.indexOf(field)] = oldRow[oldColumn];
-    });
     const time = responseTimeIndex >= 0 ? oldRow[responseTimeIndex] :
       (recentIndex >= 0 && oldRow[recentIndex] ? oldRow[recentIndex] : (firstIndex >= 0 ? oldRow[firstIndex] : ''));
-    row[1 + SELF_FIELDS.length] = toSheetDate(time);
+    const row = new Array(headers.length).fill('');
+    row[0] = toSheetDate(time);
+    row[1] = oldId;
+    SELF_FIELDS.forEach(function (field) {
+      const oldColumn = oldHeaders.indexOf(field);
+      if (oldColumn >= 0) row[2 + SELF_FIELDS.indexOf(field)] = oldRow[oldColumn];
+    });
     oldAnswerHeaders.forEach(function (oldHeader) {
       const oldColumn = oldHeaders.indexOf(oldHeader);
       const newColumn = headers.indexOf(oldHeaderMap[oldHeader]);
@@ -125,7 +125,7 @@ function ensureSummarySchema(spreadsheet) {
 
 function mapLegacyStationHeader(header) {
   const aliases = [
-    [['(interest)', '관심분야역'], '답변 | 관심분야역'],
+    [['(interest)', '답변 | 관심분야역', '관심분야역'], '__DROP__'],
     [['(career)', '진로발견역', '자기탐색역'], '__DROP__'],
     [['(senior)', '시니어역'], '답변 | 시니어역'],
     [['(transfer)', '환승역', '환승센터역'], '답변 | 환승센터역'],
@@ -192,24 +192,25 @@ function migrateRawSheet(sheet, summary) {
 function getOrCreateParticipant(sheet, participantId, submittedAt) {
   const lastRow = sheet.getLastRow();
   if (lastRow >= 2) {
-    const ids = sheet.getRange(2, 1, lastRow - 1, 1).getDisplayValues();
+    const participantColumn = SUMMARY_HEADERS.indexOf('참여자 아이디') + 1;
+    const ids = sheet.getRange(2, participantColumn, lastRow - 1, 1).getDisplayValues();
     for (let i = 0; i < ids.length; i++) {
       if (ids[i][0] === participantId) return i + 2;
     }
   }
   const row = new Array(Math.max(sheet.getLastColumn(), SUMMARY_HEADERS.length)).fill('');
-  row[0] = participantId;
-  row[SUMMARY_HEADERS.indexOf('응답 시각')] = toSheetDate(submittedAt);
+  row[SUMMARY_HEADERS.indexOf('참여자 아이디')] = participantId;
+  row[SUMMARY_HEADERS.indexOf('응답시각')] = toSheetDate(submittedAt);
   const rowNumber = sheet.getLastRow() + 1;
   sheet.getRange(rowNumber, 1, 1, row.length).setValues([row]);
-  sheet.getRange(rowNumber, SUMMARY_HEADERS.indexOf('응답 시각') + 1).setNumberFormat(SHEET_DATE_FORMAT);
+  sheet.getRange(rowNumber, SUMMARY_HEADERS.indexOf('응답시각') + 1).setNumberFormat(SHEET_DATE_FORMAT);
   return rowNumber;
 }
 
 function updateParticipantSummary(sheet, response, participantId, submittedAt) {
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(String);
   const participantColumn = headers.indexOf('참여자 아이디') + 1;
-  const timeColumn = headers.indexOf('응답 시각') + 1;
+  const timeColumn = headers.indexOf('응답시각') + 1;
   const ids = sheet.getLastRow() >= 2 ? sheet.getRange(2, participantColumn, sheet.getLastRow() - 1, 1).getDisplayValues() : [];
   let rowNumber = 0;
   for (let i = 0; i < ids.length; i++) if (ids[i][0] === participantId) { rowNumber = i + 2; break; }
@@ -230,7 +231,6 @@ function updateParticipantSummary(sheet, response, participantId, submittedAt) {
 
 function stationSummaryColumn(stationId) {
   const columns = {
-    interest: '답변 | 관심분야역',
     senior: '답변 | 시니어역',
     transfer: '답변 | 환승센터역',
     business: '답변 | 경영 X 시비즈역',
@@ -246,7 +246,7 @@ function stationSummaryColumn(stationId) {
 function formatSummaryTimes(sheet) {
   const rowCount = sheet.getLastRow() - 1;
   if (rowCount <= 0) return;
-  const column = SUMMARY_HEADERS.indexOf('응답 시각') + 1;
+  const column = SUMMARY_HEADERS.indexOf('응답시각') + 1;
   const range = sheet.getRange(2, column, rowCount, 1);
   range.setValues(range.getValues().map(function (row) { return [toSheetDate(row[0])]; }));
   range.setNumberFormat(SHEET_DATE_FORMAT);
