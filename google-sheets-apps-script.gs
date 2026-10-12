@@ -273,5 +273,8 @@ function asPlainText(value) {
 }
 
 function doGet() {
-  return ContentService.createTextOutput('SIU METRO response collector is ready.');
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  if (!spreadsheet) throw new Error('대상 스프레드시트를 찾을 수 없습니다. 시트에서 Apps Script를 열어 배포하세요.');
+  ensureSummarySchema(spreadsheet);
+  return ContentService.createTextOutput('SIU METRO response collector is ready. Participant sheet columns are up to date.');
 }
