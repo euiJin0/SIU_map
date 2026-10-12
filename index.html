@@ -76,6 +76,7 @@ button{font:inherit}
   position:absolute;right:12px;top:13px;z-index:3;width:38px;height:38px;
   border:0;border-radius:50%;background:#fff;box-shadow:0 2px 10px #0002;font-size:18px
 }
+.map-float.docent-map-open{right:14px;top:14px;width:48px;height:48px;font-size:25px;border:2px solid #eee8ff;color:#6544bc}
 
 /* ===== 길찾기 결과 헤더 ===== */
 .result{
@@ -90,7 +91,7 @@ button{font:inherit}
 .meta b{color:#333}
 .route-summary{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.65fr) minmax(0,.55fr) minmax(0,2.2fr);align-items:center;gap:3px;overflow:hidden;padding-bottom:15px;min-width:0;max-width:100%}
 .segment{height:31px;border-radius:7px;display:flex;align-items:center;justify-content:center;gap:5px;color:#fff;font-size:11px;font-weight:900;white-space:nowrap}
-.segment.walk{background:#7fc85d;width:auto;min-width:0;overflow:hidden}
+.segment.walk{background:#e8e9ed;color:#555;width:auto;min-width:0;overflow:hidden}
 .segment.senior{background:var(--purple);width:auto;min-width:0;overflow:hidden}
 .segment.career{background:#2f6fed;width:auto;min-width:0;overflow:hidden}
 .transit-dot{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:6px;background:#fff;color:inherit}
@@ -352,6 +353,40 @@ body{background:#f2f3f5;overflow-y:hidden}
 .mode-btn.active{background:#111;border-color:#111;color:#fff}
 .essay-answer{width:100%;min-height:90px;resize:vertical;border:1px solid #ddd;border-radius:11px;padding:11px;font:inherit;font-size:12px;line-height:1.5}
 .essay-answer:focus{outline:2px solid #7654e855;border-color:#7654e8}
+.self-flow{padding:6px 0}
+.self-step{font-size:10px;font-weight:900;color:var(--purple);background:#f3efff;border-radius:999px;padding:6px 10px;width:max-content}
+.self-flow #selfStepPrompt{font-size:14px;font-weight:850;color:#222;margin:12px 0}
+.self-textarea{width:100%;min-height:105px;border:1px solid #ddd;border-radius:12px;padding:12px;font:inherit;font-size:13px;resize:vertical}
+.self-options{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.self-option{min-height:42px;border:1px solid #e1e1e6;background:#fff;border-radius:11px;padding:9px;font-size:11px;text-align:left;line-height:1.4}
+.self-option.selected{border-color:#7654e8;background:#f4f0ff;color:#5537a3;font-weight:850}
+.self-note{font-size:10px;color:#777;margin:0 0 8px}
+.self-nav{display:flex;justify-content:space-between;gap:8px;margin-top:14px}
+.self-nav button{flex:1}
+.self-flow+.complete{margin-top:8px}
+.intro-screen,.loading-screen{position:fixed;inset:0;z-index:250;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#f3efff,#fff 55%,#f4f5f8)}
+.intro-card,.loading-content{width:min(100%,390px);text-align:center}
+.intro-card{padding:30px 22px;background:#fff;border:1px solid #eeeaf7;border-radius:25px;box-shadow:0 16px 45px #34206418}
+.intro-logo{font-size:17px;font-weight:950;letter-spacing:-.06em}
+.intro-logo em{font-style:normal;color:var(--purple)}
+.intro-card p{font-size:14px;font-weight:800;line-height:1.7;margin:18px 0 24px}
+.intro-card label{display:block;text-align:left;font-size:11px;font-weight:900;margin-bottom:7px}
+.intro-card input{width:100%;height:48px;border:1px solid #d9d7e2;border-radius:12px;padding:0 13px;font:inherit;font-size:14px}
+.intro-card input:focus{outline:2px solid #7654e855;border-color:#7654e8}
+.intro-submit{width:100%;height:48px;margin-top:12px;border:0;border-radius:12px;background:#7654e8;color:#fff;font-size:13px;font-weight:900}
+.loading-content h1{font-size:21px;line-height:1.45;margin:20px 0 7px;letter-spacing:-.05em}
+.loading-content p{font-size:12px;color:#777;margin:0 0 65px}
+.train-loading-track{height:12px;position:relative;margin:0 12px;border-radius:99px;background:#e4e1ed;box-shadow:inset 0 1px 3px #00000013}
+.train-loading-fill{height:100%;width:0;border-radius:inherit;background:#7654e8;animation:loading-fill 5.2s cubic-bezier(.18,.72,.28,1) forwards}
+.loading-train{position:absolute;left:0;bottom:2px;width:62px;height:47px;transform:translateX(-10%);animation:loading-train 5.2s cubic-bezier(.18,.72,.28,1) forwards}
+.loading-train svg{position:absolute;left:0;bottom:0;width:62px;height:34px;overflow:visible}
+.steam{position:absolute;left:8px;top:6px;width:7px;height:7px;border-radius:50%;background:#c7bfd9;opacity:0;animation:steam-puff 1s ease-out infinite}
+.steam-two{left:15px;top:1px;animation-delay:.45s}
+.loading-screen:not([hidden]){display:grid}
+@keyframes loading-fill{to{width:100%}}
+@keyframes loading-train{to{left:calc(100% - 62px)}}
+@keyframes steam-puff{0%{opacity:0;transform:translate(0,5px) scale(.6)}35%{opacity:.75}100%{opacity:0;transform:translate(-10px,-13px) scale(1.7)}}
+.intro-screen[hidden],.loading-screen[hidden],[hidden]{display:none!important}
 /* 도슨트 오디오 도크는 질문 창과 별도로 고정되어 재생 중에도 접근 가능합니다. */
 .audio-dock{position:fixed;z-index:110;left:50%;right:auto;bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%);width:calc(100vw - 20px);max-width:410px;min-width:0;display:none;align-items:center;gap:10px;padding:9px 11px;border:1px solid #e5e1f1;border-radius:15px;background:#fff;box-shadow:0 5px 24px #0002}
 .audio-dock.show{display:flex}
@@ -385,7 +420,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 
 <header class="top">
   <div class="logo">SIU <em>METRO</em></div>
-  <div class="top-actions"><button class="docent-open" onclick="openDocent()">♫ 도슨트</button><div class="stamps">STAMPS <span class="stamp-num" id="stampNum">0</span></div></div>
+  <div class="top-actions"><div class="stamps">STAMPS <span class="stamp-num" id="stampNum">0</span></div></div>
 </header>
 
 <!-- ===== GitHub 저장소의 전체 SIU METRO 노선도 ===== -->
@@ -397,7 +432,7 @@ body{background:#f2f3f5;overflow-y:hidden}
     <div id="mapFallback" class="map-fallback hidden">
     </div>
     <div class="map-top-title">전체 노선도 · <b>SIU METRO</b></div>
-    <button class="map-float" aria-label="현재 위치">◎</button>
+    <button class="map-float docent-map-open" onclick="openDocent()" aria-label="도슨트 듣기">🎧</button>
   </div>
 </section>
 
@@ -410,10 +445,10 @@ body{background:#f2f3f5;overflow-y:hidden}
   <div class="meta"><b>관심분야역</b> → <b>시니어비즈니스행</b> · 환승 1회 · 전시 이동 경로</div>
 
   <div class="route-summary">
-    <div class="segment walk">🚶 1분</div>
-    <div class="segment career"><span class="transit-dot">🚇</span> 진로 탐색</div>
     <div class="segment walk">🚶</div>
-    <div class="segment senior"><span class="transit-dot">🚇</span> 시니어비즈니스</div>
+    <div class="segment career">나를발견행</div>
+    <div class="segment walk">🚶</div>
+    <div class="segment senior">시니어비즈니스</div>
   </div>
 
   <div class="route-card">
@@ -434,18 +469,17 @@ body{background:#f2f3f5;overflow-y:hidden}
       <!-- 진로 탐색행 -->
       <div class="train-block career-line">
         <div class="train-head">
-          <span class="line-badge">진</span>
+          <span class="line-badge">나</span>
           <div class="train-bar career">
-            <span>관심분야역</span><span class="line-sep">|</span>
-            <b>진로 탐색행 열차</b><span class="train-note">1개 역</span>
+            <b>나를발견행 열차</b><span class="train-note">1개 역</span>
           </div>
         </div>
 
         <div class="station-row clickable" onclick="openStation('career')">
           <div class="station-dot"></div>
           <div>
-            <div class="station-title">진로발견역</div>
-            <div class="station-desc">나의 관심과 강점을 진로와 연결</div>
+            <div class="station-title">자기탐색역</div>
+            <div class="station-desc">반복해서 나타나는 나의 관심과 강점 찾기</div>
           </div>
           <button class="plus" data-station="career" aria-label="스탬프" onclick="event.stopPropagation();openStation('career')">＋</button>
         </div>
@@ -454,7 +488,7 @@ body{background:#f2f3f5;overflow-y:hidden}
       <!-- 걷기 -->
       <div class="walk-block">
         <div class="walk-person">🚶</div>
-        <div class="walk-text"><b>진로발견역까지 도보 이동</b><span>다음 노선으로 이동</span></div>
+        <div class="walk-text"><b>시니어역까지 도보 이동</b><span>다음 노선으로 이동</span></div>
       </div>
 
       <!-- 시니어비즈니스행 -->
@@ -462,8 +496,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="train-head">
           <span class="line-badge">시</span>
           <div class="train-bar senior">
-            <span>진로발견역</span><span class="line-sep">|</span>
-            <b>시니어비즈니스행</b><span class="train-note">7개 역</span>
+            <b>시니어비즈니스행 열차</b><span class="train-note">8개 역</span>
           </div>
         </div>
 
@@ -479,7 +512,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="station-row clickable" onclick="openStation('transfer')">
           <div class="station-dot transfer"></div>
           <div>
-            <div class="station-title">환승역</div>
+            <div class="station-title">환승센터역</div>
             <div class="station-desc">나의 관심 분야와 시니어비즈니스를 연결</div>
           </div>
           <button class="plus" data-station="transfer" aria-label="스탬프" onclick="event.stopPropagation();openStation('transfer')">＋</button>
@@ -491,7 +524,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="station-row clickable" onclick="openStation('business')">
           <div class="station-dot"></div>
           <div>
-            <div class="station-title">경영역</div>
+            <div class="station-title">경영 X 시비즈역</div>
             <div class="station-desc">시장·소비자·비즈니스 관점으로 바라보기</div>
           </div>
           <button class="plus" data-station="business" aria-label="스탬프" onclick="event.stopPropagation();openStation('business')">＋</button>
@@ -500,7 +533,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="station-row clickable" onclick="openStation('culture')">
           <div class="station-dot"></div>
           <div>
-            <div class="station-title">문화콘텐츠역</div>
+            <div class="station-title">문화콘텐츠 X 시비즈역</div>
             <div class="station-desc">문화·콘텐츠와 시니어의 접점 발견</div>
           </div>
           <button class="plus" data-station="culture" aria-label="스탬프" onclick="event.stopPropagation();openStation('culture')">＋</button>
@@ -509,7 +542,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="station-row clickable" onclick="openStation('welfare')">
           <div class="station-dot"></div>
           <div>
-            <div class="station-title">사회복지역</div>
+            <div class="station-title">사회복지 X 시비즈역</div>
             <div class="station-desc">사회문제와 비즈니스가 만나는 지점</div>
           </div>
           <button class="plus" data-station="welfare" aria-label="스탬프" onclick="event.stopPropagation();openStation('welfare')">＋</button>
@@ -518,7 +551,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="station-row clickable" onclick="openStation('sports')">
           <div class="station-dot"></div>
           <div>
-            <div class="station-title">체육역</div>
+            <div class="station-title">체육 X 시비즈역</div>
             <div class="station-desc">운동과 건강한 생활을 위한 경험 탐색</div>
           </div>
           <button class="plus" data-station="sports" aria-label="체육역 스탬프" onclick="event.stopPropagation();openStation('sports')">＋</button>
@@ -527,7 +560,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="station-row clickable" onclick="openStation('realestate')">
           <div class="station-dot"></div>
           <div>
-            <div class="station-title">부동산건설역</div>
+            <div class="station-title">부동산건설 X 시비즈역</div>
             <div class="station-desc">모두가 편안하게 살아갈 공간과 주거 탐색</div>
           </div>
           <button class="plus" data-station="realestate" aria-label="부동산건설역 스탬프" onclick="event.stopPropagation();openStation('realestate')">＋</button>
@@ -536,7 +569,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="station-row clickable" onclick="openStation('education')">
           <div class="station-dot"></div>
           <div>
-            <div class="station-title">교육역</div>
+            <div class="station-title">교육 X 시비즈역</div>
             <div class="station-desc">새로운 배움과 세대별 교육 기회 탐색</div>
           </div>
           <button class="plus" data-station="education" aria-label="교육역 스탬프" onclick="event.stopPropagation();openStation('education')">＋</button>
@@ -552,12 +585,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         </div>
         <span></span>
       </div>
-
-      <!-- 다음 활동 -->
-      <div class="walk-block">
-        <div class="walk-person">🚶</div>
-        <div class="walk-text"><b>다음 활동까지 걸어서 이동</b><span>씨유레터 · AI 학점 계산기와 연결</span></div>
-      </div>
+      <div class="transfer-card destination-card">씨유레터와 나만의 노선을 체험해보세요</div>
 
     </div>
     <div class="stamp-title">내 스탬프</div>
@@ -582,6 +610,15 @@ body{background:#f2f3f5;overflow-y:hidden}
     <div class="answer-mode"><button class="mode-btn active" id="choiceMode" onclick="setAnswerMode('choice')">선택 답변</button><button class="mode-btn" id="essayMode" onclick="setAnswerMode('essay')">서술 답변</button></div>
     <div class="answers" id="answers"></div>
     <textarea class="essay-answer" id="essayAnswer" placeholder="답변을 자유롭게 적어 주세요." hidden></textarea>
+    <div class="self-flow" id="selfFlow" hidden>
+      <div class="self-step" id="selfStepLabel"></div>
+      <p id="selfStepPrompt"></p>
+      <div class="self-input" id="selfInput"></div>
+      <div class="self-nav">
+        <button class="mode-btn" id="selfBack" onclick="moveSelfStep(-1)" hidden>이전</button>
+        <button class="mode-btn active" id="selfNext" onclick="moveSelfStep(1)">다음</button>
+      </div>
+    </div>
     <button class="complete" id="complete" disabled onclick="completeStation()">답변하고 스탬프 받기</button>
   </div>
 </div>
@@ -597,6 +634,39 @@ body{background:#f2f3f5;overflow-y:hidden}
 </div>
 <div class="audio-dock" id="audioDock"><button class="dock-play" id="dockPlay" onclick="toggleAudio()">▶</button><div class="dock-copy"><b id="dockTitle">도슨트</b><span id="dockStatus">재생 준비됨</span></div><button class="dock-open" onclick="openDocent()">목록</button></div>
 
+<section class="intro-screen" id="welcomeScreen">
+  <div class="intro-card">
+    <div class="intro-logo">SIU <em>METRO</em></div>
+    <p>길찾기 여정을 시작하기 전에<br>이름이나 닉네임을 적어주세요.</p>
+    <label for="participantName">이름 또는 닉네임</label>
+    <input id="participantName" maxlength="30" autocomplete="name" placeholder="예: 시우" onkeydown="if(event.key==='Enter')startJourney()">
+    <button class="intro-submit" onclick="startJourney()">여정 시작하기</button>
+  </div>
+</section>
+<section class="loading-screen" id="loadingScreen" hidden>
+  <div class="loading-content">
+    <div class="intro-logo">SIU <em>METRO</em></div>
+    <h1>나의 길 찾기 여정이 시작됩니다.</h1>
+    <p>잠시만 기다려 주세요</p>
+    <div class="train-loading-track">
+      <div class="train-loading-fill"></div>
+      <div class="loading-train" aria-hidden="true">
+        <span class="steam steam-one"></span><span class="steam steam-two"></span>
+        <svg viewBox="0 0 84 44">
+          <rect x="3" y="6" width="76" height="29" rx="10" fill="#7654e8"/>
+          <rect x="11" y="12" width="16" height="10" rx="3" fill="#eee9ff"/>
+          <rect x="32" y="12" width="16" height="10" rx="3" fill="#eee9ff"/>
+          <rect x="53" y="12" width="16" height="10" rx="3" fill="#eee9ff"/>
+          <path d="M70 26h8v6h-8" fill="#f5c95b"/>
+          <circle cx="23" cy="36" r="5" fill="#28213e"/><circle cx="62" cy="36" r="5" fill="#28213e"/>
+          <circle cx="34" cy="28" r="1.7" fill="#fff"/><circle cx="43" cy="28" r="1.7" fill="#fff"/>
+          <path d="M36 31q3 3 6 0" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
 <script>
 /* 질문과 선택지는 아래 stations에서 수정하세요. a는 객관식 선택지이며, 서술형 모드를 함께 제공합니다.
    Google Sheets 연결 주소는 GOOGLE_SHEETS_WEB_APP_URL에 Apps Script 웹 앱 URL을 넣으면 됩니다. */
@@ -608,9 +678,9 @@ const stations={
     a:["사람과 소통하고 관계를 만드는 것","무언가를 기획하고 만들어내는 것","새로운 정보와 현상을 알아가는 것","아직 모르지만 궁금한 것을 찾아보는 것"]
   },
   career:{
-    title:"진로발견역",tag:"CAREER METRO",
-    q:"나의 관심과 강점을 앞으로 어떤 방향으로 연결해 보고 싶나요?",
-    a:["기획하고 새로운 경험을 만드는 일","콘텐츠를 만들고 전달하는 일","사람과 사회의 문제를 해결하는 일","여러 분야를 연결하는 융합 활동"]
+    title:"자기탐색역",tag:"MY DISCOVERY LINE",
+    q:"나를 알아가는 네 단계 질문에 답해 주세요.",
+    a:[]
   },
   senior:{
     title:"시니어역",tag:"SENIOR BUSINESS",
@@ -618,63 +688,95 @@ const stations={
     a:["나이와 관계없이 다양한 취향을 가진 소비자","새로운 상품과 서비스를 선택하는 소비자","각자의 라이프스타일이 다른 한 명의 고객","더 알아보고 싶은 새로운 시장의 소비자"]
   },
   transfer:{
-    title:"환승역",tag:"TRANSFER STATION",
+    title:"환승센터역",tag:"TRANSFER STATION",
     q:"내가 관심 있는 분야와 시니어비즈니스를 연결한다면 어디에서 만날 수 있을까요?",
     a:["콘텐츠와 문화","마케팅과 경영","복지와 사회문제","기술과 새로운 서비스"]
   },
   business:{
-    title:"경영역",tag:"SENIOR BUSINESS LINE",
+    title:"경영 X 시비즈역",tag:"SENIOR BUSINESS LINE",
     q:"시니어 비즈니스에서 가장 먼저 살펴보고 싶은 것은 무엇인가요?",
     a:["시니어 소비자의 필요와 취향","새로운 시장과 비즈니스 모델","브랜드와 마케팅","기업과 지역사회의 연결"]
   },
   culture:{
-    title:"문화콘텐츠역",tag:"SENIOR BUSINESS LINE",
+    title:"문화콘텐츠 X 시비즈역",tag:"SENIOR BUSINESS LINE",
     q:"시니어에게 새로운 문화콘텐츠 경험을 만든다면 어떤 모습일까요?",
     a:["취향을 발견하는 콘텐츠","함께 참여하는 문화 프로그램","이야기를 기록하고 공유하는 콘텐츠","세대가 함께 즐기는 콘텐츠"]
   },
   welfare:{
-    title:"사회복지역",tag:"SENIOR BUSINESS LINE",
+    title:"사회복지 X 시비즈역",tag:"SENIOR BUSINESS LINE",
     q:"사회복지와 비즈니스가 만날 수 있는 지점은 무엇일까요?",
     a:["일상 속 불편을 해결하는 서비스","지역사회와 연결하는 서비스","누구나 이용하기 쉬운 서비스","삶의 선택과 경험을 넓혀주는 서비스"]
   },
   sports:{
-    title:"체육역",tag:"SPORTS & WELLNESS",
+    title:"체육 X 시비즈역",tag:"SPORTS & WELLNESS",
     q:"시니어가 즐겁고 건강하게 운동할 수 있도록 무엇을 만들 수 있을까요?",
     a:["함께 즐기는 생활 체육","건강 상태에 맞춘 운동 프로그램","쉽게 참여할 수 있는 지역 활동","운동을 돕는 새로운 서비스"]
   },
   realestate:{
-    title:"부동산건설역",tag:"HOUSING & SPACE",
+    title:"부동산건설 X 시비즈역",tag:"HOUSING & SPACE",
     q:"다양한 세대가 편안하게 살아갈 공간에는 무엇이 필요할까요?",
     a:["이동하기 편한 무장애 설계","안전하고 관리하기 쉬운 주거","이웃과 교류할 수 있는 공용 공간","생활에 맞춘 주거 서비스"]
   },
   education:{
-    title:"교육역",tag:"LIFELONG LEARNING",
+    title:"교육 X 시비즈역",tag:"LIFELONG LEARNING",
     q:"앞으로 새롭게 배우거나 다른 사람과 나누고 싶은 것은 무엇인가요?",
     a:["디지털 기기와 기술","취미와 문화 활동","일과 진로에 필요한 지식","경험과 지혜를 나누는 수업"]
   }
 };
 
-let done=JSON.parse(localStorage.getItem("siuMetroMobile")||"[]");
+let participantId="";
+let done=[];
 let current=null,selected=null,answerMode="choice";
 let flushingResponses=false;
 
 // 응답을 보낼 Google Apps Script 웹 앱 URL을 여기에 입력하세요. 빈 문자열이면 브라우저에만 저장합니다.
 const GOOGLE_SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbzsD_z1j5lKNJzCbqBnEX32Jnq6rsJrtOiGNpQtthbw_tQG5TfYYBlb2VBCn2oLB59e/exec";
 const RESPONSE_QUEUE_KEY="siuMetroResponses";
-const PARTICIPANT_ID_KEY="siuMetroParticipantId";
-// 같은 브라우저/기기의 응답을 묶습니다. 시트에는 Apps Script가 P001 같은 짧은 ID로 표시합니다.
-function getParticipantId(){
-  let id=localStorage.getItem(PARTICIPANT_ID_KEY);
-  if(!id){id=`P-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`.toUpperCase();localStorage.setItem(PARTICIPANT_ID_KEY,id)}
-  return id;
-}
-const participantId=getParticipantId();
+const DONE_KEY_PREFIX="siuMetroMobile:";
 // 도슨트 음원과 제목/설명은 아래 목록에서 교체하거나 항목을 추가하세요.
 const docentTracks=[
   {id:"welcome",title:"전시 여정 안내",description:"관심분야역에서 나의 다음 역까지, SIU METRO 여정을 소개합니다.",src:"docent-sample.wav"},
   {id:"senior",title:"시니어비즈니스란?",description:"시니어를 새로운 소비자이자 다양한 취향을 지닌 한 사람으로 바라봅니다.",src:"docent-senior.wav"}
 ];
 let activeTrack=0;
+
+function participantDoneKey(){return DONE_KEY_PREFIX+participantId.trim()}
+function startJourney(){
+  const input=document.getElementById("participantName");
+  const name=input.value.trim();
+  if(!name){input.focus();input.setCustomValidity("이름이나 닉네임을 입력해 주세요.");input.reportValidity();return}
+  input.setCustomValidity("");
+  participantId=name;
+  done=JSON.parse(localStorage.getItem(participantDoneKey())||"[]");
+  render();
+  document.getElementById("welcomeScreen").hidden=true;
+  document.getElementById("loadingScreen").hidden=false;
+  playTrainSound();
+  window.setTimeout(()=>{
+    document.getElementById("loadingScreen").hidden=true;
+    flushResponseQueue();
+  },5200);
+}
+document.getElementById("participantName").addEventListener("input",event=>event.currentTarget.setCustomValidity(""));
+
+function playTrainSound(){
+  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContextClass)return;
+  try{
+    const context=new AudioContextClass();
+    const master=context.createGain();master.gain.value=.035;master.connect(context.destination);
+    const filter=context.createBiquadFilter();filter.type="lowpass";filter.frequency.value=260;filter.connect(master);
+    const hum=context.createOscillator();hum.type="sawtooth";hum.frequency.value=78;hum.connect(filter);hum.start();
+    const clackTimer=window.setInterval(()=>{
+      const clack=context.createOscillator(),gain=context.createGain();
+      clack.type="triangle";clack.frequency.setValueAtTime(240,context.currentTime);clack.frequency.exponentialRampToValueAtTime(95,context.currentTime+.08);
+      gain.gain.setValueAtTime(.12,context.currentTime);gain.gain.exponentialRampToValueAtTime(.001,context.currentTime+.09);
+      clack.connect(gain);gain.connect(context.destination);clack.start();clack.stop(context.currentTime+.1);
+    },390);
+    context.resume();
+    window.setTimeout(()=>{window.clearInterval(clackTimer);master.gain.setTargetAtTime(.001,context.currentTime,.08);hum.stop(context.currentTime+.35);window.setTimeout(()=>context.close(),500)},4900);
+  }catch(error){console.debug("기차 효과음을 재생할 수 없습니다.",error)}
+}
 
 function render(){
   document.getElementById("stampNum").textContent=done.length;
@@ -707,17 +809,124 @@ function alignTrainRails(){
     block.style.setProperty("--rail-length",`${Math.max(0,end-start)}px`);
   });
 }
+const selfKeywords=[
+  "리더십과 조율","제작과 구현","정리와 분석, 논리","교육과 소통, 이해와 성장",
+  "통찰과 소비자 이해","사회적 기여, 가치 실현","협업과 시너지","창의성과 표현, 인정"
+];
+const careerCriteria=[
+  "자유","직업 안정성","성장과 배움","경제적 보상",
+  "좋은 동료와 협력","인정과 성취","일과 삶의 균형","사회적 기여"
+];
+const randomSlips=[
+  "문제를 발견하고 해결하는 일","사람을 이해하고 연결하는 일",
+  "정보를 수집하고 분석하는 일","아이디어를 기획하고 표현하는 일",
+  "직접 만들고 실행하는 일","계획을 세우고 관리하는 일",
+  "가르치고 성장하도록 돕는 일","새로운 가능성을 탐색하는 일"
+];
+let selfStep=0;
+let selfExploration={interest:"",keywords:[],criteria:[],randomDone:null,randomChoice:""};
+function resetSelfExploration(){
+  selfStep=0;selfExploration={interest:"",keywords:[],criteria:[],randomDone:null,randomChoice:""};
+  renderSelfStep();
+}
+function renderSelfStep(){
+  const prompts=[
+    "2번에서 적은 반복해서 나타나는 관심은 무엇인가요?",
+    "고른 사진 뒷장에 있는 키워드들을 선택하세요.",
+    "골랐던 나의 진로 선택 기준을 2가지만 골라주세요.",
+    "랜덤뽑기를 했나요?"
+  ];
+  document.getElementById("selfStepLabel").textContent=`질문 ${selfStep+1} / 4`;
+  document.getElementById("selfStepPrompt").textContent=prompts[selfStep];
+  const input=document.getElementById("selfInput");
+  if(selfStep===0){
+    input.innerHTML='<textarea class="self-textarea" id="selfInterest" placeholder="반복해서 나타나는 관심을 적어 주세요."></textarea>';
+    const field=document.getElementById("selfInterest");field.value=selfExploration.interest;
+    field.addEventListener("input",()=>{selfExploration.interest=field.value;updateSelfControls()});
+  }else if(selfStep===1){
+    input.innerHTML='<p class="self-note">여러 개를 선택할 수 있어요.</p><div class="self-options">'+selfKeywords.map((word,i)=>`<button type="button" class="self-option ${selfExploration.keywords.includes(word)?"selected":""}" onclick="toggleSelfChoice('keywords',${i})">${word}</button>`).join("")+'</div>';
+  }else if(selfStep===2){
+    input.innerHTML='<p class="self-note">정확히 2개를 선택해 주세요.</p><div class="self-options">'+careerCriteria.map((word,i)=>`<button type="button" class="self-option ${selfExploration.criteria.includes(word)?"selected":""}" onclick="toggleSelfChoice('criteria',${i})">${word}</button>`).join("")+'</div>';
+  }else{
+    let html='<div class="self-options self-yes-no"><button type="button" class="self-option '+(selfExploration.randomDone===true?"selected":"")+'" onclick="setRandomDone(true)">했어요</button><button type="button" class="self-option '+(selfExploration.randomDone===false?"selected":"")+'" onclick="setRandomDone(false)">아직 안 했어요</button></div>';
+    if(selfExploration.randomDone===true){
+      html+='<p class="self-note">뽑은 랜덤 쪽지를 선택하세요.</p><div class="self-options">'+randomSlips.map((word,i)=>`<button type="button" class="self-option ${selfExploration.randomChoice===word?"selected":""}" onclick="setRandomSlip(${i})">${word}</button>`).join("")+'</div>';
+    }
+    input.innerHTML=html;
+  }
+  document.getElementById("selfBack").hidden=selfStep===0;
+  document.getElementById("selfNext").hidden=selfStep===3;
+  document.getElementById("complete").hidden=selfStep!==3;
+  updateSelfControls();
+}
+function updateSelfControls(){
+  let valid=true;
+  if(selfStep===0)valid=!!selfExploration.interest.trim();
+  if(selfStep===1)valid=selfExploration.keywords.length>0;
+  if(selfStep===2)valid=selfExploration.criteria.length===2;
+  document.getElementById("selfNext").disabled=!valid;
+  document.getElementById("complete").disabled=selfExploration.randomDone===null||
+    (selfExploration.randomDone===true&&!selfExploration.randomChoice);
+}
+function toggleSelfChoice(field,index){
+  const list=selfExploration[field],value=field==="keywords"?selfKeywords[index]:careerCriteria[index];
+  if(list.includes(value))selfExploration[field]=list.filter(item=>item!==value);
+  else if(field==="keywords"||list.length<2)selfExploration[field]=list.concat(value);
+  renderSelfStep();
+}
+function setRandomDone(value){
+  selfExploration.randomDone=value;
+  if(!value)selfExploration.randomChoice="";
+  renderSelfStep();
+}
+function setRandomSlip(index){selfExploration.randomChoice=randomSlips[index];renderSelfStep()}
+function moveSelfStep(direction){
+  if(direction>0&&document.getElementById("selfNext").disabled)return;
+  selfStep=Math.max(0,Math.min(3,selfStep+direction));renderSelfStep();
+}
+async function completeSelfExploration(){
+  const entries=[
+    ["초중고 공통 관심사","2번에서 적은 반복해서 나타나는 관심은 무엇인가요?",selfExploration.interest,"서술형"],
+    ["듣고 싶은 말","고른 사진 뒷장에 있는 키워드들을 선택하세요.",selfExploration.keywords.join(" / "),"복수 선택"],
+    ["진로기준","골랐던 나의 진로 선택 기준을 2가지만 골라주세요.",selfExploration.criteria.join(" / "),"2개 선택"],
+    ["랜덤뽑기","랜덤뽑기를 했나요? 했다면 뽑은 쪽지를 선택하세요.",selfExploration.randomDone?selfExploration.randomChoice:"아직 안 했어요",selfExploration.randomDone?"랜덤 쪽지 선택":"선택"]
+  ];
+  for(const [summaryColumn,question,answer,answerType] of entries){
+    await submitResponse({stationId:"career",stationTitle:"자기탐색역",summaryColumn,question,answerType,answer});
+  }
+  if(!done.includes("career"))done.push("career");
+  localStorage.setItem(participantDoneKey(),JSON.stringify(done));
+  closeModal();render();
+}
 function openStation(id){
   current=id;selected=null;
   const s=stations[id];
   document.getElementById("tag").textContent=s.tag;
   document.getElementById("modalTitle").textContent=s.title;
+  const selfFlow=document.getElementById("selfFlow");
+  const complete=document.getElementById("complete");
+  if(id==="career"){
+    document.getElementById("question").hidden=true;
+    document.querySelector(".answer-mode").hidden=true;
+    document.getElementById("answers").hidden=true;
+    document.getElementById("essayAnswer").hidden=true;
+    selfFlow.hidden=false;
+    complete.textContent="답변 저장하고 스탬프 받기";
+    complete.hidden=true;
+    resetSelfExploration();
+    document.getElementById("modalBg").classList.add("show");
+    return;
+  }
+  selfFlow.hidden=true;
+  complete.hidden=false;
+  document.getElementById("question").hidden=false;
+  document.querySelector(".answer-mode").hidden=false;
   document.getElementById("question").textContent=s.q;
   document.getElementById("answers").innerHTML=s.a.map((a,i)=>
     `<button class="answer" onclick="selectAnswer(this,${i})">${a}</button>`).join("");
   answerMode="choice";document.getElementById("essayAnswer").value="";document.getElementById("essayAnswer").hidden=true;
   document.getElementById("answers").hidden=false;document.getElementById("choiceMode").classList.add("active");document.getElementById("essayMode").classList.remove("active");
-  const b=document.getElementById("complete");
+  const b=complete;b.hidden=false;
   b.disabled=done.includes(id);
   b.textContent=done.includes(id)?"이미 획득한 스탬프":"답변하고 스탬프 받기";
   document.getElementById("modalBg").classList.add("show");
@@ -735,7 +944,7 @@ function setAnswerMode(mode){
 }
 document.getElementById("essayAnswer").addEventListener("input",()=>{if(answerMode==="essay")document.getElementById("complete").disabled=!document.getElementById("essayAnswer").value.trim()});
 async function submitResponse(response){
-  const record={participantId,stationId:response.stationId,stationTitle:response.stationTitle,question:response.question,answerType:response.answerType,answer:response.answer,submittedAt:new Date().toISOString()};
+  const record={participantId,stationId:response.stationId,stationTitle:response.stationTitle,summaryColumn:response.summaryColumn||"",question:response.question,answerType:response.answerType,answer:response.answer,submittedAt:new Date().toISOString()};
   const queue=JSON.parse(localStorage.getItem(RESPONSE_QUEUE_KEY)||"[]");queue.push(record);localStorage.setItem(RESPONSE_QUEUE_KEY,JSON.stringify(queue));
   await flushResponseQueue();
 }
@@ -761,11 +970,12 @@ async function flushResponseQueue(){
   finally{flushingResponses=false}
 }
 function completeStation(){
+  if(current==="career"){completeSelfExploration();return}
   const essay=document.getElementById("essayAnswer").value.trim();
   if(!current||(answerMode==="choice"&&selected===null)||(answerMode==="essay"&&!essay))return;
   const s=stations[current];submitResponse({stationId:current,stationTitle:s.title,question:s.q,answerType:answerMode,answer:answerMode==="choice"?s.a[selected]:essay});
   if(!done.includes(current))done.push(current);
-  localStorage.setItem("siuMetroMobile",JSON.stringify(done));
+  localStorage.setItem(participantDoneKey(),JSON.stringify(done));
   closeModal();render();
 }
 function closeModal(e){
