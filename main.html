@@ -298,7 +298,7 @@ html,body{width:100%;max-width:100%;height:100%;overflow-x:hidden;overscroll-beh
 body{background:#f2f3f5;overflow-y:hidden}
 .phone{position:relative;width:100%;max-width:430px;min-width:0;height:100dvh;min-height:0;margin:0 auto;display:flex;flex-direction:column;overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-y;box-shadow:0 0 28px #00000012}
 .top{flex:0 0 calc(56px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);height:calc(56px + env(safe-area-inset-top))}
-.map-wrap{flex:0 0 40%;height:auto;min-height:145px;transition:flex-basis .32s cubic-bezier(.2,.75,.25,1)}
+.map-wrap{flex:0 0 34%;height:auto;min-height:135px;transition:flex-basis .32s cubic-bezier(.2,.75,.25,1)}
 .map{height:100%;min-height:0}
 .map img{object-fit:contain;background:#f2f4f1}
 .map-fallback:not(.hidden){background:linear-gradient(135deg,#e7eef0,#f5f6f2 50%,#e2ece7)}
@@ -371,20 +371,20 @@ body{background:#f2f3f5;overflow-y:hidden}
 .intro-logo em{font-style:normal;color:var(--purple)}
 .intro-card p{font-size:14px;font-weight:800;line-height:1.7;margin:18px 0 24px}
 .intro-card label{display:block;text-align:left;font-size:11px;font-weight:900;margin-bottom:7px}
-.intro-card input{width:100%;height:48px;border:1px solid #d9d7e2;border-radius:12px;padding:0 13px;font:inherit;font-size:14px}
+.intro-card input{width:100%;height:48px;border:1px solid #d9d7e2;border-radius:12px;padding:0 13px;font:inherit;font-size:16px}
 .intro-card input:focus{outline:2px solid #7654e855;border-color:#7654e8}
 .intro-submit{width:100%;height:48px;margin-top:12px;border:0;border-radius:12px;background:#7654e8;color:#fff;font-size:13px;font-weight:900}
 .loading-content h1{font-size:21px;line-height:1.45;margin:20px 0 7px;letter-spacing:-.05em}
 .loading-content p{font-size:12px;color:#777;margin:0 0 65px}
 .train-loading-track{height:12px;position:relative;margin:0 12px;border-radius:99px;background:#e4e1ed;box-shadow:inset 0 1px 3px #00000013}
 .train-loading-fill{height:100%;width:0;border-radius:inherit;background:#7654e8;animation:loading-fill 5.2s cubic-bezier(.18,.72,.28,1) forwards}
-.loading-train{position:absolute;left:0;bottom:2px;width:62px;height:47px;transform:translateX(-10%);animation:loading-train 5.2s cubic-bezier(.18,.72,.28,1) forwards}
-.loading-train svg{position:absolute;left:0;bottom:0;width:62px;height:34px;overflow:visible}
+.loading-train{position:absolute;left:0;bottom:2px;width:116px;height:58px;transform:translateX(-4%);animation:loading-train 5.2s cubic-bezier(.18,.72,.28,1) forwards}
+.loading-train svg{position:absolute;left:0;bottom:0;width:116px;height:54px;overflow:visible}
 .steam{position:absolute;left:8px;top:6px;width:7px;height:7px;border-radius:50%;background:#c7bfd9;opacity:0;animation:steam-puff 1s ease-out infinite}
 .steam-two{left:15px;top:1px;animation-delay:.45s}
 .loading-screen:not([hidden]){display:grid}
 @keyframes loading-fill{to{width:100%}}
-@keyframes loading-train{to{left:calc(100% - 62px)}}
+@keyframes loading-train{to{left:calc(100% - 116px)}}
 @keyframes steam-puff{0%{opacity:0;transform:translate(0,5px) scale(.6)}35%{opacity:.75}100%{opacity:0;transform:translate(-10px,-13px) scale(1.7)}}
 .intro-screen[hidden],.loading-screen[hidden],[hidden]{display:none!important}
 /* 도슨트 오디오 도크는 질문 창과 별도로 고정되어 재생 중에도 접근 가능합니다. */
@@ -405,6 +405,13 @@ body{background:#f2f3f5;overflow-y:hidden}
 .phone.route-focus .map-wrap{flex-basis:19%;min-height:118px}
 .phone.map-focus .result{flex-basis:30%;min-height:175px}
 .phone.route-focus .result{flex-basis:81%}
+/* 휴대폰 화면에서 지도와 경로가 한눈에 들어오도록 여백과 비율을 조정합니다. */
+@media(max-width:600px){
+  .duration{font-size:21px}
+  .result{padding-left:13px;padding-right:13px}
+  .route-item{padding-top:11px;padding-bottom:11px}
+  .intro-card input,.essay-answer,.self-textarea{font-size:16px}
+}
 @media(max-width:360px){
   .map-wrap{min-height:130px}.phone.map-focus .map-wrap{flex-basis:64%}
   .phone.map-focus .result{flex-basis:36%;min-height:185px}
@@ -442,7 +449,7 @@ body{background:#f2f3f5;overflow-y:hidden}
   <div class="result-head">
     <div class="duration">전시 여정</div>
   </div>
-  <div class="meta"><b>관심분야역</b> → <b>시니어비즈니스행</b> · 환승 1회 · 전시 이동 경로</div>
+  <div class="meta"><b id="firstStationMeta">나의 역</b> → <b>시니어비즈니스행</b> · 환승 1회 · 전시 이동 경로</div>
 
   <div class="route-summary">
     <div class="segment walk">🚶</div>
@@ -460,10 +467,10 @@ body{background:#f2f3f5;overflow-y:hidden}
       <div class="route-item">
         <div class="marker start"><span>출발</span></div>
         <div>
-          <div class="route-name">관심분야역</div>
+          <div class="route-name" id="firstStationTitle">나의 역</div>
           <div class="route-sub">내가 좋아하고 관심 있는 것에서 출발합니다.</div>
         </div>
-        <button class="plus" data-station="interest" aria-label="관심분야역 스탬프" onclick="openStation('interest')">＋</button>
+        <button class="plus" id="firstStationStamp" data-station="interest" aria-label="나의 역 스탬프" onclick="openStation('interest')">＋</button>
       </div>
 
       <!-- 진로 탐색행 -->
@@ -639,7 +646,7 @@ body{background:#f2f3f5;overflow-y:hidden}
     <div class="intro-logo">SIU <em>METRO</em></div>
     <p>길찾기 여정을 시작하기 전에<br>이름이나 닉네임을 적어주세요.</p>
     <label for="participantName">이름 또는 닉네임</label>
-    <input id="participantName" maxlength="30" autocomplete="name" placeholder="예: 시우" onkeydown="if(event.key==='Enter')startJourney()">
+    <input id="participantName" maxlength="30" autocomplete="name" placeholder="예: 강씨융" onkeydown="if(event.key==='Enter')startJourney()">
     <button class="intro-submit" onclick="startJourney()">여정 시작하기</button>
   </div>
 </section>
@@ -652,15 +659,23 @@ body{background:#f2f3f5;overflow-y:hidden}
       <div class="train-loading-fill"></div>
       <div class="loading-train" aria-hidden="true">
         <span class="steam steam-one"></span><span class="steam steam-two"></span>
-        <svg viewBox="0 0 84 44">
-          <rect x="3" y="6" width="76" height="29" rx="10" fill="#7654e8"/>
-          <rect x="11" y="12" width="16" height="10" rx="3" fill="#eee9ff"/>
-          <rect x="32" y="12" width="16" height="10" rx="3" fill="#eee9ff"/>
-          <rect x="53" y="12" width="16" height="10" rx="3" fill="#eee9ff"/>
-          <path d="M70 26h8v6h-8" fill="#f5c95b"/>
-          <circle cx="23" cy="36" r="5" fill="#28213e"/><circle cx="62" cy="36" r="5" fill="#28213e"/>
-          <circle cx="34" cy="28" r="1.7" fill="#fff"/><circle cx="43" cy="28" r="1.7" fill="#fff"/>
-          <path d="M36 31q3 3 6 0" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <svg viewBox="0 0 132 58">
+          <!-- 전동차 지붕과 집전장치: 버스와 구분되는 지하철 외형 -->
+          <path d="M24 18l7-10h15l8 10M31 8h14M34 8V4h11v4" fill="none" stroke="#51408b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- 연결된 객차와 앞쪽 운전실 -->
+          <path d="M5 22q0-6 7-6h83q5 0 8 4l8 4q5 3 5 8v9H5z" fill="#7654e8" stroke="#51408b" stroke-width="2"/>
+          <path d="M108 25l7 3q3 2 3 5v4h-10z" fill="#eee9ff" stroke="#51408b" stroke-width="1.5"/>
+          <!-- 객차 창문, 문과 객차 연결부 -->
+          <rect x="11" y="21" width="15" height="10" rx="2" fill="#eee9ff"/>
+          <path d="M31 19v23M33 21h13v10H33z" fill="#eee9ff"/>
+          <rect x="50" y="21" width="15" height="10" rx="2" fill="#eee9ff"/>
+          <path d="M69 19v23M71 21h13v10H71z" fill="#eee9ff"/>
+          <rect x="88" y="21" width="13" height="10" rx="2" fill="#eee9ff"/>
+          <path d="M10 40h96" stroke="#f5c95b" stroke-width="3"/>
+          <!-- 대차, 바퀴와 철로 -->
+          <path d="M13 44h91m-82 0v3m70-3v3" stroke="#51408b" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="26" cy="46" r="5" fill="#28213e"/><circle cx="91" cy="46" r="5" fill="#28213e"/>
+          <path d="M3 53h124m-111 2v2m20-2v2m20-2v2m20-2v2m20-2v2m20-2v2" stroke="#9b95aa" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
       </div>
     </div>
@@ -673,7 +688,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 // 질문 문구와 선택지를 수정할 때는 이 stations 객체의 각 역 q(질문), a(선택지)를 바꾸세요.
 const stations={
   interest:{
-    title:"관심분야역",tag:"START STATION",
+    title:"나의 역",tag:"START STATION",
     q:"지금 내가 가장 자연스럽게 관심이 가는 것은 무엇인가요?",
     a:["사람과 소통하고 관계를 만드는 것","무언가를 기획하고 만들어내는 것","새로운 정보와 현상을 알아가는 것","아직 모르지만 궁금한 것을 찾아보는 것"]
   },
@@ -730,12 +745,12 @@ let current=null,selected=null,answerMode="choice";
 let flushingResponses=false;
 
 // 응답을 보낼 Google Apps Script 웹 앱 URL을 여기에 입력하세요. 빈 문자열이면 브라우저에만 저장합니다.
-const GOOGLE_SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbzsD_z1j5lKNJzCbqBnEX32Jnq6rsJrtOiGNpQtthbw_tQG5TfYYBlb2VBCn2oLB59e/exec";
+const GOOGLE_SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbz5caFPW7863WGnUnKiQIilRi-iNeZFx2zzcj_AVgbuSmCQHlc_2kl6FJ9oQJ2O-_FA/exec";
 const RESPONSE_QUEUE_KEY="siuMetroResponses";
 const DONE_KEY_PREFIX="siuMetroMobile:";
 // 도슨트 음원과 제목/설명은 아래 목록에서 교체하거나 항목을 추가하세요.
 const docentTracks=[
-  {id:"welcome",title:"전시 여정 안내",description:"관심분야역에서 나의 다음 역까지, SIU METRO 여정을 소개합니다.",src:"docent-sample.wav"},
+  {id:"welcome",title:"전시 여정 안내",description:"나의 역에서 나의 다음 역까지, SIU METRO 여정을 소개합니다.",src:"docent-sample.wav"},
   {id:"senior",title:"시니어비즈니스란?",description:"시니어를 새로운 소비자이자 다양한 취향을 지닌 한 사람으로 바라봅니다.",src:"docent-senior.wav"}
 ];
 let activeTrack=0;
@@ -747,6 +762,12 @@ function startJourney(){
   if(!name){input.focus();input.setCustomValidity("이름이나 닉네임을 입력해 주세요.");input.reportValidity();return}
   input.setCustomValidity("");
   participantId=name;
+  const firstStationName=`${name}의 역`;
+  stations.interest.title=firstStationName;
+  document.getElementById("firstStationTitle").textContent=firstStationName;
+  document.getElementById("firstStationMeta").textContent=firstStationName;
+  document.getElementById("firstStationStamp").setAttribute("aria-label",`${firstStationName} 스탬프`);
+  docentTracks[0].description=`${firstStationName}에서 나의 다음 역까지, SIU METRO 여정을 소개합니다.`;
   done=JSON.parse(localStorage.getItem(participantDoneKey())||"[]");
   render();
   document.getElementById("welcomeScreen").hidden=true;
