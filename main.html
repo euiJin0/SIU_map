@@ -253,7 +253,7 @@ button{font:inherit}
   /* 환승역 아래 노란 안내 문구 글씨 크기 조절 */
   font-size:10px;line-height:1.4;white-space:normal;overflow-wrap:anywhere
 }
-.destination-card{margin-top:0}
+.destination-card{margin-top:-5px}
 .activity-chip{
   display:flex;align-items:center;gap:8px;margin:2px 0 8px;padding:10px 12px;
   border:1px solid #e1e3e7;border-radius:10px;background:#fff
@@ -281,15 +281,15 @@ button{font:inherit}
 }
 .modal-handle{width:42px;height:4px;border-radius:99px;background:#aaa;margin:0 auto 15px}
 .modal-top{display:flex;justify-content:space-between}
-.tag{font-size:8px;font-weight:950;color:var(--purple);letter-spacing:.12em}
-.modal h2{font-size:21px;margin:5px 0 7px;letter-spacing:-.05em}
-.modal p{font-size:11px;line-height:1.6;color:#6f737b;margin:0 0 12px}
-.close{border:0;background:#f1f2f4;border-radius:50%;width:32px;height:32px;font-size:18px}
-.answers{display:grid;gap:6px}
-.answer{display:flex;align-items:center;justify-content:center;min-height:58px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:14px;text-align:center;padding:14px 16px;font-size:12px;font-weight:750;line-height:1.45;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
+.tag{font-size:10px;font-weight:950;color:var(--purple);letter-spacing:.12em}
+.modal h2{font-size:25px;margin:7px 0 10px;letter-spacing:-.05em}
+.modal p{font-size:14px;line-height:1.65;color:#6f737b;margin:0 0 16px}
+.close{border:0;background:#f1f2f4;border-radius:50%;width:42px;height:42px;font-size:23px}
+.answers{display:grid;gap:10px}
+.answer{display:flex;align-items:center;justify-content:center;min-height:68px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:16px;text-align:center;padding:17px 18px;font-size:15px;font-weight:750;line-height:1.5;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
 .answer:active{transform:scale(.985)}
 .answer.selected{background:linear-gradient(145deg,#7654e8,#6540d2);color:#fff;border-color:#6540d2;box-shadow:0 5px 14px #7654e83d}
-.complete{width:100%;border:0;background:#111;color:#fff;border-radius:12px;padding:13px;margin-top:9px;font-size:11px;font-weight:900}
+.complete{width:100%;min-height:58px;border:0;background:#111;color:#fff;border-radius:15px;padding:15px;margin-top:12px;font-size:14px;font-weight:900}
 .complete:disabled{background:#ddd;color:#aaa}
 
 /* 작은 화면 보정 */
@@ -355,20 +355,20 @@ body{background:#f2f3f5;overflow-y:hidden}
 .stamp .s-circle img{width:100%;height:100%;object-fit:contain}
 .plus.done img{width:54px;height:54px}
 .answer-mode{display:flex;gap:7px;margin:4px 0 9px}
-.mode-btn{border:1px solid #ddd;border-radius:999px;background:#fff;padding:7px 11px;font-size:10px}
+.mode-btn{border:1px solid #ddd;border-radius:999px;background:#fff;padding:10px 15px;font-size:13px}
 .mode-btn.active{background:#111;border-color:#111;color:#fff}
-.essay-answer{width:100%;min-height:90px;resize:vertical;border:1px solid #ddd;border-radius:11px;padding:11px;font:inherit;font-size:12px;line-height:1.5}
+.essay-answer{width:100%;min-height:145px;resize:vertical;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;line-height:1.5}
 .essay-answer:focus{outline:2px solid #7654e855;border-color:#7654e8}
-.self-flow{padding:6px 0}
-.self-step{font-size:10px;font-weight:900;color:var(--purple);background:#f3efff;border-radius:999px;padding:6px 10px;width:max-content}
-.self-flow #selfStepPrompt{font-size:14px;font-weight:850;color:#222;margin:12px 0}
-.self-textarea{width:100%;min-height:105px;border:1px solid #ddd;border-radius:12px;padding:12px;font:inherit;font-size:13px;resize:vertical}
-.self-options{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.self-option{display:flex;align-items:center;justify-content:center;min-height:50px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:13px;padding:10px;font-size:11px;font-weight:700;text-align:center;line-height:1.4;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
+.self-flow{padding:10px 0}
+.self-step{font-size:12px;font-weight:900;color:var(--purple);background:#f3efff;border-radius:999px;padding:8px 12px;width:max-content}
+.self-flow #selfStepPrompt{font-size:18px;font-weight:850;color:#222;margin:16px 0}
+.self-textarea{width:100%;min-height:145px;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;resize:vertical}
+.self-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.self-option{display:flex;align-items:center;justify-content:center;min-height:60px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:15px;padding:12px;font-size:13px;font-weight:700;text-align:center;line-height:1.45;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
 .self-option:active{transform:scale(.98)}
 .self-option.selected{border-color:#7654e8;background:#f1ebff;color:#5537a3;font-weight:850;box-shadow:0 4px 12px #7654e826}
-.self-note{font-size:10px;color:#777;margin:0 0 8px}
-.self-nav{display:flex;justify-content:space-between;gap:8px;margin-top:14px}
+.self-note{font-size:13px;color:#777;margin:0 0 11px}
+.self-nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
 .self-nav button{flex:1}
 .self-flow+.complete{margin-top:8px}
 .intro-screen,.loading-screen{position:fixed;inset:0;z-index:250;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#f3efff,#fff 55%,#f4f5f8)}
@@ -384,13 +384,15 @@ body{background:#f2f3f5;overflow-y:hidden}
 .loading-content h1{font-size:21px;line-height:1.45;margin:20px 0 7px;letter-spacing:-.05em}
 .loading-content p{font-size:12px;color:#777;margin:0 0 65px}
 .train-loading-track{height:12px;position:relative;margin:0 12px;border-radius:99px;background:#e4e1ed;box-shadow:inset 0 1px 3px #00000013}
-.loading-train{position:absolute;left:0;bottom:2px;width:104px;height:65px;transform:translateX(-2%);animation:loading-train 5.2s cubic-bezier(.18,.72,.28,1) forwards}
-.loading-train svg{position:absolute;left:0;bottom:0;width:104px;height:65px;overflow:visible}
+.train-loading-fill{position:absolute;inset:0 auto 0 0;width:0;border-radius:inherit;background:linear-gradient(90deg,#9a7af0,#7654e8);animation:loading-fill 5.2s cubic-bezier(.18,.72,.28,1) forwards}
+.loading-train{position:absolute;z-index:2;left:0;bottom:2px;width:112px;height:70px;transform:translateX(-2%);animation:loading-train 5.2s cubic-bezier(.18,.72,.28,1) forwards}
+.loading-train svg{position:absolute;left:0;bottom:0;width:112px;height:70px;overflow:visible;filter:drop-shadow(0 3px 2px #2222)}
 .steam{position:absolute;z-index:2;left:9px;top:2px;width:7px;height:7px;border-radius:50%;background:#aaa3b8;opacity:0;filter:blur(.5px);animation:steam-puff 1.15s ease-out infinite}
 .steam-two{left:17px;top:-1px;animation-delay:.4s}
 .steam-three{left:25px;top:3px;animation-delay:.8s}
 .loading-screen:not([hidden]){display:grid}
-@keyframes loading-train{to{left:calc(100% - 104px)}}
+@keyframes loading-fill{to{width:100%}}
+@keyframes loading-train{to{left:calc(100% - 112px)}}
 @keyframes steam-puff{0%{opacity:0;transform:translate(0,5px) scale(.55)}28%{opacity:.72}100%{opacity:0;transform:translate(-7px,-16px) scale(1.6)}}
 .intro-screen[hidden],.loading-screen[hidden],[hidden]{display:none!important}
 /* 도슨트 오디오 도크는 질문 창과 별도로 고정되어 재생 중에도 접근 가능합니다. */
@@ -419,30 +421,50 @@ body{background:#f2f3f5;overflow-y:hidden}
   .route-item.start-route{padding-bottom:16px}
   .intro-card input,.essay-answer,.self-textarea{font-size:16px}
   .modal-bg{align-items:flex-end;overscroll-behavior:none}
-  #modalBg .modal{height:80dvh;max-height:80dvh;align-self:flex-end;margin:0 auto;border-radius:20px 20px 0 0;overflow:hidden;overscroll-behavior:none;touch-action:none;padding:14px 17px calc(66px + env(safe-area-inset-bottom))}
-  .modal h2{font-size:23px;margin:7px 0 9px}
-  .modal p{font-size:13px;margin-bottom:15px}
-  .modal-handle{margin-bottom:18px}
-  .close{width:36px;height:36px}
-  .answers{gap:9px}
-  .answer{min-height:64px;padding:16px;font-size:14px}
-  .complete{min-height:50px;padding:14px;font-size:13px}
-  .self-flow #selfStepPrompt{font-size:16px;margin:15px 0}
-  .self-textarea{min-height:125px}
-  .self-options{gap:9px}
-  .self-option{min-height:58px;padding:12px;font-size:13px}
-  .self-options .self-option{min-height:52px;padding:9px}
+  #modalBg .modal{height:80dvh;max-height:80dvh;align-self:flex-end;margin:0 auto;border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;overscroll-behavior:none;touch-action:none;padding:20px 21px calc(64px + env(safe-area-inset-bottom))}
+  #modalBg .modal-handle{width:54px;height:5px;margin-bottom:22px}
+  #modalBg .tag{font-size:11px}
+  #modalBg .modal h2{font-size:28px;margin:8px 0 12px}
+  #modalBg .modal p{font-size:16px;line-height:1.65;margin-bottom:18px}
+  #modalBg .close{width:46px;height:46px;font-size:25px}
+  #modalBg .answer-mode{gap:10px;margin:6px 0 14px}
+  #modalBg .mode-btn{min-height:48px;padding:11px 16px;font-size:14px}
+  #modalBg .answers{flex:1;min-height:0;grid-auto-rows:minmax(60px,1fr);align-content:stretch;gap:12px}
+  #modalBg .answer{min-height:0;padding:17px;font-size:16px}
+  #modalBg .essay-answer{flex:1;min-height:120px;padding:16px;font-size:16px;resize:none}
+  #modalBg .complete{min-height:64px;padding:16px;font-size:16px;margin-top:14px}
+  #modalBg .self-flow{flex:1;min-height:0;display:flex;flex-direction:column;padding:10px 0}
+  #modalBg .self-step{font-size:14px;padding:9px 14px}
+  #modalBg .self-flow #selfStepPrompt{font-size:20px;line-height:1.45;margin:18px 0}
+  #modalBg .self-textarea{flex:1;min-height:0;padding:16px;font-size:16px;resize:none}
+  #modalBg .self-note{font-size:13px;margin:0 0 11px}
+  #modalBg .self-input{flex:1;min-height:0;display:flex;flex-direction:column}
+  #modalBg .self-options{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr);align-content:stretch;gap:11px}
+  #modalBg .self-option{height:100%;min-height:0;padding:12px;font-size:14px}
+  #modalBg .self-yes-no{flex:0 0 auto}
+  #modalBg .self-nav{gap:11px;margin-top:18px}
+  #modalBg .self-nav .mode-btn{min-height:54px;font-size:15px}
 }
 @media(max-width:600px) and (max-height:700px){
-  #modalBg .modal{padding-top:10px;padding-bottom:calc(58px + env(safe-area-inset-bottom))}
-  #modalBg .modal-handle{margin-bottom:12px}
-  #modalBg .modal h2{font-size:20px;margin:4px 0 6px}
-  #modalBg .self-flow #selfStepPrompt{font-size:14px;margin:8px 0}
+  #modalBg .modal{padding:12px 16px calc(56px + env(safe-area-inset-bottom))}
+  #modalBg .modal-handle{margin-bottom:14px}
+  #modalBg .modal h2{font-size:23px;margin:5px 0 7px}
+  #modalBg .modal p{font-size:14px;margin-bottom:12px}
+  #modalBg .answer-mode{margin:4px 0 9px}
+  #modalBg .mode-btn{min-height:42px;padding:8px 12px;font-size:12px}
+  #modalBg .answers{gap:8px}
+  #modalBg .answer{min-height:56px;padding:12px;font-size:13px}
+  #modalBg .essay-answer{min-height:105px;padding:12px}
+  #modalBg .self-flow{padding:3px 0}
+  #modalBg .self-step{font-size:12px;padding:7px 11px}
+  #modalBg .self-flow #selfStepPrompt{font-size:16px;margin:10px 0}
+  #modalBg .self-textarea{min-height:100px;padding:12px}
+  #modalBg .self-note{font-size:11px;margin-bottom:7px}
   #modalBg .self-options{gap:6px}
-  #modalBg .answer{min-height:52px;padding:11px;font-size:12px}
-  #modalBg .self-options .self-option{min-height:42px;padding:6px;font-size:11px}
-  #modalBg .self-nav{margin-top:8px}
-  #modalBg .complete{min-height:42px;padding:10px;margin-top:7px}
+  #modalBg .self-options .self-option{min-height:0;padding:7px;font-size:11px}
+  #modalBg .self-nav{margin-top:8px;gap:7px}
+  #modalBg .self-nav .mode-btn{min-height:42px;font-size:12px}
+  #modalBg .complete{min-height:48px;padding:11px;font-size:13px;margin-top:8px}
 }
 @media(max-width:360px){
   .map-wrap{min-height:130px}.phone.map-focus .map-wrap{flex-basis:64%}
@@ -450,6 +472,16 @@ body{background:#f2f3f5;overflow-y:hidden}
   .meta{font-size:10px}.train-note{display:none}.train-bar{padding-left:12px;gap:5px}
   .audio-dock{gap:7px;padding:8px 9px}.dock-play{width:34px;height:34px}.dock-open{padding:7px;font-size:9px}
 }
+/* 랜덤 쪽지 8개가 모두 보이도록 마지막 단계에서만 선택 버튼 간격을 알맞게 조정합니다. */
+#modalBg.self-random-expanded .self-flow{padding:2px 0}
+#modalBg.self-random-expanded #selfStepPrompt{font-size:17px;margin:8px 0}
+#modalBg.self-random-expanded #selfInput .self-note{font-size:11px;margin:5px 0}
+#modalBg.self-random-expanded #selfInput .self-options{gap:6px}
+#modalBg.self-random-expanded #selfInput .self-yes-no .self-option{min-height:44px;padding:7px;font-size:12px}
+#modalBg.self-random-expanded #selfInput .self-options:not(.self-yes-no) .self-option{min-height:0;padding:7px;font-size:12px}
+#modalBg.self-random-expanded .self-nav{margin-top:8px}
+#modalBg.self-random-expanded .self-nav .mode-btn{min-height:44px}
+#modalBg.self-random-expanded .complete{min-height:50px;margin-top:7px;padding:10px;font-size:13px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -684,30 +716,27 @@ body{background:#f2f3f5;overflow-y:hidden}
     <div class="intro-logo">SIU <em>METRO</em></div>
     <h1>나의 길 찾기 여정이 시작됩니다.</h1>
     <p>잠시만 기다려 주세요</p>
-  <div class="train-loading-track">
+    <div class="train-loading-track">
+      <div class="train-loading-fill"></div>
       <div class="loading-train" aria-hidden="true">
         <span class="steam steam-one"></span><span class="steam steam-two"></span><span class="steam steam-three"></span>
-        <svg viewBox="0 0 160 100">
-          <!-- 첨부 이미지의 옆모습 전동차 형태를 SIU 보라색 계열로 표현 -->
-          <path d="M4 14h101q15 0 25 12l19 21q8 9 7 23-1 15-15 17H4z" fill="#f2edff"/>
-          <path d="M4 75h151q-4 10-15 12H4z" fill="#7654e8"/>
-          <!-- 긴 측면 창과 전면 운전실 창 -->
-          <rect x="13" y="25" width="72" height="25" rx="8" fill="#555064"/>
-          <path d="M18 25h23v25H18q-5 0-5-6V33q0-8 5-8" fill="#69647a"/>
-          <path d="M42 25h21v25H42z" fill="#4a4658"/>
-          <path d="M65 25h13q7 0 7 8v9q0 8-7 8H65z" fill="#69647a"/>
-          <path d="M99 24h8q7 0 12 6l19 20H99z" fill="#555064"/>
-          <!-- 차체 측면 띠, 표시등과 문 표시 -->
-          <path d="M4 59h87q4 0 4 4t-4 4H4z" fill="#a98df8"/>
-          <rect x="99" y="59" width="13" height="8" rx="4" fill="#a98df8"/>
-          <rect x="126" y="58" width="17" height="10" rx="5" fill="#8e6df0"/>
-          <!-- 바퀴와 선로 -->
-          <circle cx="17" cy="87" r="11" fill="#69647a"/>
-          <circle cx="42" cy="87" r="11" fill="#555064"/>
-          <circle cx="67" cy="87" r="11" fill="#69647a"/>
-          <circle cx="105" cy="87" r="11" fill="#555064"/>
-          <circle cx="130" cy="87" r="11" fill="#69647a"/>
-          <path d="M4 96h152" stroke="#a98df8" stroke-width="5" stroke-linecap="round"/>
+        <svg viewBox="0 0 160 100" role="img" aria-label="연기가 나는 귀여운 지하철">
+          <!-- 첨부한 옆모습 열차처럼 둥근 차체, 넓은 창, 낮은 바퀴를 살린 작은 지하철 그림입니다. -->
+          <path d="M5 20Q5 11 15 11h91q16 0 27 12l20 22q8 9 8 20 0 17-17 20H5z" fill="#eee8ff"/>
+          <path d="M5 70h156v7q-3 8-15 8H5z" fill="#7654e8"/>
+          <!-- 객실 창과 앞쪽 운전실 창 -->
+          <rect x="14" y="23" width="72" height="25" rx="8" fill="#514b61"/>
+          <path d="M22 24v23m25-23v23m25-23v23" stroke="#777087" stroke-width="2" opacity=".8"/>
+          <path d="M101 22h7q7 0 12 6l20 20h-39z" fill="#514b61"/>
+          <!-- 문과 귀여운 앞 불빛 -->
+          <path d="M94 51v18" stroke="#c7b8f4" stroke-width="2"/>
+          <path d="M5 57h84q4 0 4 4t-4 4H5z" fill="#aa95ef"/>
+          <rect x="103" y="56" width="14" height="8" rx="4" fill="#aa95ef"/>
+          <rect x="130" y="55" width="16" height="10" rx="5" fill="#9578e9"/>
+          <!-- 두툼한 바퀴와 이어진 선로 -->
+          <circle cx="22" cy="84" r="8" fill="#656071"/><circle cx="52" cy="84" r="8" fill="#656071"/>
+          <circle cx="111" cy="84" r="8" fill="#656071"/><circle cx="137" cy="84" r="8" fill="#656071"/>
+          <path d="M5 94h150" stroke="#7654e8" stroke-width="5" stroke-linecap="round"/>
         </svg>
       </div>
     </div>
@@ -810,14 +839,21 @@ function playTrainSound(){
   if(!AudioContextClass)return;
   try{
     const context=new AudioContextClass();
-    const master=context.createGain();master.gain.value=.035;master.connect(context.destination);
-    const filter=context.createBiquadFilter();filter.type="lowpass";filter.frequency.value=260;filter.connect(master);
-    const hum=context.createOscillator();hum.type="sawtooth";hum.frequency.value=78;hum.connect(filter);hum.start();
+    const master=context.createGain();master.gain.value=.045;master.connect(context.destination);
+    const filter=context.createBiquadFilter();filter.type="lowpass";filter.frequency.value=340;filter.connect(master);
+    const hum=context.createOscillator();hum.type="sawtooth";hum.frequency.setValueAtTime(66,context.currentTime);hum.frequency.exponentialRampToValueAtTime(92,context.currentTime+4.8);hum.connect(filter);hum.start();
+    // 출발 알림음 두 음 뒤에 낮은 전동차 주행음을 섞어 짧은 지하철 출발 효과를 냅니다.
+    [660,880].forEach((frequency,index)=>{
+      const chime=context.createOscillator(),envelope=context.createGain(),start=context.currentTime+index*.16;
+      chime.type="sine";chime.frequency.value=frequency;envelope.gain.setValueAtTime(.0001,start);
+      envelope.gain.exponentialRampToValueAtTime(.08,start+.025);envelope.gain.exponentialRampToValueAtTime(.0001,start+.23);
+      chime.connect(envelope);envelope.connect(context.destination);chime.start(start);chime.stop(start+.25);
+    });
     const clackTimer=window.setInterval(()=>{
       const clack=context.createOscillator(),gain=context.createGain();
       clack.type="triangle";clack.frequency.setValueAtTime(240,context.currentTime);clack.frequency.exponentialRampToValueAtTime(95,context.currentTime+.08);
-      gain.gain.setValueAtTime(.12,context.currentTime);gain.gain.exponentialRampToValueAtTime(.001,context.currentTime+.09);
-      clack.connect(gain);gain.connect(context.destination);clack.start();clack.stop(context.currentTime+.1);
+      gain.gain.setValueAtTime(.08,context.currentTime);gain.gain.exponentialRampToValueAtTime(.001,context.currentTime+.09);
+      clack.connect(gain);gain.connect(master);clack.start();clack.stop(context.currentTime+.1);
     },390);
     context.resume();
     window.setTimeout(()=>{window.clearInterval(clackTimer);master.gain.setTargetAtTime(.001,context.currentTime,.08);hum.stop(context.currentTime+.35);window.setTimeout(()=>context.close(),500)},4900);
@@ -895,6 +931,7 @@ function renderSelfStep(){
   ];
   document.getElementById("selfStepLabel").textContent=`질문 ${selfStep+1} / 4`;
   document.getElementById("selfStepPrompt").textContent=prompts[selfStep];
+  document.getElementById("modalBg").classList.toggle("self-random-expanded",selfStep===3&&selfExploration.randomDone===true);
   const input=document.getElementById("selfInput");
   if(selfStep===0){
     input.innerHTML='<textarea class="self-textarea" id="selfInterest" placeholder="반복해서 나타나는 관심을 적어 주세요."></textarea>';
@@ -957,6 +994,7 @@ async function completeSelfExploration(){
 }
 function openStation(id){
   current=id;selected=null;
+  document.getElementById("modalBg").classList.remove("self-random-expanded");
   const s=stations[id];
   document.getElementById("tag").textContent=s.tag;
   document.getElementById("modalTitle").textContent=s.title;
