@@ -253,7 +253,7 @@ button{font:inherit}
   /* 환승역 아래 노란 안내 문구 글씨 크기 조절 */
   font-size:10px;line-height:1.4;white-space:normal;overflow-wrap:anywhere
 }
-.destination-card{margin-top:-5px}
+.destination-card{margin-top:-9px}
 .activity-chip{
   display:flex;align-items:center;gap:8px;margin:2px 0 8px;padding:10px 12px;
   border:1px solid #e1e3e7;border-radius:10px;background:#fff
@@ -804,6 +804,8 @@ let flushingResponses=false;
 const GOOGLE_SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbx2ZPUritQc7fOIQ0ip2fvmUDx_vt-MEeaD4nfLwhrU5TMnoNJ8vgY1ATXW_z8ZALu5/exec";
 const RESPONSE_QUEUE_KEY="siuMetroResponses";
 const DONE_KEY_PREFIX="siuMetroMobile:";
+const PARTICIPANT_KEY="siuMetroActiveParticipant";
+const SELF_STATE_KEY_PREFIX="siuMetroSelfProgress:";
 // 도슨트 음원과 제목/설명은 아래 목록에서 교체하거나 항목을 추가하세요.
 const docentTracks=[
   {id:"welcome",title:"전시 여정 안내",description:"나의 역에서 나의 다음 역까지, SIU METRO 여정을 소개합니다.",src:"docent-sample.wav"},
@@ -812,17 +814,30 @@ const docentTracks=[
 let activeTrack=0;
 
 function participantDoneKey(){return DONE_KEY_PREFIX+participantId.trim()}
-function startJourney(){
-  const input=document.getElementById("participantName");
-  const name=input.value.trim();
-  if(!name){input.focus();input.setCustomValidity("이름이나 닉네임을 입력해 주세요.");input.reportValidity();return}
-  input.setCustomValidity("");
+function selfProgressKey(){return SELF_STATE_KEY_PREFIX+participantId.trim()}
+function setParticipant(name){
   participantId=name;
+  localStorage.setItem(PARTICIPANT_KEY,name);
   const firstStationName=`${name}의 역`;
   document.getElementById("firstStationTitle").textContent=firstStationName;
   document.getElementById("firstStationMeta").textContent=firstStationName;
   docentTracks[0].description=`${firstStationName}에서 나의 다음 역까지, SIU METRO 여정을 소개합니다.`;
   done=JSON.parse(localStorage.getItem(participantDoneKey())||"[]").filter(id=>id!=="interest");
+}
+function restoreParticipant(){
+  const name=localStorage.getItem(PARTICIPANT_KEY);
+  if(!name)return;
+  const input=document.getElementById("participantName");
+  input.value=name;
+  setParticipant(name);
+  document.getElementById("welcomeScreen").hidden=true;
+}
+function startJourney(){
+  const input=document.getElementById("participantName");
+  const name=input.value.trim();
+  if(!name){input.focus();input.setCustomValidity("이름이나 닉네임을 입력해 주세요.");input.reportValidity();return}
+  input.setCustomValidity("");
+  setParticipant(name);
   render();
   document.getElementById("welcomeScreen").hidden=true;
   document.getElementById("loadingScreen").hidden=false;
@@ -918,8 +933,21 @@ const randomSlips=[
 ];
 let selfStep=0;
 let selfExploration={interest:"",keywords:[],criteria:[],randomDone:null,randomChoice:""};
+function saveSelfProgress(){
+  if(!participantId)return;
+  localStorage.setItem(selfProgressKey(),JSON.stringify({step:selfStep,...selfExploration}));
+}
 function resetSelfExploration(){
-  selfStep=0;selfExploration={interest:"",keywords:[],criteria:[],randomDone:null,randomChoice:""};
+  let saved=null;
+  try{saved=JSON.parse(localStorage.getItem(selfProgressKey())||"null")}catch(error){console.warn("저장된 질문 진행 정보를 읽지 못했습니다.",error)}
+  selfStep=saved?Math.max(0,Math.min(3,Number(saved.step)||0)):0;
+  selfExploration=saved?{
+    interest:typeof saved.interest==="string"?saved.interest:"",
+    keywords:Array.isArray(saved.keywords)?saved.keywords:[],
+    criteria:Array.isArray(saved.criteria)?saved.criteria:[],
+    randomDone:typeof saved.randomDone==="boolean"?saved.randomDone:null,
+    randomChoice:typeof saved.randomChoice==="string"?saved.randomChoice:""
+  }:{interest:"",keywords:[],criteria:[],randomDone:null,randomChoice:""};
   renderSelfStep();
 }
 function renderSelfStep(){
@@ -936,7 +964,7 @@ function renderSelfStep(){
   if(selfStep===0){
     input.innerHTML='<textarea class="self-textarea" id="selfInterest" placeholder="반복해서 나타나는 관심을 적어 주세요."></textarea>';
     const field=document.getElementById("selfInterest");field.value=selfExploration.interest;
-    field.addEventListener("input",()=>{selfExploration.interest=field.value;updateSelfControls()});
+    field.addEventListener("input",()=>{selfExploration.interest=field.value;saveSelfProgress();updateSelfControls()});
   }else if(selfStep===1){
     input.innerHTML='<p class="self-note">여러 개를 선택할 수 있어요.</p><div class="self-options">'+selfKeywords.map((word,i)=>`<button type="button" class="self-option ${selfExploration.keywords.includes(word)?"selected":""}" onclick="toggleSelfChoice('keywords',${i})">${word}</button>`).join("")+'</div>';
   }else if(selfStep===2){
@@ -966,17 +994,17 @@ function toggleSelfChoice(field,index){
   const list=selfExploration[field],value=field==="keywords"?selfKeywords[index]:careerCriteria[index];
   if(list.includes(value))selfExploration[field]=list.filter(item=>item!==value);
   else if(field==="keywords"||list.length<2)selfExploration[field]=list.concat(value);
-  renderSelfStep();
+  saveSelfProgress();renderSelfStep();
 }
 function setRandomDone(value){
   selfExploration.randomDone=value;
   if(!value)selfExploration.randomChoice="";
-  renderSelfStep();
+  saveSelfProgress();renderSelfStep();
 }
-function setRandomSlip(index){selfExploration.randomChoice=randomSlips[index];renderSelfStep()}
+function setRandomSlip(index){selfExploration.randomChoice=randomSlips[index];saveSelfProgress();renderSelfStep()}
 function moveSelfStep(direction){
   if(direction>0&&document.getElementById("selfNext").disabled)return;
-  selfStep=Math.max(0,Math.min(3,selfStep+direction));renderSelfStep();
+  selfStep=Math.max(0,Math.min(3,selfStep+direction));saveSelfProgress();renderSelfStep();
 }
 async function completeSelfExploration(){
   const entries=[
@@ -988,6 +1016,7 @@ async function completeSelfExploration(){
   for(const [summaryColumn,question,answer,answerType] of entries){
     await submitResponse({stationId:"career",stationTitle:"자기탐색역",summaryColumn,question,answerType,answer});
   }
+  localStorage.removeItem(selfProgressKey());
   if(!done.includes("career"))done.push("career");
   localStorage.setItem(participantDoneKey(),JSON.stringify(done));
   closeModal();render();
@@ -1077,6 +1106,7 @@ function closeModal(e){
   if(!e||e.target===document.getElementById("modalBg"))
     document.getElementById("modalBg").classList.remove("show");
 }
+restoreParticipant();
 render();
 window.addEventListener("resize",()=>{requestAnimationFrame(alignTrainRails);requestAnimationFrame(alignRouteRail)},{passive:true});
 
