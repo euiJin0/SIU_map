@@ -59,8 +59,9 @@ function ensureSummarySchema(spreadsheet) {
 
   const values = sheet.getDataRange().getValues();
   const oldHeaders = values[0].map(String);
-  const isCurrent = SUMMARY_HEADERS.every(function (header, index) { return oldHeaders[index] === header; }) &&
-    oldHeaders.slice(SUMMARY_HEADERS.length).every(function (header) { return header.indexOf('답변 | ') === 0; });
+  // 중복된 '답변 | 초중고 공통 관심사' 같은 예전 열이 있으면 통합·삭제하도록 열 전체가 정확히 일치할 때만 건너뜁니다.
+  const isCurrent = oldHeaders.length === SUMMARY_HEADERS.length &&
+    SUMMARY_HEADERS.every(function (header, index) { return oldHeaders[index] === header; });
   if (isCurrent) {
     formatSummaryTimes(sheet);
     return sheet;
@@ -71,21 +72,22 @@ function ensureSummarySchema(spreadsheet) {
   const responseTimeIndex = oldHeaders.indexOf('응답시각') >= 0 ? oldHeaders.indexOf('응답시각') : oldHeaders.indexOf('응답 시각');
   const recentIndex = oldHeaders.indexOf('최근 응답');
   const firstIndex = oldHeaders.indexOf('첫 응답');
-  const oldAnswerHeaders = oldHeaders.filter(function (header) {
-    return ['참여자 ID', '참여자 아이디', '응답시각', '응답 시각', '최근 응답', '첫 응답', '기기 키'].indexOf(header) === -1;
+  const excludedHeaders = ['참여자 ID', '참여자 아이디', '응답시각', '응답 시각', '최근 응답', '첫 응답', '기기 키'];
+  const oldAnswerColumns = [];
+  oldHeaders.forEach(function (header, index) {
+    if (excludedHeaders.indexOf(header) === -1) oldAnswerColumns.push({ header: header, index: index, mappedHeader: '' });
   });
   const extraHeaders = [];
-  const oldHeaderMap = {};
-  oldAnswerHeaders.forEach(function (oldHeader) {
-    const legacyStation = mapLegacyStationHeader(oldHeader);
-    const mappedHeader = legacyStation === '__DROP__' ? '' : (legacyStation || normalizeLegacyAnswerHeader(oldHeader));
+  oldAnswerColumns.forEach(function (column) {
+    const legacyStation = mapLegacyStationHeader(column.header);
+    const mappedHeader = legacyStation === '__DROP__' ? '' : (legacyStation || normalizeLegacyAnswerHeader(column.header));
+    column.mappedHeader = mappedHeader;
     if (SUMMARY_HEADERS.indexOf(mappedHeader) >= 0) {
-      oldHeaderMap[oldHeader] = mappedHeader;
+      return;
     } else if (mappedHeader && STATION_FIELDS.indexOf(mappedHeader) >= 0) {
-      oldHeaderMap[oldHeader] = mappedHeader;
+      return;
     } else if (mappedHeader && extraHeaders.indexOf(mappedHeader) < 0) {
       extraHeaders.push(mappedHeader);
-      oldHeaderMap[oldHeader] = mappedHeader;
     }
   });
   const headers = SUMMARY_HEADERS.concat(extraHeaders);
@@ -103,10 +105,16 @@ function ensureSummarySchema(spreadsheet) {
       const oldColumn = oldHeaders.indexOf(field);
       if (oldColumn >= 0) row[2 + SELF_FIELDS.indexOf(field)] = oldRow[oldColumn];
     });
-    oldAnswerHeaders.forEach(function (oldHeader) {
-      const oldColumn = oldHeaders.indexOf(oldHeader);
-      const newColumn = headers.indexOf(oldHeaderMap[oldHeader]);
-      if (oldColumn >= 0 && newColumn >= 0 && newColumn !== 0) row[newColumn] = oldRow[oldColumn];
+    oldAnswerColumns.forEach(function (column) {
+      const newColumn = headers.indexOf(column.mappedHeader);
+      if (newColumn < 2 || !column.mappedHeader) return;
+      const oldValue = oldRow[column.index];
+      if (SELF_FIELDS.indexOf(column.mappedHeader) >= 0) {
+        // 앞쪽 자기탐색 열에 이미 값이 있으면 유지하고, 빈 경우에만 중복 열의 응답을 가져옵니다.
+        if ((row[newColumn] === '' || row[newColumn] == null) && oldValue !== '' && oldValue != null) row[newColumn] = oldValue;
+      } else if (oldValue !== '' && oldValue != null) {
+        row[newColumn] = oldValue;
+      }
     });
     rows.push(row);
   }
@@ -143,9 +151,15 @@ function mapLegacyStationHeader(header) {
 }
 
 function normalizeLegacyAnswerHeader(header) {
-  if (header.indexOf('답변 | ') === 0) return header;
-  if (/^(연결 테스트|Codex)/i.test(header)) return '';
-  return header ? '답변 | ' + header : '';
+  const label = String(header || '').replace(/^답변\s*\|\s*/, '').trim();
+  const compactLabel = label.replace(/\s+/g, '');
+  const selfHeader = SELF_FIELDS.find(function (field) {
+    const compactField = field.replace(/\s+/g, '');
+    return compactLabel === compactField || (compactField.indexOf(compactLabel) === 0 && compactLabel.length >= 4);
+  });
+  if (selfHeader) return selfHeader;
+  if (/^(연결 테스트|Codex)/i.test(label)) return '';
+  return label ? '답변 | ' + label : '';
 }
 
 function migrateRawSheet(sheet, summary) {
