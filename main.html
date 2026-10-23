@@ -292,6 +292,39 @@ button{font:inherit}
 .answer.selected{background:linear-gradient(145deg,#7654e8,#6540d2);color:#fff;border-color:#6540d2;box-shadow:0 5px 14px #7654e83d}
 .complete{width:100%;min-height:58px;border:0;background:#111;color:#fff;border-radius:15px;padding:15px;margin-top:12px;font-size:14px;font-weight:900}
 .complete:disabled{background:#ddd;color:#aaa}
+.next-station-trigger{cursor:pointer}
+.next-station-trigger .route-sub{color:#6142b0}
+.next-station-plus{align-self:center;width:32px;height:32px;border:0;border-radius:50%;background:var(--purple);color:#fff;font-size:22px;line-height:1;box-shadow:0 3px 9px #7654e83d}
+.report-bg{position:fixed;inset:0;z-index:180;background:#101115b8;display:none;align-items:center;justify-content:center;padding:12px}
+.report-bg.show{display:flex}
+.report-panel{width:min(100%,500px);max-height:94dvh;overflow:auto;background:#f8f9fb;border-radius:22px;padding:14px;box-shadow:0 18px 60px #0004}
+.report-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.report-toolbar strong{font-size:13px}.report-toolbar button{border:0;background:#eceef3;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800}
+.report-paper{background:#fff;border:1px solid #e1e3e8;border-radius:14px;padding:14px;color:#191b20;font-family:"Pretendard","Noto Sans KR",Arial,sans-serif}
+.report-head{padding:14px 13px;background:#f1f3f9;border-radius:10px;margin-bottom:9px}
+.report-eyebrow{font-size:8px;color:#7965c6;letter-spacing:.08em;font-weight:800}
+.report-head h2{font-size:21px;margin:4px 0 3px;letter-spacing:-.05em}
+.report-head p{font-size:10px;line-height:1.55;color:#626775;margin:0}
+.report-section{padding:12px 1px;border-bottom:1px solid #e9eaee}
+.report-section:last-child{border-bottom:0}.report-section-title{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.report-number{width:23px;height:23px;border:1px solid #4881ff;border-radius:50%;color:#3474f2;display:grid;place-items:center;font-size:9px;font-weight:800;flex:none}
+.report-number.purple{border-color:#825bff;color:#7045f2}.report-number.orange{border-color:#f29500;color:#df7b00}
+.report-section-title b{font-size:12px}.report-section-title small{display:block;color:#92959d;font-size:7px;margin-top:2px}
+.report-copy{font-size:10px;line-height:1.65;color:#353841;margin:5px 0}
+.report-copy.lead{font-size:12px;color:#1c1e24}
+.report-box{border:1px solid #d9cdfd;border-radius:9px;padding:9px;margin-top:6px}
+.report-label{font-size:8px;font-weight:900;margin:6px 0 3px}.report-tags{display:flex;gap:4px;flex-wrap:wrap}
+.report-weave{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:9px 0 2px;color:#7054bc;font-size:8px;font-weight:800}
+.report-weave span{background:#f1edff;border-radius:99px;padding:4px 7px}.report-weave i{font-style:normal;color:#aaa}
+.report-trail{display:grid;gap:6px;margin-top:8px}.report-trail-row{display:grid;grid-template-columns:15px 1fr;gap:6px;align-items:start;font-size:9px;line-height:1.45;color:#343740}.report-trail-row:before{content:"";width:7px;height:7px;border:2px solid #8a70df;border-radius:50%;margin:2px auto 0}.report-trail-row b{font-size:9px}.report-trail-row span{display:block;color:#777b84}
+.report-tag{font-size:8px;border-radius:99px;background:#eef4ff;color:#4d7fda;padding:3px 6px}
+.report-tag.purple{background:#f1edff;color:#7154c2}.report-tag.gray{background:#f0f0f0;color:#666}
+.report-next{background:#f1f3f9;border-radius:10px;padding:11px;margin-top:10px}
+.report-next b{font-size:12px;display:block;margin:3px 0}.report-next p{font-size:9px;line-height:1.55;color:#626775;margin:0}
+.report-actions{display:flex;gap:8px;margin-top:10px}.report-actions button{flex:1;border:0;border-radius:11px;padding:12px 8px;font-size:11px;font-weight:900;background:#7654e8;color:white}.report-actions .secondary{background:#fff;color:#5134a1;border:1px solid #ddd4f4}
+.report-gallery{display:grid;gap:7px;margin-top:10px}.gallery-item{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #e5e6ea;border-radius:10px;padding:7px}.gallery-item img{width:50px;height:66px;object-fit:cover;border-radius:5px}.gallery-item span{flex:1;font-size:10px;font-weight:800}.gallery-item button{border:0;background:#f1eff7;color:#5d45a2;border-radius:8px;padding:7px;font-size:9px;font-weight:800}
+.next-answer{width:100%;min-height:100px;resize:vertical;border:1px solid #ddd4f4;border-radius:12px;padding:13px;font:inherit;font-size:15px;line-height:1.5;margin:8px 0}
+.top-gallery{border:1px solid #e6e1f0;border-radius:999px;background:#fff;color:#6142b0;padding:7px 10px;font-size:10px;font-weight:900;white-space:nowrap}
 
 /* 작은 화면 보정 */
 @media(max-width:360px){
@@ -492,7 +525,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 
 <header class="top">
   <div class="logo">SIU <em>MAP</em></div>
-  <div class="top-actions"><button class="new-participant" id="newParticipantBtn" onclick="startNewParticipation()" hidden>다시 하기</button><div class="stamps">STAMPS <span class="stamp-num" id="stampNum">0</span></div></div>
+  <div class="top-actions"><button class="top-gallery" onclick="openGallery()">갤러리</button><button class="new-participant" id="newParticipantBtn" onclick="startNewParticipation()" hidden>다시 하기</button><div class="stamps">STAMPS <span class="stamp-num" id="stampNum">0</span></div></div>
 </header>
 
 <!-- ===== GitHub 저장소의 전체 SIU MAP 노선도 ===== -->
@@ -648,12 +681,13 @@ body{background:#f2f3f5;overflow-y:hidden}
       </div>
 
       <!-- 도착 -->
-      <div class="route-item destination-route">
+      <div class="route-item destination-route next-station-trigger" onclick="openNextStation()">
         <div class="marker arrive"><span>도착</span></div>
         <div>
           <div class="route-name">나의 다음 역</div>
           <div class="route-sub">전시에서 찾은 나의 관심을 다음 경험으로 이어갑니다.</div>
         </div>
+        <button class="next-station-plus" type="button" aria-label="나의 다음 역 한 줄 쓰기" onclick="event.stopPropagation();openNextStation()">+</button>
       </div>
     </div>
     <div class="stamp-title">내 스탬프</div>
@@ -661,6 +695,16 @@ body{background:#f2f3f5;overflow-y:hidden}
   </div>
 </section>
 
+</div>
+
+<!-- 여정 리포트와 기기 내 갤러리 -->
+<div class="report-bg" id="reportBg" onclick="closeReport(event)">
+  <div class="report-panel" onclick="event.stopPropagation()">
+    <div class="report-toolbar"><strong id="reportToolbarTitle">나의 여정 리포트</strong><button onclick="closeReport()">닫기</button></div>
+    <div id="nextStationForm"><div class="report-paper"><div class="report-eyebrow">MY NEXT STATION</div><h2 style="font-size:20px;margin:5px 0">나의 다음 역은?</h2><p class="report-copy">이번 여정에서 발견한 관심과 가능성을 다음 경험으로 이어가는 한 문장을 적어주세요.</p><textarea class="next-answer" id="nextAnswer" maxlength="180" placeholder="예: 시니어의 취향을 담은 문화 콘텐츠를 직접 기획해 보고 싶다."></textarea><div style="font-size:9px;color:#888">작성한 문장을 바탕으로 여정 리포트가 만들어집니다.</div></div><button class="complete" id="createReportBtn" disabled onclick="createJourneyReport()">나의 여정 리포트 만들기</button></div>
+    <div id="reportView" hidden><div class="report-paper" id="reportPaper"></div><div class="report-actions"><button onclick="saveReportImage()">휴대폰에 이미지 저장</button><button class="secondary" onclick="saveReportToGallery()">내 갤러리에 저장</button></div><p class="report-copy">휴대폰에 저장을 누르면 공유 메뉴가 열려요. 사진 앱이나 갤러리를 선택해 저장할 수 있습니다.</p></div>
+    <div id="galleryView" hidden><div class="report-paper"><div class="report-eyebrow">MY GALLERY</div><h2 style="font-size:20px;margin:5px 0">저장한 여정 리포트</h2><div class="report-gallery" id="reportGallery"></div></div></div>
+  </div>
 </div>
 
 <!-- ===== 질문 바텀시트 ===== -->
@@ -704,7 +748,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 
 <section class="intro-screen" id="welcomeScreen">
   <div class="intro-card">
-    <div class="intro-logo">SIU <em>METRO</em></div>
+    <div class="intro-logo">SIU <em>MAP</em></div>
     <p>길찾기 여정을 시작하기 전에<br>이름이나 닉네임을 적어주세요.</p>
     <label for="participantName">이름 또는 닉네임</label>
     <input id="participantName" maxlength="30" autocomplete="name" placeholder="예: 강씨융" onkeydown="if(event.key==='Enter')startJourney()">
@@ -713,7 +757,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 </section>
 <section class="loading-screen" id="loadingScreen" hidden>
   <div class="loading-content">
-    <div class="intro-logo">SIU <em>METRO</em></div>
+    <div class="intro-logo">SIU <em>MAP</em></div>
     <h1>나의 길 찾기 여정이 시작됩니다.</h1>
     <p>잠시만 기다려 주세요</p>
     <div class="train-loading-track">
@@ -806,6 +850,9 @@ const RESPONSE_QUEUE_KEY="siuMetroResponses";
 const DONE_KEY_PREFIX="siuMetroMobile:";
 const PARTICIPANT_KEY="siuMetroActiveParticipant";
 const SELF_STATE_KEY_PREFIX="siuMetroSelfProgress:";
+const ANSWERS_KEY_PREFIX="siuMetroAnswers:";
+const REPORT_GALLERY_KEY_PREFIX="siuMetroGallery:";
+const NEXT_STATION_KEY_PREFIX="siuMetroNextStation:";
 // 도슨트 음원과 제목/설명은 아래 목록에서 교체하거나 항목을 추가하세요.
 const docentTracks=[
   {id:"welcome",title:"전시 여정 안내",description:"나의 역에서 나의 다음 역까지, SIU MAP 여정을 소개합니다.",src:"docent-sample.wav"},
@@ -815,6 +862,9 @@ let activeTrack=0;
 
 function participantDoneKey(){return DONE_KEY_PREFIX+participantId.trim()}
 function selfProgressKey(){return SELF_STATE_KEY_PREFIX+participantId.trim()}
+function participantAnswersKey(){return ANSWERS_KEY_PREFIX+participantId.trim()}
+function participantGalleryKey(){return REPORT_GALLERY_KEY_PREFIX+participantId.trim()}
+function participantNextStationKey(){return NEXT_STATION_KEY_PREFIX+participantId.trim()}
 function setParticipant(name){
   participantId=name;
   localStorage.setItem(PARTICIPANT_KEY,name);
@@ -1082,6 +1132,7 @@ function setAnswerMode(mode){
 document.getElementById("essayAnswer").addEventListener("input",()=>{if(answerMode==="essay")document.getElementById("complete").disabled=!document.getElementById("essayAnswer").value.trim()});
 async function submitResponse(response){
   const record={participantId,stationId:response.stationId,stationTitle:response.stationTitle,summaryColumn:response.summaryColumn||"",question:response.question,answerType:response.answerType,answer:response.answer,submittedAt:new Date().toISOString()};
+  const saved=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]");saved.push(record);localStorage.setItem(participantAnswersKey(),JSON.stringify(saved));
   const queue=JSON.parse(localStorage.getItem(RESPONSE_QUEUE_KEY)||"[]");queue.push(record);localStorage.setItem(RESPONSE_QUEUE_KEY,JSON.stringify(queue));
   await flushResponseQueue();
 }
@@ -1115,6 +1166,117 @@ function completeStation(){
   localStorage.setItem(participantDoneKey(),JSON.stringify(done));
   closeModal();render();
 }
+function openNextStation(){
+  if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
+  const saved=localStorage.getItem(participantNextStationKey())||"";
+  document.getElementById("nextAnswer").value=saved;
+  document.getElementById("nextAnswer").oninput=event=>{localStorage.setItem(participantNextStationKey(),event.target.value);document.getElementById("createReportBtn").disabled=!event.target.value.trim()};
+  document.getElementById("createReportBtn").disabled=!saved.trim();
+  document.getElementById("nextStationForm").hidden=false;document.getElementById("reportView").hidden=true;document.getElementById("galleryView").hidden=true;
+  document.getElementById("reportToolbarTitle").textContent="나의 다음 역";
+  document.getElementById("reportBg").classList.add("show");
+}
+function closeReport(event){if(!event||event.target===document.getElementById("reportBg"))document.getElementById("reportBg").classList.remove("show")}
+function latestAnswers(){
+  const records=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]"),result={};
+  records.forEach(record=>{const key=record.stationId==="career"?`career:${record.summaryColumn}`:record.stationId;result[key]=record.answer});return result;
+}
+function reportInsights(next){
+  const a=latestAnswers(),interest=a["career:초중고 공통 관심사"]||"나를 설명하는 관심",keywords=(a["career:듣고 싶은 말"]||"").split(" / ").filter(Boolean),criteria=(a["career:진로기준"]||"").split(" / ").filter(Boolean);
+  const firstIdea=a.senior||"시니어도 저마다 다른 취향과 가능성을 지닌 사람이라는 관점";
+  const expandedIdea=a.seniorBusiness||"시니어의 필요를 새로운 경험으로 연결하는 일";
+  const transfer=a.transfer||"관심 분야";
+  const areas=Object.entries({culture:"문화콘텐츠",welfare:"사회복지",sports:"체육",realestate:"공간·주거",education:"교육"}).filter(([id])=>a[id]).map(([id])=>`${areasLabel(id)} · ${a[id]}`);
+  const stops=[["가능성발견역",a.senior],["시니어비즈니스역",a.seniorBusiness],["환승센터역",a.transfer],["문화콘텐츠 X 시비즈역",a.culture],["사회복지 X 시비즈역",a.welfare],["체육 X 시비즈역",a.sports],["부동산건설 X 시비즈역",a.realestate],["교육 X 시비즈역",a.education]].filter(([,answer])=>!!answer);
+  const traitReadings={
+    "리더십과 조율":"여러 사람의 생각을 모아 함께 갈 방향을 만드는",
+    "제작과 구현":"떠올린 생각을 구체적인 결과로 옮기는",
+    "정리와 분석, 논리":"정보를 정리해 문제의 실마리를 찾는",
+    "교육과 소통, 이해와 성장":"사람의 이야기를 듣고 성장을 돕는",
+    "통찰과 소비자 이해":"사람의 필요와 경험을 세심하게 읽는",
+    "사회적 기여, 가치 실현":"사회에 필요한 변화를 실제로 만드는",
+    "협업과 시너지":"서로 다른 강점을 연결해 더 큰 결과를 만드는",
+    "창의성과 표현, 인정":"새로운 관점을 자신만의 방식으로 표현하는"
+  };
+  const criteriaReadings={"자유":"스스로 선택하고 시도할 수 있는 여지","직업 안정성":"꾸준히 이어갈 수 있는 안정감","성장과 배움":"계속 배우며 넓어지는 가능성","경제적 보상":"노력에 맞는 보상","좋은 동료와 협력":"믿고 함께할 수 있는 사람들","인정과 성취":"기여를 알아주는 성취감","일과 삶의 균형":"삶의 다른 부분과 조화를 이루는 리듬","사회적 기여":"사회에 보탬이 되는 의미"};
+  const traitText=keywords.slice(0,2).map(word=>traitReadings[word]).filter(Boolean);
+  const criteriaText=criteria.slice(0,2).map(word=>criteriaReadings[word]).filter(Boolean);
+  const selfSentence=traitText.length
+    ?`‘${interest}’에 반복해서 마음이 가고, ${traitText.join(" 또 ")} 사람으로 보여요. ${criteriaText.length?`진로 선택 기준으로 ‘${criteria.join("’, ‘")}’를 고른 점에서도 자신에게 중요한 방향을 알고 있어요.`:"이런 관심과 강점은 앞으로 어떤 일을 선택할지 알려주는 단서가 돼요."}`
+    :`‘${interest}’에 대한 기록과 선택한 기준 ${criteria.join(", ")||""}을 보면, 무엇에 마음이 움직이고 어떤 환경에서 의미를 느끼는지 스스로 살펴보는 사람이에요.`;
+  const journeySentence=`처음 떠올린 관점은 ‘${firstIdea}’였어요. 여기서 ‘${expandedIdea}’라는 가능성을 발견하고, 환승한 ‘${transfer}’ 분야와 관심 ‘${interest}’를 실처럼 엮었어요. 그 생각은 이제 ‘${next}’라는 다음 행동으로 이어집니다.`;
+  const nextSentence=stops.length
+    ?`이번 여정에서 ${stops.map(([title])=>title).join(", ")}에 머물렀어요. 선택한 답을 따라 관심이 구체적인 장면으로 바뀌었고, 다음에는 ‘${next}’를 직접 시도해 보려 해요.`
+    :`아직 선택한 역이 많지 않아도 괜찮아요. ‘${transfer}’에 대한 관심에서 출발해 ‘${next}’라는 다음 행동을 정했어요. 이 문장이 다음 여정의 첫 정거장이 될 수 있어요.`;
+  return {interest,keywords,criteria,firstIdea,expandedIdea,transfer,areas,stops,selfSentence,journeySentence,nextSentence,next};
+}
+function areasLabel(id){return ({culture:"문화콘텐츠",welfare:"사회복지",sports:"체육",realestate:"부동산·주거",education:"교육"})[id]||id}
+function htmlEscape(value){return String(value||"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char])}
+function reportTag(text,color=""){return `<span class="report-tag ${color}">${htmlEscape(text)}</span>`}
+async function createJourneyReport(){
+  const next=document.getElementById("nextAnswer").value.trim();if(!next)return;
+  localStorage.setItem(participantNextStationKey(),next);
+  const answerRecords=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]");
+  if(!answerRecords.some(record=>record.stationId==="nextStation"&&record.answer===next)){
+    await submitResponse({stationId:"nextStation",stationTitle:"나의 다음 역",summaryColumn:"나의 다음 역 한 줄",question:"이번 여정에서 발견한 관심과 가능성을 다음 경험으로 이어가는 한 문장을 적어주세요.",answerType:"서술형",answer:next});
+  }
+  const d=reportInsights(next),name=participantId||"나";
+  const areaTags=d.areas.length?d.areas.map(area=>reportTag(area.split(" · ")[0],"gray")).join(""):reportTag("탐색 중","gray");
+  const keywordTags=(d.keywords.length?d.keywords:d.criteria).slice(0,3).map(x=>reportTag(x,"purple")).join("");
+  document.getElementById("reportPaper").innerHTML=`<header class="report-head"><div class="report-eyebrow">SIU MAP · MY JOURNEY REPORT</div><h2>${htmlEscape(name)}의 관심 노선도</h2><p>이번 전시에서 발견한 나의 관심과 가능성<br>나의 출발역에서 다음 가능성까지</p></header>
+   <section class="report-section"><div class="report-section-title"><span class="report-number">01</span><div><b>내가 발견한 나</b><small>MY INTEREST & VALUES</small></div></div><p class="report-copy lead">${htmlEscape(d.selfSentence)}</p><div class="report-tags">${reportTag(d.interest)}${keywordTags}</div></section>
+   <section class="report-section"><div class="report-section-title"><span class="report-number purple">02</span><div><b>나의 관심이 확장된 곳</b><small>MY SENIOR BUSINESS JOURNEY</small></div></div><div class="report-box"><div class="report-label">처음 떠올린 관점</div><p class="report-copy">${htmlEscape(d.firstIdea)}</p><div class="report-weave"><span>${htmlEscape(d.interest)}</span><i>→</i><span>${htmlEscape(d.transfer)}</span><i>→</i><span>${htmlEscape(d.expandedIdea)}</span></div><div class="report-label">실을 엮으며 확장된 생각</div><p class="report-copy">${htmlEscape(d.journeySentence)}</p><div class="report-label">내가 들른 분야</div><div class="report-tags">${areaTags}</div></div></section>
+   <section class="report-section"><div class="report-section-title"><span class="report-number orange">03</span><div><b>이번 여정에서 만난 역</b><small>MY EXHIBITION TRACK</small></div></div><p class="report-copy">${htmlEscape(d.nextSentence)}</p><div class="report-trail">${d.stops.length?d.stops.map(([title,answer])=>`<div class="report-trail-row"><div><b>${htmlEscape(title)}</b><span>${htmlEscape(answer)}</span></div></div>`).join(""):"<div class=\"report-trail-row\"><div><b>환승 분야</b><span>아직 답변한 역은 없어요. 다음 여정에서 관심을 더 이어가 보세요.</span></div></div>"}</div></section>
+   <div class="report-next"><div class="report-eyebrow">MY NEXT STATION</div><b>나의 다음 역은?</b><p>${htmlEscape(next)}</p></div>`;
+  document.getElementById("nextStationForm").hidden=true;document.getElementById("reportView").hidden=false;document.getElementById("galleryView").hidden=true;
+  document.getElementById("reportToolbarTitle").textContent="나의 여정 리포트";
+}
+function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=4){
+  let line="",lines=0;for(const char of Array.from(String(text||""))){const candidate=line+char;if(ctx.measureText(candidate).width>maxWidth&&line){ctx.fillText(line,x,y);y+=lineHeight;lines++;line=char;if(lines>=maxLines)return y} else line=candidate}if(line){ctx.fillText(line,x,y);y+=lineHeight}return y;
+}
+function reportCanvas(){
+  const d=reportInsights(localStorage.getItem(participantNextStationKey())||"");const canvas=document.createElement("canvas");canvas.width=900;canvas.height=1280+d.stops.length*47;const ctx=canvas.getContext("2d");
+  ctx.fillStyle="#fbfbfc";ctx.fillRect(0,0,900,canvas.height);ctx.strokeStyle="#e2e4e8";ctx.lineWidth=2;ctx.strokeRect(12,12,876,canvas.height-24);
+  const rounded=(x,y,w,h,r,color,stroke)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=color;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}};
+  const text=(s,x,y,size=22,color="#292c33",weight=500)=>{ctx.font=`${weight} ${size}px "Noto Sans KR", sans-serif`;ctx.fillStyle=color;ctx.fillText(String(s),x,y)};
+  rounded(32,32,836,164,20,"#f1f3f9");text("SIU MAP · MY JOURNEY REPORT",54,70,16,"#7965c6",700);ctx.font='800 36px "Noto Sans KR", sans-serif';ctx.fillStyle="#17191e";wrapCanvasText(ctx,`${participantId||"나"}의 관심 노선도`,54,112,780,40,2);text("이번 전시에서 발견한 나의 관심과 가능성",54,157,19,"#656a75");
+  function section(y,num,title,eng,accent){ctx.strokeStyle="#e8e9ed";ctx.beginPath();ctx.moveTo(45,y-20);ctx.lineTo(855,y-20);ctx.stroke();ctx.beginPath();ctx.arc(70,y+7,21,0,Math.PI*2);ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.stroke();text(num,58,y+15,17,accent,700);text(title,108,y+5,23,"#22252b",800);text(eng,108,y+28,13,"#92959d",600);return y+66}
+  let y=section(235,"01","내가 발견한 나","MY INTEREST & VALUES","#4881ff");y=wrapCanvasText(ctx,d.selfSentence,54,y,790,31,4);y+=9;
+  rounded(52,y,796,46,12,"#eef4ff");wrapCanvasText(ctx,[d.interest,...d.keywords.slice(0,2)].join("  ·  "),70,y+29,750,21,2);y+=78;
+  y=section(y,"02","나의 관심이 확장된 곳","MY SENIOR BUSINESS JOURNEY","#825bff");
+  const boxY=y-5,boxH=300;rounded(50,boxY,800,boxH,17,"#fff","#d9cdfd");
+  text("처음 떠올린 관점",72,y+27,16,"#454852",700);let by=wrapCanvasText(ctx,d.firstIdea,72,y+52,750,24,2);
+  text("실을 엮으며 확장된 생각",72,by+14,15,"#7054bc",700);by=wrapCanvasText(ctx,d.journeySentence,72,by+40,750,25,3);
+  text("내가 들른 분야",72,boxY+273,15,"#454852",700);wrapCanvasText(ctx,d.areas.length?d.areas.map(a=>a.split(" · ")[0]).join("   ·   "):d.transfer,72,boxY+294,750,21,2);y=boxY+boxH+33;
+  y=section(y,"03","이번 여정에서 만난 역","MY EXHIBITION TRACK","#f29500");y=wrapCanvasText(ctx,d.nextSentence,54,y,790,27,3)+4;
+  for(const [title,answer] of d.stops){ctx.beginPath();ctx.arc(65,y-3,5,0,Math.PI*2);ctx.fillStyle="#8a70df";ctx.fill();text(title,82,y,15,"#292c33",700);y=wrapCanvasText(ctx,answer,82,y+20,750,20,2)+7;}
+  y+=4;rounded(50,y,800,132,17,"#f1f3f9");text("MY NEXT STATION",72,y+31,14,"#7965c6",700);text("나의 다음 역은?",72,y+64,21,"#22252b",800);wrapCanvasText(ctx,d.next,72,y+91,750,24,2);
+  text("SIU MAP  ·  나의 길 찾기 여정",54,y+154,14,"#9699a1",600);
+  return canvas;
+}
+async function saveReportImage(){
+  const canvas=reportCanvas(),blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));
+  if(!blob){alert("이미지를 만들지 못했어요. 다시 시도해 주세요.");return}
+  const file=typeof File==="function"?new File([blob],`${participantId||"나"}-SIU-MAP-여정리포트.png`,{type:"image/png"}):null;
+  if(file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:`${participantId||"나"}의 SIU MAP 여정 리포트`});return}
+    catch(error){if(error.name==="AbortError")return;console.warn("공유 메뉴를 열 수 없어 이미지 다운로드로 전환합니다.",error)}
+  }
+  const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=file?file.name:`${participantId||"나"}-SIU-MAP-여정리포트.png`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+async function saveReportToGallery(){
+  const canvas=reportCanvas(),dataUrl=canvas.toDataURL("image/jpeg",.82),gallery=JSON.parse(localStorage.getItem(participantGalleryKey())||"[]");
+  gallery.unshift({createdAt:new Date().toISOString(),title:`${participantId||"나"}의 관심 노선도`,image:dataUrl,next:localStorage.getItem(participantNextStationKey())||""});
+  try{localStorage.setItem(participantGalleryKey(),JSON.stringify(gallery.slice(0,8)));}catch(error){alert("기기 저장 공간이 부족해요. 갤러리에서 오래된 이미지를 지운 뒤 다시 시도해 주세요.");return}
+  alert("나의 여정 리포트를 갤러리에 저장했어요.");
+}
+function openGallery(){
+  if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
+  const gallery=JSON.parse(localStorage.getItem(participantGalleryKey())||"[]"),container=document.getElementById("reportGallery");
+  container.innerHTML=gallery.length?gallery.map((item,index)=>`<div class="gallery-item"><img src="${item.image}" alt="저장된 여정 리포트"><span>${htmlEscape(item.title)}<br><small>${new Date(item.createdAt).toLocaleDateString("ko-KR")}</small></span><button onclick="downloadGalleryImage(${index})">이미지 저장</button></div>`).join(""):'<p class="report-copy">저장한 리포트가 아직 없어요. 여정 마지막 역에서 리포트를 만들고 갤러리에 저장해 주세요.</p>';
+  document.getElementById("nextStationForm").hidden=true;document.getElementById("reportView").hidden=true;document.getElementById("galleryView").hidden=false;document.getElementById("reportToolbarTitle").textContent="나의 갤러리";document.getElementById("reportBg").classList.add("show");
+}
+function downloadGalleryImage(index){const gallery=JSON.parse(localStorage.getItem(participantGalleryKey())||"[]"),item=gallery[index];if(!item)return;const link=document.createElement("a");link.href=item.image;link.download=`${participantId||"나"}-관심-노선도.jpg`;link.click()}
 function closeModal(e){
   if(!e||e.target===document.getElementById("modalBg"))
     document.getElementById("modalBg").classList.remove("show");
