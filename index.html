@@ -264,7 +264,7 @@ button{font:inherit}
 
 /* ===== 스탬프 ===== */
 .stamp-title{font-size:17px;font-weight:950;padding:18px 18px 10px}
-.stamp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:0 12px 40px}
+.stamp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;padding:0 12px 40px}
 .stamp{
   aspect-ratio:1;border:1px dashed #d5d8dd;border-radius:13px;background:#fafafa;
   display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;color:#b1b5bd
@@ -323,9 +323,9 @@ button{font:inherit}
 .report-next{background:#f1f3f9;border-radius:10px;padding:11px;margin-top:10px}
 .report-next b{font-size:12px;display:block;margin:3px 0}.report-next p{font-size:9px;line-height:1.55;color:#626775;margin:0}
 .report-actions{display:flex;gap:8px;margin-top:10px}.report-actions button{flex:1;border:0;border-radius:11px;padding:12px 8px;font-size:11px;font-weight:900;background:#7654e8;color:white}.report-actions .secondary{background:#fff;color:#5134a1;border:1px solid #ddd4f4}
-.report-gallery{display:grid;gap:7px;margin-top:10px}.gallery-item{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #e5e6ea;border-radius:10px;padding:7px}.gallery-item img{width:50px;height:66px;object-fit:cover;border-radius:5px}.gallery-item span{flex:1;font-size:10px;font-weight:800}.gallery-item button{border:0;background:#f1eff7;color:#5d45a2;border-radius:8px;padding:7px;font-size:9px;font-weight:800}
+
 .next-answer{width:100%;min-height:100px;resize:vertical;border:1px solid #ddd4f4;border-radius:12px;padding:13px;font:inherit;font-size:15px;line-height:1.5;margin:8px 0}
-.top-gallery{border:1px solid #e6e1f0;border-radius:999px;background:#fff;color:#6142b0;padding:7px 10px;font-size:10px;font-weight:900;white-space:nowrap}
+
 
 /* 작은 화면 보정 */
 @media(max-width:360px){
@@ -381,6 +381,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 .walk-person{left:19px;top:50%;transform:translate(-50%,-50%);width:auto;height:auto;border-radius:0;background:transparent;box-shadow:none;font-size:17px;line-height:1;animation:none}
 .stamp-title{padding:12px 2px 8px}
 .stamp-grid{padding:0 0 20px}
+.stamp-grid .stamp:last-child:nth-child(3n + 1){grid-column:2}
 .plus{border-color:#c5b9ec;color:var(--purple)}
 .plus.done{position:relative;width:30px;height:30px;padding:0;border:0;background:transparent;box-shadow:none;overflow:visible}
 .plus.done img{position:absolute;left:calc(50% - 8px);top:50%;display:block;width:46px;height:46px;max-width:none;object-fit:contain;transform:translate(-50%,-50%)}
@@ -526,7 +527,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 
 <header class="top">
   <div class="logo">SIU <em>MAP</em></div>
-  <div class="top-actions"><button class="top-gallery" onclick="openGallery()">갤러리</button><button class="new-participant" id="newParticipantBtn" onclick="startNewParticipation()" hidden>다시 하기</button><div class="stamps">STAMPS <span class="stamp-num" id="stampNum">0</span></div></div>
+  <div class="top-actions"><button class="new-participant" id="newParticipantBtn" onclick="startNewParticipation()" hidden>다시 하기</button><div class="stamps">STAMPS <span class="stamp-num" id="stampNum">0</span></div></div>
 </header>
 
 <!-- ===== GitHub 저장소의 전체 SIU MAP 노선도 ===== -->
@@ -688,7 +689,7 @@ body{background:#f2f3f5;overflow-y:hidden}
           <div class="route-name">나의 다음 역</div>
           <div class="route-sub">전시에서 찾은 나의 관심을 다음 경험으로 이어갑니다.</div>
         </div>
-        <button class="plus next-station-plus" type="button" aria-label="나의 다음 역 한 줄 쓰기" onclick="event.stopPropagation();openNextStation()">＋</button>
+        <button class="plus next-station-plus" data-station="nextStation" type="button" aria-label="나의 다음 역 한 줄 쓰기" onclick="event.stopPropagation();openNextStation()">＋</button>
       </div>
     </div>
     <div class="stamp-title">내 스탬프</div>
@@ -698,13 +699,12 @@ body{background:#f2f3f5;overflow-y:hidden}
 
 </div>
 
-<!-- 여정 리포트와 기기 내 갤러리 -->
+<!-- 여정 리포트 -->
 <div class="report-bg" id="reportBg" onclick="closeReport(event)">
   <div class="report-panel" onclick="event.stopPropagation()">
     <div class="report-toolbar"><strong id="reportToolbarTitle">나의 여정 리포트</strong><button onclick="closeReport()">닫기</button></div>
     <div id="nextStationForm"><div class="report-paper"><div class="report-eyebrow">MY NEXT STATION</div><h2 style="font-size:20px;margin:5px 0">나의 다음 역은?</h2><p class="report-copy">이번 여정에서 발견한 관심과 가능성을 다음 경험으로 이어가는 한 문장을 적어주세요.</p><textarea class="next-answer" id="nextAnswer" maxlength="180" placeholder="예: 시니어의 취향을 담은 문화 콘텐츠를 직접 기획해 보고 싶다."></textarea><div style="font-size:9px;color:#888">작성한 문장을 바탕으로 여정 리포트가 만들어집니다.</div></div><button class="complete" id="createReportBtn" disabled onclick="createJourneyReport()">나의 여정 리포트 만들기</button></div>
-    <div id="reportView" hidden><div class="report-paper" id="reportPaper"></div><div class="report-actions"><button onclick="saveReportImage()">휴대폰에 이미지 저장</button><button class="secondary" onclick="saveReportToGallery()">내 갤러리에 저장</button></div></div>
-    <div id="galleryView" hidden><div class="report-paper"><div class="report-eyebrow">MY GALLERY</div><h2 style="font-size:20px;margin:5px 0">저장한 여정 리포트</h2><div class="report-gallery" id="reportGallery"></div></div></div>
+    <div id="reportView" hidden><div class="report-paper" id="reportPaper"></div><div class="report-actions"><button onclick="saveReportImage()">이미지 저장</button></div></div>
   </div>
 </div>
 
@@ -837,7 +837,8 @@ const stations={
     title:"교육 X 시비즈역",tag:"LIFELONG LEARNING",
     q:"앞으로 새롭게 배우거나 다른 사람과 나누고 싶은 것은 무엇인가요?",
     a:["디지털 기기와 기술","취미와 문화 활동","일과 진로에 필요한 지식","경험과 지혜를 나누는 수업"]
-  }
+  },
+  nextStation:{title:"나의 다음 역",tag:"MY NEXT STATION",q:"여정 리포트를 확인하고 다음 한 줄을 남겨 보세요.",a:[]}
 };
 
 let participantId="";
@@ -852,7 +853,6 @@ const DONE_KEY_PREFIX="siuMetroMobile:";
 const PARTICIPANT_KEY="siuMetroActiveParticipant";
 const SELF_STATE_KEY_PREFIX="siuMetroSelfProgress:";
 const ANSWERS_KEY_PREFIX="siuMetroAnswers:";
-const REPORT_GALLERY_KEY_PREFIX="siuMetroGallery:";
 const NEXT_STATION_KEY_PREFIX="siuMetroNextStation:";
 // 도슨트 음원과 제목/설명은 아래 목록에서 교체하거나 항목을 추가하세요.
 const docentTracks=[
@@ -864,7 +864,6 @@ let activeTrack=0;
 function participantDoneKey(){return DONE_KEY_PREFIX+participantId.trim()}
 function selfProgressKey(){return SELF_STATE_KEY_PREFIX+participantId.trim()}
 function participantAnswersKey(){return ANSWERS_KEY_PREFIX+participantId.trim()}
-function participantGalleryKey(){return REPORT_GALLERY_KEY_PREFIX+participantId.trim()}
 function participantNextStationKey(){return NEXT_STATION_KEY_PREFIX+participantId.trim()}
 function setParticipant(name){
   participantId=name;
@@ -1173,7 +1172,7 @@ function openNextStation(){
   document.getElementById("nextAnswer").value=saved;
   document.getElementById("nextAnswer").oninput=event=>{localStorage.setItem(participantNextStationKey(),event.target.value);document.getElementById("createReportBtn").disabled=!event.target.value.trim()};
   document.getElementById("createReportBtn").disabled=!saved.trim();
-  document.getElementById("nextStationForm").hidden=false;document.getElementById("reportView").hidden=true;document.getElementById("galleryView").hidden=true;
+  document.getElementById("nextStationForm").hidden=false;document.getElementById("reportView").hidden=true;
   document.getElementById("reportToolbarTitle").textContent="나의 다음 역";
   document.getElementById("reportBg").classList.add("show");
 }
@@ -1222,7 +1221,8 @@ async function createJourneyReport(){
   }
   const canvas=reportCanvas();
   document.getElementById("reportPaper").innerHTML=`<img class="report-image-preview" src="${canvas.toDataURL("image/png")}" alt="${htmlEscape(participantId||"나")}의 SIU MAP 여정 리포트 이미지">`;
-  document.getElementById("nextStationForm").hidden=true;document.getElementById("reportView").hidden=false;document.getElementById("galleryView").hidden=true;
+  document.getElementById("nextStationForm").hidden=true;document.getElementById("reportView").hidden=false;
+  if(!done.includes("nextStation")){done.push("nextStation");localStorage.setItem(participantDoneKey(),JSON.stringify(done));render()}
   document.getElementById("reportToolbarTitle").textContent="나의 여정 리포트";
 }
 function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=4){
@@ -1279,19 +1279,6 @@ async function saveReportImage(){
   }
   const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=file?file.name:`${participantId||"나"}-SIU-MAP-여정리포트.png`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
-async function saveReportToGallery(){
-  const canvas=reportCanvas(),dataUrl=canvas.toDataURL("image/jpeg",.82),gallery=JSON.parse(localStorage.getItem(participantGalleryKey())||"[]");
-  gallery.unshift({createdAt:new Date().toISOString(),title:`${participantId||"나"}의 관심 노선도`,image:dataUrl,next:localStorage.getItem(participantNextStationKey())||""});
-  try{localStorage.setItem(participantGalleryKey(),JSON.stringify(gallery.slice(0,8)));}catch(error){alert("기기 저장 공간이 부족해요. 갤러리에서 오래된 이미지를 지운 뒤 다시 시도해 주세요.");return}
-  alert("나의 여정 리포트를 갤러리에 저장했어요.");
-}
-function openGallery(){
-  if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
-  const gallery=JSON.parse(localStorage.getItem(participantGalleryKey())||"[]"),container=document.getElementById("reportGallery");
-  container.innerHTML=gallery.length?gallery.map((item,index)=>`<div class="gallery-item"><img src="${item.image}" alt="저장된 여정 리포트"><span>${htmlEscape(item.title)}<br><small>${new Date(item.createdAt).toLocaleDateString("ko-KR")}</small></span><button onclick="downloadGalleryImage(${index})">이미지 저장</button></div>`).join(""):'<p class="report-copy">저장한 리포트가 아직 없어요. 여정 마지막 역에서 리포트를 만들고 갤러리에 저장해 주세요.</p>';
-  document.getElementById("nextStationForm").hidden=true;document.getElementById("reportView").hidden=true;document.getElementById("galleryView").hidden=false;document.getElementById("reportToolbarTitle").textContent="나의 갤러리";document.getElementById("reportBg").classList.add("show");
-}
-function downloadGalleryImage(index){const gallery=JSON.parse(localStorage.getItem(participantGalleryKey())||"[]"),item=gallery[index];if(!item)return;const link=document.createElement("a");link.href=item.image;link.download=`${participantId||"나"}-관심-노선도.jpg`;link.click()}
 function closeModal(e){
   if(!e||e.target===document.getElementById("modalBg"))
     document.getElementById("modalBg").classList.remove("show");
