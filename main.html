@@ -294,7 +294,6 @@ button{font:inherit}
 .complete:disabled{background:#ddd;color:#aaa}
 .next-station-trigger{cursor:pointer}
 .next-station-trigger .route-sub{color:#6142b0}
-.next-station-plus{align-self:center;width:32px;height:32px;border:0;border-radius:50%;background:var(--purple);color:#fff;font-size:22px;line-height:1;box-shadow:0 3px 9px #7654e83d}
 .report-bg{position:fixed;inset:0;z-index:180;background:#101115b8;display:none;align-items:center;justify-content:center;padding:12px}
 .report-bg.show{display:flex}
 .report-panel{width:min(100%,500px);max-height:94dvh;overflow:auto;background:#f8f9fb;border-radius:22px;padding:14px;box-shadow:0 18px 60px #0004}
@@ -688,7 +687,7 @@ body{background:#f2f3f5;overflow-y:hidden}
           <div class="route-name">나의 다음 역</div>
           <div class="route-sub">전시에서 찾은 나의 관심을 다음 경험으로 이어갑니다.</div>
         </div>
-        <button class="next-station-plus" type="button" aria-label="나의 다음 역 한 줄 쓰기" onclick="event.stopPropagation();openNextStation()">+</button>
+        <button class="plus next-station-plus" type="button" aria-label="나의 다음 역 한 줄 쓰기" onclick="event.stopPropagation();openNextStation()">＋</button>
       </div>
     </div>
     <div class="stamp-title">내 스탬프</div>
@@ -1203,9 +1202,9 @@ function reportInsights(next){
   const traitText=keywords.slice(0,2).map(word=>traitReadings[word]).filter(Boolean);
   const criteriaText=criteria.slice(0,2).map(word=>criteriaReadings[word]).filter(Boolean);
   const selfSentence=traitText.length
-    ?`‘${interest}’에 반복해서 마음이 가고, ${traitText.join(" 또 ")} 사람으로 보여요. ${criteriaText.length?`진로 선택 기준으로 ‘${criteria.join("’, ‘")}’를 고른 점에서도 자신에게 중요한 방향을 알고 있어요.`:"이런 관심과 강점은 앞으로 어떤 일을 선택할지 알려주는 단서가 돼요."}`
-    :`‘${interest}’에 대한 기록과 선택한 기준 ${criteria.join(", ")||""}을 보면, 무엇에 마음이 움직이고 어떤 환경에서 의미를 느끼는지 스스로 살펴보는 사람이에요.`;
-  const journeySentence=`처음에는 ‘${firstIdea}’에 주목했어요. ‘${expandedIdea}’라는 가능성을 발견하고, 관심 ‘${interest}’를 환승한 ‘${transfer}’ 분야와 연결하며 생각을 다음 경험으로 구체화했어요.`;
+    ?`‘${interest}’에 꾸준히 마음이 가는 이유는 ${traitText.join(" 또 ")} 강점과 닿아 있어요. ${criteria.length?`‘${criteria.join("’, ‘")}’를 진로 기준으로 고른 점에서는 자신에게 맞는 환경을 스스로 찾으려는 모습도 보여요.`:"진로 기준을 함께 살펴보면 자신에게 맞는 환경도 더 또렷해질 거예요."}`
+    :`‘${interest}’와 기준 ${criteria.join(", ")||"아직 정하지 않은 선택"}을 살펴보며, 무엇에 마음이 움직이고 어떤 환경에서 의미를 느끼는지 스스로 탐색하고 있어요.`;
+  const journeySentence=`‘${firstIdea}’에서 출발해 ‘${expandedIdea}’의 가능성을 발견했어요. ‘${interest}’와 ‘${transfer}’를 엮어 다음 경험의 방향을 찾았어요.`;
   const nextSentence=stops.length
     ?`이번 여정에서 ${stops.map(([title])=>title).join(", ")}에 머물렀어요. 선택한 답을 따라 관심이 구체적인 장면으로 바뀌었고, 다음에는 ‘${next}’를 직접 시도해 보려 해요.`
     :`아직 선택한 역이 많지 않아도 괜찮아요. ‘${transfer}’에 대한 관심에서 출발해 ‘${next}’라는 다음 행동을 정했어요. 이 문장이 다음 여정의 첫 정거장이 될 수 있어요.`;
@@ -1230,23 +1229,58 @@ function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=4){
   let line="",lines=0;for(const char of Array.from(String(text||""))){const candidate=line+char;if(ctx.measureText(candidate).width>maxWidth&&line){ctx.fillText(line,x,y);y+=lineHeight;lines++;line=char;if(lines>=maxLines)return y} else line=candidate}if(line){ctx.fillText(line,x,y);y+=lineHeight}return y;
 }
 function reportCanvas(){
-  const d=reportInsights(localStorage.getItem(participantNextStationKey())||"");const canvas=document.createElement("canvas");canvas.width=900;canvas.height=1280+d.stops.length*47;const ctx=canvas.getContext("2d");
+  const d=reportInsights(localStorage.getItem(participantNextStationKey())||"");const canvas=document.createElement("canvas");canvas.width=900;canvas.height=1520+d.stops.length*52;const ctx=canvas.getContext("2d");
   ctx.fillStyle="#fbfbfc";ctx.fillRect(0,0,900,canvas.height);ctx.strokeStyle="#e2e4e8";ctx.lineWidth=2;ctx.strokeRect(12,12,876,canvas.height-24);
   const rounded=(x,y,w,h,r,color,stroke)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=color;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}};
-  const text=(s,x,y,size=22,color="#292c33",weight=500)=>{ctx.font=`${weight} ${size}px "Noto Sans KR", sans-serif`;ctx.fillStyle=color;ctx.fillText(String(s),x,y)};
-  rounded(32,32,836,164,20,"#f1f3f9");text("SIU MAP · MY JOURNEY REPORT",54,70,16,"#7965c6",700);ctx.font='800 36px "Noto Sans KR", sans-serif';ctx.fillStyle="#17191e";wrapCanvasText(ctx,`${participantId||"나"}의 관심 노선도`,54,112,780,40,2);text("이번 전시에서 발견한 나의 관심과 가능성",54,157,19,"#656a75");
-  function section(y,num,title,eng,accent){ctx.strokeStyle="#e8e9ed";ctx.beginPath();ctx.moveTo(45,y-20);ctx.lineTo(855,y-20);ctx.stroke();ctx.beginPath();ctx.arc(70,y+7,21,0,Math.PI*2);ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.stroke();text(num,58,y+15,17,accent,700);text(title,108,y+5,23,"#22252b",800);text(eng,108,y+28,13,"#92959d",600);return y+66}
-  let y=section(235,"01","내가 발견한 나","MY INTEREST & VALUES","#4881ff");y=wrapCanvasText(ctx,d.selfSentence,54,y,790,31,4);y+=9;
-  rounded(52,y,796,46,12,"#eef4ff");wrapCanvasText(ctx,[d.interest,...d.keywords.slice(0,2)].join("  ·  "),70,y+29,750,21,2);y+=78;
-  y=section(y,"02","나의 관심이 확장된 곳","MY SENIOR BUSINESS JOURNEY","#825bff");
-  const boxY=y-5,boxH=300;rounded(50,boxY,800,boxH,17,"#fff","#d9cdfd");
-  text("처음 떠올린 관점",72,y+27,16,"#454852",700);let by=wrapCanvasText(ctx,d.firstIdea,72,y+52,750,24,2);
-  text("실을 엮으며 확장된 생각",72,by+14,15,"#7054bc",700);by=wrapCanvasText(ctx,d.journeySentence,72,by+40,750,25,3);
-  text("내가 들른 분야",72,boxY+273,15,"#454852",700);wrapCanvasText(ctx,d.areas.length?d.areas.map(a=>a.split(" · ")[0]).join("   ·   "):d.transfer,72,boxY+294,750,21,2);y=boxY+boxH+33;
-  y=section(y,"03","이번 여정에서 만난 역","MY EXHIBITION TRACK","#f29500");y=wrapCanvasText(ctx,d.nextSentence,54,y,790,27,3)+4;
-  for(const [title,answer] of d.stops){ctx.beginPath();ctx.arc(65,y-3,5,0,Math.PI*2);ctx.fillStyle="#8a70df";ctx.fill();text(title,82,y,15,"#292c33",700);y=wrapCanvasText(ctx,answer,82,y+20,750,20,2)+7;}
-  y+=4;rounded(50,y,800,132,17,"#f1f3f9");text("MY NEXT STATION",72,y+31,14,"#7965c6",700);text("나의 다음 역은?",72,y+64,21,"#22252b",800);wrapCanvasText(ctx,d.next,72,y+91,750,24,2);
-  text("SIU MAP  ·  나의 길 찾기 여정",54,y+154,14,"#9699a1",600);
+  const text=(s,x,y,size=22,color="#292c33",weight=500,align="left")=>{ctx.font=`${weight} ${size}px "Noto Sans KR",sans-serif`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(String(s),x,y);ctx.textAlign="left"};
+  const para=(value,x,y,width,size=19,color="#424650",lineHeight=28,maxLines=3,weight=500)=>{ctx.font=`${weight} ${size}px "Noto Sans KR",sans-serif`;ctx.fillStyle=color;return wrapCanvasText(ctx,value,x,y,width,lineHeight,maxLines)};
+  const heading=(y,num,title,eng,accent)=>{ctx.beginPath();ctx.arc(73,y+5,21,0,Math.PI*2);ctx.fillStyle=accent;ctx.fill();text(num,73,y+11,16,"#fff",800,"center");text(title,112,y+3,24,"#20232a",800);text(eng,112,y+25,12,"#8b909a",600);return y+48};
+  const pills=(values,x,y,maxWidth)=>{let px=x,py=y;ctx.font='600 16px "Noto Sans KR",sans-serif';for(const value of values){const label=String(value);const width=Math.min(maxWidth,ctx.measureText(label).width+24);if(px+width>x+maxWidth){px=x;py+=38}rounded(px,py,width,29,14,"#f0edfb");text(label,px+12,py+20,16,"#67529d",600);px+=width+8}return py+29};
+  rounded(42,34,816,154,22,"#f1f3f8");rounded(42,34,8,154,4,"#7654e8");text("SIU MAP   /   MY JOURNEY REPORT",72,70,15,"#7654e8",800);
+  ctx.font='800 36px "Noto Sans KR",sans-serif';ctx.fillStyle="#20232a";wrapCanvasText(ctx,`${participantId||"나"}의 관심 노선도`,72,116,750,40,2);
+  text("전시에서 발견한 관심을 다음 경험으로 잇는 기록",72,157,17,"#737884",500);
+
+  let y=heading(224,"01","내가 발견한 나","INTERESTS & VALUES","#3679ed");
+  const selfY=y+8;rounded(54,selfY,792,320,18,"#fff","#e3e7ef");
+  text("반복해서 마음이 향한 관심",78,selfY+31,15,"#7b818c",700);
+  ctx.font='700 25px "Noto Sans KR",sans-serif';ctx.fillStyle="#242832";const interestBottom=wrapCanvasText(ctx,d.interest,78,selfY+63,744,31,2);
+  text("내가 고른 키워드와 기준",78,selfY+113,15,"#7b818c",700);
+  const selectedTags=[...d.keywords.slice(0,2),...d.criteria.slice(0,1)];const pillsBottom=pills(selectedTags.length?selectedTags:["탐색을 시작한 사람"],78,selfY+130,742);
+  text("이 선택에서 읽히는 나의 방향",78,Math.max(selfY+204,pillsBottom+27),15,"#3679ed",700);
+  para(d.selfSentence,78,Math.max(selfY+231,pillsBottom+51),742,18,"#343943",24,3,500);
+  y=selfY+346;
+
+  y=heading(y,"02","나의 관심이 확장된 곳","THREADS INTO NEW POSSIBILITIES","#7654e8");
+  const journeyY=y+8;rounded(54,journeyY,792,470,18,"#fff","#e1def0");
+  text("선택한 답변을 따라 관심과 가능성을 연결했어요",78,journeyY+31,15,"#7b818c",700);
+  const nodeY=journeyY+62,nodeW=166,nodeH=120,nodeGap=26,nodeX=78;
+  const nodes=[["나의 관심",d.interest], ["처음 관점",d.firstIdea], ["환승 분야",d.transfer], ["확장된 가능성",d.expandedIdea]];
+  nodes.forEach(([label,value],index)=>{
+    const x=nodeX+index*(nodeW+nodeGap);rounded(x,nodeY,nodeW,nodeH,13,index===3?"#f2efff":"#f7f8fb",index===3?"#d8cdf7":"#e6e8ed");
+    text(`0${index+1}`,x+14,nodeY+22,12,index===3?"#7654e8":"#9298a3",800);
+    text(label,x+14,nodeY+44,15,"#3b3f49",700);
+    para(value,x+14,nodeY+68,nodeW-28,14,"#646a75",17,3,500);
+    if(index<3)text("›",x+nodeW+4,nodeY+61,25,"#aaa5bb",700,"center");
+  });
+  text("실을 엮으며 달라진 관점",78,journeyY+203,15,"#7654e8",700);
+  para(d.journeySentence,78,journeyY+228,744,17,"#3d414a",22,2,500);
+  rounded(72,journeyY+286,756,164,13,"#f1edff");text("나의 다음 한 줄",92,journeyY+314,13,"#7654e8",800);para(d.next,92,journeyY+344,716,16,"#302b3e",20,5,650);
+  y=journeyY+494;
+
+  y=heading(y,"03","이번 여정에서 만난 역","THE STOPS I CHOSE","#e88812");
+  para(d.stops.length?`‘${d.transfer}’를 중심으로 관심이 머문 역과 답변을 정리했어요.`:"여정을 더 진행하면 들른 역과 답변이 여기에 담겨요.",58,y+4,784,17,"#707681",24,2,500);y+=45;
+  rounded(54,y,792,Math.max(76,d.stops.length*52+18),16,"#fff","#e5e7ec");
+  if(d.stops.length){
+    d.stops.forEach(([title,answer],index)=>{
+      const rowY=y+14+index*52;
+      if(index>0){ctx.beginPath();ctx.moveTo(78,rowY-9);ctx.lineTo(824,rowY-9);ctx.strokeStyle="#eff0f3";ctx.lineWidth=1;ctx.stroke()}
+      ctx.beginPath();ctx.arc(82,rowY+8,5,0,Math.PI*2);ctx.fillStyle=index===0?"#7654e8":"#a8a0c7";ctx.fill();
+      para(title,98,rowY+13,220,15,"#363a43",18,2,700);para(answer,338,rowY+13,470,15,"#727782",18,2,500);
+    });
+  }else{ text("아직 저장된 역 답변이 없습니다.",78,y+46,16,"#858a94",500); }
+  y+=Math.max(76,d.stops.length*52+18)+22;
+  rounded(54,y,792,152,18,"#20232a");text("다음 정거장",80,y+34,14,"#c7b8ff",700);text("나의 다음 역은?",80,y+64,21,"#fff",800);para(d.next,80,y+96,740,18,"#f5f4fa",23,3,500);
+  text("SIU MAP   ·   나의 길 찾기 여정",54,y+164,13,"#8b909a",600);
   return canvas;
 }
 async function saveReportImage(){
