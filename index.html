@@ -300,7 +300,8 @@ button{font:inherit}
 .report-panel{width:min(100%,500px);max-height:94dvh;overflow:auto;background:#f8f9fb;border-radius:22px;padding:14px;box-shadow:0 18px 60px #0004}
 .report-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .report-toolbar strong{font-size:13px}.report-toolbar button{border:0;background:#eceef3;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800}
-.report-paper{background:#fff;border:1px solid #e1e3e8;border-radius:14px;padding:14px;color:#191b20;font-family:"Pretendard","Noto Sans KR",Arial,sans-serif}
+.report-paper{background:#fff;border:1px solid #e1e3e8;border-radius:14px;padding:10px;color:#191b20;font-family:"Pretendard","Noto Sans KR",Arial,sans-serif}
+.report-image-preview{display:block;width:100%;height:auto;border-radius:9px}
 .report-head{padding:14px 13px;background:#f1f3f9;border-radius:10px;margin-bottom:9px}
 .report-eyebrow{font-size:8px;color:#7965c6;letter-spacing:.08em;font-weight:800}
 .report-head h2{font-size:21px;margin:4px 0 3px;letter-spacing:-.05em}
@@ -1204,7 +1205,7 @@ function reportInsights(next){
   const selfSentence=traitText.length
     ?`‘${interest}’에 반복해서 마음이 가고, ${traitText.join(" 또 ")} 사람으로 보여요. ${criteriaText.length?`진로 선택 기준으로 ‘${criteria.join("’, ‘")}’를 고른 점에서도 자신에게 중요한 방향을 알고 있어요.`:"이런 관심과 강점은 앞으로 어떤 일을 선택할지 알려주는 단서가 돼요."}`
     :`‘${interest}’에 대한 기록과 선택한 기준 ${criteria.join(", ")||""}을 보면, 무엇에 마음이 움직이고 어떤 환경에서 의미를 느끼는지 스스로 살펴보는 사람이에요.`;
-  const journeySentence=`처음 떠올린 관점은 ‘${firstIdea}’였어요. 여기서 ‘${expandedIdea}’라는 가능성을 발견하고, 환승한 ‘${transfer}’ 분야와 관심 ‘${interest}’를 실처럼 엮었어요. 그 생각은 이제 ‘${next}’라는 다음 행동으로 이어집니다.`;
+  const journeySentence=`처음에는 ‘${firstIdea}’에 주목했어요. ‘${expandedIdea}’라는 가능성을 발견하고, 관심 ‘${interest}’를 환승한 ‘${transfer}’ 분야와 연결하며 생각을 다음 경험으로 구체화했어요.`;
   const nextSentence=stops.length
     ?`이번 여정에서 ${stops.map(([title])=>title).join(", ")}에 머물렀어요. 선택한 답을 따라 관심이 구체적인 장면으로 바뀌었고, 다음에는 ‘${next}’를 직접 시도해 보려 해요.`
     :`아직 선택한 역이 많지 않아도 괜찮아요. ‘${transfer}’에 대한 관심에서 출발해 ‘${next}’라는 다음 행동을 정했어요. 이 문장이 다음 여정의 첫 정거장이 될 수 있어요.`;
@@ -1220,14 +1221,8 @@ async function createJourneyReport(){
   if(!answerRecords.some(record=>record.stationId==="nextStation"&&record.answer===next)){
     await submitResponse({stationId:"nextStation",stationTitle:"나의 다음 역",summaryColumn:"나의 다음 역 한 줄",question:"이번 여정에서 발견한 관심과 가능성을 다음 경험으로 이어가는 한 문장을 적어주세요.",answerType:"서술형",answer:next});
   }
-  const d=reportInsights(next),name=participantId||"나";
-  const areaTags=d.areas.length?d.areas.map(area=>reportTag(area.split(" · ")[0],"gray")).join(""):reportTag("탐색 중","gray");
-  const keywordTags=(d.keywords.length?d.keywords:d.criteria).slice(0,3).map(x=>reportTag(x,"purple")).join("");
-  document.getElementById("reportPaper").innerHTML=`<header class="report-head"><div class="report-eyebrow">SIU MAP · MY JOURNEY REPORT</div><h2>${htmlEscape(name)}의 관심 노선도</h2><p>이번 전시에서 발견한 나의 관심과 가능성<br>나의 출발역에서 다음 가능성까지</p></header>
-   <section class="report-section"><div class="report-section-title"><span class="report-number">01</span><div><b>내가 발견한 나</b><small>MY INTEREST & VALUES</small></div></div><p class="report-copy lead">${htmlEscape(d.selfSentence)}</p><div class="report-tags">${reportTag(d.interest)}${keywordTags}</div></section>
-   <section class="report-section"><div class="report-section-title"><span class="report-number purple">02</span><div><b>나의 관심이 확장된 곳</b><small>MY SENIOR BUSINESS JOURNEY</small></div></div><div class="report-box"><div class="report-label">처음 떠올린 관점</div><p class="report-copy">${htmlEscape(d.firstIdea)}</p><div class="report-weave"><span>${htmlEscape(d.interest)}</span><i>→</i><span>${htmlEscape(d.transfer)}</span><i>→</i><span>${htmlEscape(d.expandedIdea)}</span></div><div class="report-label">실을 엮으며 확장된 생각</div><p class="report-copy">${htmlEscape(d.journeySentence)}</p><div class="report-label">내가 들른 분야</div><div class="report-tags">${areaTags}</div></div></section>
-   <section class="report-section"><div class="report-section-title"><span class="report-number orange">03</span><div><b>이번 여정에서 만난 역</b><small>MY EXHIBITION TRACK</small></div></div><p class="report-copy">${htmlEscape(d.nextSentence)}</p><div class="report-trail">${d.stops.length?d.stops.map(([title,answer])=>`<div class="report-trail-row"><div><b>${htmlEscape(title)}</b><span>${htmlEscape(answer)}</span></div></div>`).join(""):"<div class=\"report-trail-row\"><div><b>환승 분야</b><span>아직 답변한 역은 없어요. 다음 여정에서 관심을 더 이어가 보세요.</span></div></div>"}</div></section>
-   <div class="report-next"><div class="report-eyebrow">MY NEXT STATION</div><b>나의 다음 역은?</b><p>${htmlEscape(next)}</p></div>`;
+  const canvas=reportCanvas();
+  document.getElementById("reportPaper").innerHTML=`<img class="report-image-preview" src="${canvas.toDataURL("image/png")}" alt="${htmlEscape(participantId||"나")}의 SIU MAP 여정 리포트 이미지">`;
   document.getElementById("nextStationForm").hidden=true;document.getElementById("reportView").hidden=false;document.getElementById("galleryView").hidden=true;
   document.getElementById("reportToolbarTitle").textContent="나의 여정 리포트";
 }
