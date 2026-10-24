@@ -383,11 +383,11 @@ body{background:#f2f3f5;overflow-y:hidden}
 .stamp-grid{padding:0 0 20px}
 .stamp-grid .stamp:last-child:nth-child(3n + 1){grid-column:2}
 .plus{border-color:#c5b9ec;color:var(--purple)}
-.plus.done{position:relative;width:30px;height:30px;min-width:30px;min-height:30px;padding:0;border:0;background:transparent;box-shadow:none;overflow:hidden;display:grid;place-items:center}
-.plus.done img{position:static;display:block;width:30px;height:30px;max-width:100%;object-fit:contain;transform:none}
+.plus.done{position:relative;width:30px;height:30px;min-width:30px;min-height:30px;padding:0;border:0;background:transparent;box-shadow:none;overflow:visible;display:grid;place-items:center}
+.plus.done img{position:absolute;left:50%;top:50%;display:block;width:46px;height:46px;max-width:none;object-fit:contain;transform:translate(-50%,-50%)}
 .s-circle img{display:block;width:100%;height:100%;object-fit:contain}
-.stamp.on .s-circle{width:88px;height:88px;border:0}
-.stamp .s-circle{width:88px;height:88px;border:0}
+.stamp.on .s-circle{width:70px;height:70px;border:0}
+.stamp .s-circle{width:70px;height:70px;border:0}
 .stamp .s-circle img{width:100%;height:100%;object-fit:contain}
 .answer-mode{display:flex;gap:7px;margin:4px 0 9px}
 .mode-btn{border:1px solid #ddd;border-radius:999px;background:#fff;padding:10px 15px;font-size:13px}
@@ -447,7 +447,8 @@ body{background:#f2f3f5;overflow-y:hidden}
 .docent-help{font-size:10px!important}
 .docent-footnote{flex:none;margin:4px 0 0;padding:10px 12px;border-radius:12px;background:#f5f2fc;color:#68539e;font-size:11px;line-height:1.45}
 @media(max-width:600px){
-  #docentBg .docent-modal{height:100dvh;max-height:100dvh;width:min(100%,430px);display:flex;flex-direction:column;overflow:hidden;padding:calc(14px + env(safe-area-inset-top)) 16px calc(12px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0}
+  .plus.done img{width:54px;height:54px}
+  #docentBg .docent-modal{height:min(72dvh,620px);min-height:58dvh;max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);width:min(100%,430px);display:flex;flex-direction:column;overflow:hidden;padding:calc(14px + env(safe-area-inset-top)) 16px calc(12px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0}
   #docentBg .modal-handle{margin-bottom:10px;flex:none}
   #docentBg .modal-top,#docentBg .docent-help{flex:none}
   #docentBg .modal h2{font-size:23px;margin:4px 0 6px}
@@ -459,7 +460,7 @@ body{background:#f2f3f5;overflow-y:hidden}
   #docentBg .docent-footnote{margin-top:8px}
 }
 @media(max-height:650px){
-  #docentBg .docent-modal{height:100dvh;padding-top:calc(8px + env(safe-area-inset-top))}
+  #docentBg .docent-modal{height:min(72dvh,620px);min-height:58dvh;padding-top:calc(8px + env(safe-area-inset-top))}
   #docentBg .modal-handle{margin-bottom:7px}
   #docentBg .docent-help{margin-bottom:5px}
   #docentBg .track-list{margin:4px 0 7px}
@@ -1311,20 +1312,24 @@ function reportCanvas(){
   text("SIU MAP   ·   나의 길 찾기 여정",72,1128,13,"#858a95",600);
   return canvas;
 }
-function saveReportImage(){
+async function saveReportImage(){
   try{
-    const canvas=reportCanvas(),dataUrl=canvas.toDataURL("image/jpeg",.92),base64=dataUrl.split(",")[1];
-    const bytes=Uint8Array.from(atob(base64),char=>char.charCodeAt(0));
-    const jpeg=new Blob([bytes],{type:"image/jpeg"}),url=URL.createObjectURL(jpeg);
-    const link=document.createElement("a");link.href=url;link.download=`${participantId||"나"}-SIU-MAP-여정리포트.jpg`;link.style.display="none";
-    document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
-    if(navigator.share&&navigator.canShare){
-      const file=new File([jpeg],link.download,{type:"image/jpeg"});
-      if(navigator.canShare({files:[file]}))navigator.share({files:[file],title:"SIU MAP 여정 리포트"}).catch(()=>{});
+    const canvas=reportCanvas();
+    const jpeg=await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("JPG 변환에 실패했습니다.")),"image/jpeg",.94));
+    const filename=`${(participantId||"SIU-MAP").replace(/[\\/:*?"<>|]/g,"_")}-여정리포트.jpg`;
+    if(typeof File==="function"&&navigator.share&&navigator.canShare){
+      const file=new File([jpeg],filename,{type:"image/jpeg",lastModified:Date.now()});
+      if(navigator.canShare({files:[file]})){
+        try{await navigator.share({files:[file],title:"SIU MAP 여정 리포트"});return}
+        catch(error){if(error&&error.name==="AbortError")return;console.warn("공유 저장을 지원하지 않아 다운로드로 전환합니다.",error)}
+      }
     }
+    const url=URL.createObjectURL(jpeg),link=document.createElement("a");
+    link.href=url;link.download=filename;link.hidden=true;document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
   }catch(error){
     console.error("JPG 저장 실패",error);
-    alert("JPG 저장을 시작하지 못했어요. 브라우저의 다운로드 권한을 확인하고 다시 눌러 주세요.");
+    alert("이미지를 JPG로 만들지 못했어요. 다시 시도해 주세요.");
   }
 }
 function closeModal(e){
