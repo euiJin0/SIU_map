@@ -11,15 +11,14 @@ const REPORT_FIELDS = ['나의 다음 역 한 줄'];
 const STATION_FIELDS = [
   '답변 | 시니어역',
   '답변 | 환승센터역',
-  '답변 | 경영 X 시비즈역',
   '답변 | 문화콘텐츠 X 시비즈역',
   '답변 | 사회복지 X 시비즈역',
   '답변 | 체육 X 시비즈역',
   '답변 | 부동산건설 X 시비즈역',
   '답변 | 교육 X 시비즈역'
 ];
-// 참여자별 보기의 열 순서: 응답시각 → 참여자 아이디 → 자기탐색 답변 → 다음 역 한 줄 → 각 역 답변.
-const SUMMARY_HEADERS = ['응답시각', '참여자 아이디'].concat(SELF_FIELDS, REPORT_FIELDS, STATION_FIELDS);
+// 참여자별 보기의 열 순서: 응답시각 → 참여자 아이디 → 자기탐색 답변 → 역별 답변 → 나의 다음 역 한 줄.
+const SUMMARY_HEADERS = ['응답시각', '참여자 아이디'].concat(SELF_FIELDS, STATION_FIELDS, REPORT_FIELDS);
 const SHEET_DATE_FORMAT = 'yyyy-mm-dd hh:mm';
 
 function doPost(e) {
@@ -140,7 +139,7 @@ function mapLegacyStationHeader(header) {
     [['(career)', '진로발견역', '자기탐색역'], '__DROP__'],
     [['(senior)', '시니어역'], '답변 | 시니어역'],
     [['(transfer)', '환승역', '환승센터역'], '답변 | 환승센터역'],
-    [['(business)', '경영역', '경영 X 시비즈역'], '답변 | 경영 X 시비즈역'],
+    [['(business)', '경영역', '경영 X 시비즈역'], '__DROP__'],
     [['(culture)', '문화콘텐츠역', '문화콘텐츠 X 시비즈역'], '답변 | 문화콘텐츠 X 시비즈역'],
     [['(welfare)', '사회복지역', '사회복지 X 시비즈역'], '답변 | 사회복지 X 시비즈역'],
     [['(sports)', '체육역', '체육 X 시비즈역'], '답변 | 체육 X 시비즈역'],
@@ -252,7 +251,6 @@ function stationSummaryColumn(stationId) {
     nextStation: '나의 다음 역 한 줄',
     senior: '답변 | 시니어역',
     transfer: '답변 | 환승센터역',
-    business: '답변 | 경영 X 시비즈역',
     culture: '답변 | 문화콘텐츠 X 시비즈역',
     welfare: '답변 | 사회복지 X 시비즈역',
     sports: '답변 | 체육 X 시비즈역',
