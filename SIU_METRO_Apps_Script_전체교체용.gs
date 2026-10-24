@@ -7,6 +7,7 @@
  */
 const RAW_HEADERS = ['응답시각', '참여자 아이디', '역 이름', '질문', '답변 유형', '답변'];
 const SELF_FIELDS = ['초중고 공통 관심사', '듣고 싶은 말', '진로기준', '랜덤뽑기'];
+const REPORT_FIELDS = ['나의 다음 역 한 줄'];
 const STATION_FIELDS = [
   '답변 | 시니어역',
   '답변 | 환승센터역',
@@ -17,8 +18,8 @@ const STATION_FIELDS = [
   '답변 | 부동산건설 X 시비즈역',
   '답변 | 교육 X 시비즈역'
 ];
-// 참여자별 보기의 열 순서: 응답시각 → 참여자 아이디 → 자기탐색 답변 → 각 역 답변.
-const SUMMARY_HEADERS = ['응답시각', '참여자 아이디'].concat(SELF_FIELDS, STATION_FIELDS);
+// 참여자별 보기의 열 순서: 응답시각 → 참여자 아이디 → 자기탐색 답변 → 다음 역 한 줄 → 각 역 답변.
+const SUMMARY_HEADERS = ['응답시각', '참여자 아이디'].concat(SELF_FIELDS, REPORT_FIELDS, STATION_FIELDS);
 const SHEET_DATE_FORMAT = 'yyyy-mm-dd hh:mm';
 
 function doPost(e) {
@@ -33,6 +34,7 @@ function doPost(e) {
   const rawSheet = spreadsheet.getSheetByName('응답') || spreadsheet.insertSheet('응답');
   getOrCreateParticipant(summary, participantId, submittedAt);
   migrateRawSheet(rawSheet, summary);
+  backfillNextStationAnswers(rawSheet, summary);
 
   const rowNumber = rawSheet.getLastRow() + 1;
   rawSheet.appendRow([
@@ -133,6 +135,7 @@ function ensureSummarySchema(spreadsheet) {
 
 function mapLegacyStationHeader(header) {
   const aliases = [
+    [['나의 다음 역 한 줄', '답변 | 나의 다음 역', '나의 다음 역'], '나의 다음 역 한 줄'],
     [['(interest)', '답변 | 관심분야역', '관심분야역'], '__DROP__'],
     [['(career)', '진로발견역', '자기탐색역'], '__DROP__'],
     [['(senior)', '시니어역'], '답변 | 시니어역'],
@@ -152,6 +155,7 @@ function mapLegacyStationHeader(header) {
 
 function normalizeLegacyAnswerHeader(header) {
   const label = String(header || '').replace(/^답변\s*\|\s*/, '').trim();
+  if (label === '나의 다음 역' || label === '나의 다음 역 한 줄') return '나의 다음 역 한 줄';
   const compactLabel = label.replace(/\s+/g, '');
   const selfHeader = SELF_FIELDS.find(function (field) {
     const compactField = field.replace(/\s+/g, '');
@@ -245,6 +249,7 @@ function updateParticipantSummary(sheet, response, participantId, submittedAt) {
 
 function stationSummaryColumn(stationId) {
   const columns = {
+    nextStation: '나의 다음 역 한 줄',
     senior: '답변 | 시니어역',
     transfer: '답변 | 환승센터역',
     business: '답변 | 경영 X 시비즈역',
@@ -274,6 +279,42 @@ function formatRawTimes(sheet) {
   range.setNumberFormat(SHEET_DATE_FORMAT);
 }
 
+function backfillNextStationAnswers(rawSheet, summary) {
+  if (rawSheet.getLastRow() < 2) return;
+  const raw = rawSheet.getDataRange().getValues();
+  const rawHeaders = raw[0].map(String);
+  const participantIndex = rawHeaders.indexOf('참여자 아이디');
+  const stationIndex = rawHeaders.indexOf('역 이름');
+  const questionIndex = rawHeaders.indexOf('질문');
+  const answerIndex = rawHeaders.indexOf('답변');
+  const timeIndex = rawHeaders.indexOf('응답시각');
+  const summaryHeaders = summary.getRange(1, 1, 1, summary.getLastColumn()).getValues()[0].map(String);
+  const summaryParticipantIndex = summaryHeaders.indexOf('참여자 아이디');
+  const summaryAnswerIndex = summaryHeaders.indexOf('나의 다음 역 한 줄');
+  if ([participantIndex, stationIndex, questionIndex, answerIndex, timeIndex, summaryParticipantIndex, summaryAnswerIndex].some(function (index) { return index < 0; })) return;
+
+  const latestByParticipant = Object.create(null);
+  for (let r = 1; r < raw.length; r++) {
+    const row = raw[r];
+    const id = String(row[participantIndex] || '').trim();
+    const station = String(row[stationIndex] || '').trim();
+    const question = String(row[questionIndex] || '');
+    const answer = String(row[answerIndex] || '');
+    if (!id || !answer || (station !== '나의 다음 역' && question.indexOf('다음 경험으로 이어가는 한 문장') === -1)) continue;
+    const time = Date.parse(row[timeIndex]) || 0;
+    if (!latestByParticipant[id] || time >= latestByParticipant[id].time) latestByParticipant[id] = { answer: answer, time: time };
+  }
+
+  const summaryValues = summary.getDataRange().getValues();
+  for (let r = 1; r < summaryValues.length; r++) {
+    const id = String(summaryValues[r][summaryParticipantIndex] || '').trim();
+    const current = summaryValues[r][summaryAnswerIndex];
+    if (id && (current === '' || current == null) && latestByParticipant[id]) {
+      summary.getRange(r + 1, summaryAnswerIndex + 1).setValue(asPlainText(latestByParticipant[id].answer));
+    }
+  }
+}
+
 function toSheetDate(value) {
   if (value instanceof Date) return value;
   if (!value) return '';
@@ -289,6 +330,9 @@ function asPlainText(value) {
 function doGet() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   if (!spreadsheet) throw new Error('대상 스프레드시트를 찾을 수 없습니다. 시트에서 Apps Script를 열어 배포하세요.');
-  ensureSummarySchema(spreadsheet);
+  const summary = ensureSummarySchema(spreadsheet);
+  const rawSheet = spreadsheet.getSheetByName('응답') || spreadsheet.insertSheet('응답');
+  migrateRawSheet(rawSheet, summary);
+  backfillNextStationAnswers(rawSheet, summary);
   return ContentService.createTextOutput('SIU METRO response collector is ready. Participant sheet columns are up to date.');
 }
