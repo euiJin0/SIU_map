@@ -1,8 +1,8 @@
 /**
  * @OnlyCurrentDoc
  * SIU METRO response collector for Google Sheets.
- * Setup: paste this file into the spreadsheet's Apps Script project,
- * save, then update the existing Web app deployment to a new version.
+ * Setup: replace the entire contents of Code.gs with this file. Do not append it.
+ * Keep only one copy of this script in the project, save, then deploy a new version.
  * Execute as: Me. Access: Anyone.
  */
 const RAW_HEADERS = ['응답시각', '참여자 아이디', '역 이름', '질문', '답변 유형', '답변'];
@@ -54,6 +54,7 @@ function ensureSummarySchema(spreadsheet) {
   const sheet = spreadsheet.getSheetByName('참여자별 보기') || spreadsheet.insertSheet('참여자별 보기');
   if (sheet.getLastRow() === 0) {
     sheet.getRange(1, 1, 1, SUMMARY_HEADERS.length).setValues([SUMMARY_HEADERS]);
+    fitSummaryColumns(sheet, SUMMARY_HEADERS.length);
     sheet.getRange('A:A').setNumberFormat(SHEET_DATE_FORMAT);
     return sheet;
   }
@@ -64,6 +65,7 @@ function ensureSummarySchema(spreadsheet) {
   const isCurrent = oldHeaders.length === SUMMARY_HEADERS.length &&
     SUMMARY_HEADERS.every(function (header, index) { return oldHeaders[index] === header; });
   if (isCurrent) {
+    fitSummaryColumns(sheet, SUMMARY_HEADERS.length);
     formatSummaryTimes(sheet);
     return sheet;
   }
@@ -78,20 +80,12 @@ function ensureSummarySchema(spreadsheet) {
   oldHeaders.forEach(function (header, index) {
     if (excludedHeaders.indexOf(header) === -1) oldAnswerColumns.push({ header: header, index: index, mappedHeader: '' });
   });
-  const extraHeaders = [];
   oldAnswerColumns.forEach(function (column) {
     const legacyStation = mapLegacyStationHeader(column.header);
     const mappedHeader = legacyStation === '__DROP__' ? '' : (legacyStation || normalizeLegacyAnswerHeader(column.header));
     column.mappedHeader = mappedHeader;
-    if (SUMMARY_HEADERS.indexOf(mappedHeader) >= 0) {
-      return;
-    } else if (mappedHeader && STATION_FIELDS.indexOf(mappedHeader) >= 0) {
-      return;
-    } else if (mappedHeader && extraHeaders.indexOf(mappedHeader) < 0) {
-      extraHeaders.push(mappedHeader);
-    }
   });
-  const headers = SUMMARY_HEADERS.concat(extraHeaders);
+  const headers = SUMMARY_HEADERS;
   const rows = [];
   for (let r = 1; r < values.length; r++) {
     const oldRow = values[r];
@@ -128,8 +122,18 @@ function ensureSummarySchema(spreadsheet) {
   sheet.showColumns(1, sheet.getMaxColumns());
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   if (rows.length) sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+  fitSummaryColumns(sheet, headers.length);
   formatSummaryTimes(sheet);
   return sheet;
+}
+
+function fitSummaryColumns(sheet, requiredColumns) {
+  const currentColumns = sheet.getMaxColumns();
+  if (currentColumns < requiredColumns) {
+    sheet.insertColumnsAfter(currentColumns, requiredColumns - currentColumns);
+  } else if (currentColumns > requiredColumns) {
+    sheet.deleteColumns(requiredColumns + 1, currentColumns - requiredColumns);
+  }
 }
 
 function mapLegacyStationHeader(header) {
