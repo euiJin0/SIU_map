@@ -6,7 +6,7 @@
  * Execute as: Me. Access: Anyone.
  */
 const RAW_HEADERS = ['응답시각', '참여자 아이디', '역 이름', '질문', '답변 유형', '답변'];
-const SELF_FIELDS = ['초중고 공통 관심사', '듣고 싶은 말', '진로기준', '랜덤뽑기'];
+const SELF_FIELDS = ['초중고 공통 관심사', '듣고 싶은 말', '어떤 분야에 새로운 가능성 펼치기', '랜덤뽑기'];
 const REPORT_FIELDS = ['나의 다음 역 한 줄'];
 const STATION_FIELDS = [
   '답변 | 시니어역',
@@ -155,6 +155,7 @@ function mapLegacyStationHeader(header) {
 function normalizeLegacyAnswerHeader(header) {
   const label = String(header || '').replace(/^답변\s*\|\s*/, '').trim();
   if (label === '나의 다음 역' || label === '나의 다음 역 한 줄') return '나의 다음 역 한 줄';
+  if (label === '진로기준') return '어떤 분야에 새로운 가능성 펼치기';
   const compactLabel = label.replace(/\s+/g, '');
   const selfHeader = SELF_FIELDS.find(function (field) {
     const compactField = field.replace(/\s+/g, '');

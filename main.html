@@ -497,6 +497,7 @@ body{background:#f2f3f5;overflow-y:hidden}
   #modalBg .self-input{flex:1;min-height:0;display:flex;flex-direction:column}
   #modalBg .self-options{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr);align-content:stretch;gap:7px}
   #modalBg .self-option{height:100%;min-height:0;padding:8px;font-size:12px;line-height:1.3}
+  #modalBg .self-field-options .self-option{padding:5px 7px;font-size:11px;line-height:1.2}
   #modalBg .self-yes-no{flex:0 0 auto}
   #modalBg .self-nav{gap:8px;margin-top:8px;flex:none}
   #modalBg .self-nav .mode-btn{min-height:42px;font-size:13px}
@@ -1005,9 +1006,16 @@ const selfKeywords=[
   "리더십과 조율","제작과 구현","정리와 분석, 논리","교육과 소통, 이해와 성장",
   "통찰과 소비자 이해","사회적 기여, 가치 실현","협업과 시너지","창의성과 표현, 인정"
 ];
-const careerCriteria=[
-  "자유","직업 안정성","성장과 배움","경제적 보상",
-  "좋은 동료와 협력","인정과 성취","일과 삶의 균형","사회적 기여"
+const careerFields=[
+  "문화와 콘텐츠를 통해 새로운 경험을 만드는 분야",
+  "기업과 비즈니스를 통해 새로운 가치를 만드는 분야",
+  "금융과 경제를 통해 더 나은 생활을 지원하는 분야",
+  "건강과 의료를 통해 삶의 질을 높이는 분야",
+  "기술과 제품을 통해 일상의 불편을 해결하는 분야",
+  "교육과 학습을 통해 새로운 배움의 기회를 만드는 분야",
+  "도시와 주거환경을 통해 더 나은 생활공간을 만드는 분야",
+  "사람과 지역사회를 연결해 관계와 참여를 넓히는 분야",
+  "아직 잘 모르겠지만 새로운 분야를 탐색해 보고 싶다"
 ];
 const randomSlips=[
   "문제를 발견하고 해결하는 일","사람을 이해하고 연결하는 일",
@@ -1016,7 +1024,7 @@ const randomSlips=[
   "가르치고 성장하도록 돕는 일","새로운 가능성을 탐색하는 일"
 ];
 let selfStep=0;
-let selfExploration={interest:"",keywords:[],criteria:[],randomDone:null,randomChoice:""};
+let selfExploration={interest:"",keywords:[],field:"",randomDone:null,randomChoice:""};
 function saveSelfProgress(){
   if(!participantId)return;
   localStorage.setItem(selfProgressKey(),JSON.stringify({step:selfStep,...selfExploration}));
@@ -1028,17 +1036,17 @@ function resetSelfExploration(){
   selfExploration=saved?{
     interest:typeof saved.interest==="string"?saved.interest:"",
     keywords:Array.isArray(saved.keywords)?saved.keywords:[],
-    criteria:Array.isArray(saved.criteria)?saved.criteria:[],
+    field:typeof saved.field==="string"?saved.field:"",
     randomDone:typeof saved.randomDone==="boolean"?saved.randomDone:null,
     randomChoice:typeof saved.randomChoice==="string"?saved.randomChoice:""
-  }:{interest:"",keywords:[],criteria:[],randomDone:null,randomChoice:""};
+  }:{interest:"",keywords:[],field:"",randomDone:null,randomChoice:""};
   renderSelfStep();
 }
 function renderSelfStep(){
   const prompts=[
-    "2번에서 적은 반복해서 나타나는 관심은 무엇인가요?",
-    "고른 사진 뒷장에 있는 키워드들을 선택하세요.",
-    "골랐던 나의 진로 선택 기준을 2가지만 골라주세요.",
+    "기록지 Q2에서 적은 반복해서 나타나는 관심은 무엇인가요?",
+    "Q3에서 고른 사진 뒷장에 있는 키워드들을 선택하세요.",
+    "기록지 Q4에서 선택한 분야는 무엇인가요?",
     "랜덤뽑기를 했나요?"
   ];
   document.getElementById("selfStepLabel").textContent=`질문 ${selfStep+1} / 4`;
@@ -1052,7 +1060,7 @@ function renderSelfStep(){
   }else if(selfStep===1){
     input.innerHTML='<p class="self-note">여러 개를 선택할 수 있어요.</p><div class="self-options">'+selfKeywords.map((word,i)=>`<button type="button" class="self-option ${selfExploration.keywords.includes(word)?"selected":""}" onclick="toggleSelfChoice('keywords',${i})">${word}</button>`).join("")+'</div>';
   }else if(selfStep===2){
-    input.innerHTML='<p class="self-note">정확히 2개를 선택해 주세요.</p><div class="self-options">'+careerCriteria.map((word,i)=>`<button type="button" class="self-option ${selfExploration.criteria.includes(word)?"selected":""}" onclick="toggleSelfChoice('criteria',${i})">${word}</button>`).join("")+'</div>';
+    input.innerHTML='<p class="self-note">분야 하나를 골라 주세요.</p><div class="self-options self-field-options">'+careerFields.map((word,i)=>`<button type="button" class="self-option ${selfExploration.field===word?"selected":""}" onclick="setCareerField(${i})">${word}</button>`).join("")+'</div>';
   }else{
     let html='<div class="self-options self-yes-no"><button type="button" class="self-option '+(selfExploration.randomDone===true?"selected":"")+'" onclick="setRandomDone(true)">했어요</button><button type="button" class="self-option '+(selfExploration.randomDone===false?"selected":"")+'" onclick="setRandomDone(false)">안 했어요</button></div>';
     if(selfExploration.randomDone===true){
@@ -1069,17 +1077,18 @@ function updateSelfControls(){
   let valid=true;
   if(selfStep===0)valid=!!selfExploration.interest.trim();
   if(selfStep===1)valid=selfExploration.keywords.length>0;
-  if(selfStep===2)valid=selfExploration.criteria.length===2;
+  if(selfStep===2)valid=!!selfExploration.field;
   document.getElementById("selfNext").disabled=!valid;
   document.getElementById("complete").disabled=selfExploration.randomDone===null||
     (selfExploration.randomDone===true&&!selfExploration.randomChoice);
 }
 function toggleSelfChoice(field,index){
-  const list=selfExploration[field],value=field==="keywords"?selfKeywords[index]:careerCriteria[index];
+  const list=selfExploration[field],value=selfKeywords[index];
   if(list.includes(value))selfExploration[field]=list.filter(item=>item!==value);
-  else if(field==="keywords"||list.length<2)selfExploration[field]=list.concat(value);
+  else selfExploration[field]=list.concat(value);
   saveSelfProgress();renderSelfStep();
 }
+function setCareerField(index){selfExploration.field=careerFields[index];saveSelfProgress();renderSelfStep()}
 function setRandomDone(value){
   selfExploration.randomDone=value;
   if(!value)selfExploration.randomChoice="";
@@ -1092,9 +1101,9 @@ function moveSelfStep(direction){
 }
 async function completeSelfExploration(){
   const entries=[
-    ["초중고 공통 관심사","2번에서 적은 반복해서 나타나는 관심은 무엇인가요?",selfExploration.interest,"서술형"],
-    ["듣고 싶은 말","고른 사진 뒷장에 있는 키워드들을 선택하세요.",selfExploration.keywords.join(" / "),"복수 선택"],
-    ["진로기준","골랐던 나의 진로 선택 기준을 2가지만 골라주세요.",selfExploration.criteria.join(" / "),"2개 선택"],
+    ["초중고 공통 관심사","기록지 Q2에서 적은 반복해서 나타나는 관심은 무엇인가요?",selfExploration.interest,"서술형"],
+    ["듣고 싶은 말","Q3에서 고른 사진 뒷장에 있는 키워드들을 선택하세요.",selfExploration.keywords.join(" / "),"복수 선택"],
+    ["어떤 분야에 새로운 가능성 펼치기","기록지 Q4에서 선택한 분야는 무엇인가요?",selfExploration.field,"선택"],
     ["랜덤뽑기","랜덤뽑기를 했나요? 했다면 뽑은 쪽지를 선택하세요.",selfExploration.randomDone?selfExploration.randomChoice:"안 했어요",selfExploration.randomDone?"랜덤 쪽지 선택":"선택"]
   ];
   for(const [summaryColumn,question,answer,answerType] of entries){
@@ -1203,7 +1212,7 @@ function latestAnswers(){
   records.forEach(record=>{const key=record.stationId==="career"?`career:${record.summaryColumn}`:record.stationId;result[key]=record.answer});return result;
 }
 function reportInsights(next){
-  const a=latestAnswers(),interest=a["career:초중고 공통 관심사"]||"나를 설명하는 관심",keywords=(a["career:듣고 싶은 말"]||"").split(" / ").filter(Boolean),criteria=(a["career:진로기준"]||"").split(" / ").filter(Boolean);
+  const a=latestAnswers(),interest=a["career:초중고 공통 관심사"]||"나를 설명하는 관심",keywords=(a["career:듣고 싶은 말"]||"").split(" / ").filter(Boolean),field=a["career:어떤 분야에 새로운 가능성 펼치기"]||"";
   const firstIdea=a.senior||"시니어도 저마다 다른 취향과 가능성을 지닌 사람이라는 관점";
   const expandedIdea=a.seniorBusiness||"시니어의 필요를 새로운 경험으로 연결하는 일";
   const transfer=a.transfer||"관심 분야";
@@ -1219,16 +1228,27 @@ function reportInsights(next){
     "협업과 시너지":"서로 다른 강점을 연결해 더 큰 결과를 만드는",
     "창의성과 표현, 인정":"새로운 관점을 자신만의 방식으로 표현하는"
   };
-  const criteriaReadings={"자유":"스스로 선택하고 시도할 수 있는 여지","직업 안정성":"꾸준히 이어갈 수 있는 안정감","성장과 배움":"계속 배우며 넓어지는 가능성","경제적 보상":"노력에 맞는 보상","좋은 동료와 협력":"믿고 함께할 수 있는 사람들","인정과 성취":"기여를 알아주는 성취감","일과 삶의 균형":"삶의 다른 부분과 조화를 이루는 리듬","사회적 기여":"사회에 보탬이 되는 의미"};
+  const fieldReadings={
+    "문화와 콘텐츠를 통해 새로운 경험을 만드는 분야":["문화·콘텐츠","새로운 경험을 만들고 나누는 일"],
+    "기업과 비즈니스를 통해 새로운 가치를 만드는 분야":["기업·비즈니스","아이디어를 지속 가능한 가치로 잇는 일"],
+    "금융과 경제를 통해 더 나은 생활을 지원하는 분야":["금융·경제","생활의 선택과 안정을 뒷받침하는 일"],
+    "건강과 의료를 통해 삶의 질을 높이는 분야":["건강·의료","건강한 일상과 삶의 질을 돌보는 일"],
+    "기술과 제품을 통해 일상의 불편을 해결하는 분야":["기술·제품","작은 불편을 실제 해결로 바꾸는 일"],
+    "교육과 학습을 통해 새로운 배움의 기회를 만드는 분야":["교육·학습","배움의 문을 열고 성장을 돕는 일"],
+    "도시와 주거환경을 통해 더 나은 생활공간을 만드는 분야":["도시·주거환경","사람이 편안히 살아갈 공간을 만드는 일"],
+    "사람과 지역사회를 연결해 관계와 참여를 넓히는 분야":["사람·지역사회","관계와 참여의 연결을 넓히는 일"],
+    "아직 잘 모르겠지만 새로운 분야를 탐색해 보고 싶다":["새로운 분야 탐색","가능성을 열어 두고 경험해 보는 일"]
+  };
+  const fieldInsight=fieldReadings[field]||["관심 분야","새로운 가능성을 탐색하는 일"];
   const traitText=keywords.slice(0,2).map(word=>traitReadings[word]).filter(Boolean);
   const selfSentence=traitText.length
-    ?`‘${interest}’에 마음이 가는 건 ${traitText[0]} 강점과 닿아 있어요. ‘${criteria[0]||"나의 기준"}’을 고른 점에서 중요하게 여기는 환경도 보여요.`
-    :`‘${interest}’와 기준 ${criteria.join(", ")||"아직 정하지 않은 선택"}을 살펴보며, 무엇에 마음이 움직이고 어떤 환경에서 의미를 느끼는지 스스로 탐색하고 있어요.`;
+    ?`‘${interest}’에 끌리는 마음은 ${traitText[0]} 강점과 닿아 있어요. ${fieldInsight[1]}에도 관심을 보였어요.`
+    :`‘${interest}’에서 출발해 ${fieldInsight[1]}에 관심을 보였어요. 마음이 움직이는 방향을 직접 탐색하고 있어요.`;
   const journeySentence=`‘${firstIdea}’라는 관점이 ‘${expandedIdea}’라는 가능성으로 확장됐어요.`;
   const nextSentence=stops.length
     ?`이번 여정에서 ${stops.map(([title])=>title).join(", ")}에 머물렀어요. 선택한 답을 따라 관심이 구체적인 장면으로 바뀌었고, 다음에는 ‘${next}’를 직접 시도해 보려 해요.`
     :`아직 선택한 역이 많지 않아도 괜찮아요. ‘${transfer}’에 대한 관심에서 출발해 ‘${next}’라는 다음 행동을 정했어요. 이 문장이 다음 여정의 첫 정거장이 될 수 있어요.`;
-  return {interest,keywords,criteria,firstIdea,expandedIdea,transfer,areas,stops,selfSentence,journeySentence,nextSentence,next};
+  return {interest,keywords,field,fieldLabel:fieldInsight[0],firstIdea,expandedIdea,transfer,areas,stops,selfSentence,journeySentence,nextSentence,next};
 }
 function areasLabel(id){return ({culture:"문화콘텐츠",welfare:"사회복지",sports:"체육",realestate:"부동산·주거",education:"교육"})[id]||id}
 function htmlEscape(value){return String(value||"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char])}
@@ -1266,7 +1286,7 @@ function reportCanvas(){
 
   card(42,196,816,270);label("01   나를 움직이는 관심",72,226,"#3776e8");
   para(d.interest,72,265,744,27,"#20232a",32,2,800);
-  const coreTags=[...d.keywords.slice(0,2),...d.criteria.slice(0,1)];pills(coreTags.length?coreTags:["나를 알아가는 중"],72,322,744,["#f0edfb","#67529d"]);
+  const coreTags=[...d.keywords.slice(0,2),d.fieldLabel].filter(Boolean);pills(coreTags.length?coreTags:["나를 알아가는 중"],72,322,744,["#f0edfb","#67529d"]);
   label("이 선택에서 읽히는 나의 방향",72,372,"#3776e8");
   para(d.selfSentence,72,400,744,17,"#444954",23,3,500);
 
