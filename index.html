@@ -393,12 +393,12 @@ body{background:#f2f3f5;overflow-y:hidden}
 .answer-mode{display:flex;gap:7px;margin:4px 0 9px}
 .mode-btn{border:1px solid #ddd;border-radius:999px;background:#fff;padding:10px 15px;font-size:13px}
 .mode-btn.active{background:#111;border-color:#111;color:#fff}
-.essay-answer{width:82%;max-width:520px;min-height:145px;margin:0 auto;resize:vertical;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;line-height:1.5}
+.essay-answer{width:90%;max-width:520px;min-height:110px;margin:0 auto;resize:vertical;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;line-height:1.5}
 .essay-answer:focus{outline:2px solid #7654e855;border-color:#7654e8}
 .self-flow{padding:10px 0}
 .self-step{font-size:12px;font-weight:900;color:var(--purple);background:#f3efff;border-radius:999px;padding:8px 12px;width:max-content}
 .self-flow #selfStepPrompt{font-size:18px;font-weight:850;color:#222;margin:16px 0}
-.self-textarea{width:82%;max-width:520px;min-height:145px;margin:0 auto;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;resize:vertical}
+.self-textarea{width:90%;max-width:520px;min-height:110px;margin:0 auto;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;resize:vertical}
 .self-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .self-option{display:flex;align-items:center;justify-content:center;min-height:60px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:15px;padding:12px;font-size:13px;font-weight:700;text-align:center;line-height:1.45;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
 .self-option:active{transform:scale(.98)}
@@ -493,12 +493,12 @@ body{background:#f2f3f5;overflow-y:hidden}
   #modalBg .mode-btn{min-height:40px;padding:8px 13px;font-size:13px}
   #modalBg .answers{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr);align-content:stretch;gap:8px;overflow:hidden}
   #modalBg .answer{min-height:0;padding:9px 12px;font-size:14px;line-height:1.35}
-  #modalBg .essay-answer{flex:1;width:82%;min-height:0;padding:13px;font-size:15px;resize:none}
+  #modalBg .essay-answer{flex:none;width:90%;height:30dvh;max-height:250px;min-height:130px;padding:13px;font-size:15px;resize:none}
   #modalBg .complete{flex:none;min-height:50px;padding:12px;font-size:14px;margin:9px 0 0}
   #modalBg .self-flow{flex:1;min-height:0;display:flex;flex-direction:column;padding:4px 0}
   #modalBg .self-step{font-size:12px;padding:7px 11px;flex:none}
   #modalBg .self-flow #selfStepPrompt{font-size:17px;line-height:1.35;margin:8px 0;flex:none}
-  #modalBg .self-textarea{flex:1;width:82%;min-height:0;padding:13px;font-size:15px;resize:none}
+  #modalBg .self-textarea{flex:none;width:90%;height:26dvh;max-height:220px;min-height:120px;padding:13px;font-size:15px;resize:none}
   #modalBg .essay-answer,#modalBg .self-textarea,.report-panel textarea{font-size:16px!important}
   #modalBg .self-note{font-size:11px;margin:0 0 6px;flex:none}
   #modalBg .self-input{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -520,11 +520,11 @@ body{background:#f2f3f5;overflow-y:hidden}
   #modalBg .mode-btn{min-height:42px;padding:8px 12px;font-size:12px}
   #modalBg .answers{gap:8px}
   #modalBg .answer{min-height:0;padding:8px;font-size:12px}
-  #modalBg .essay-answer{min-height:0;padding:10px}
+  #modalBg .essay-answer{height:28dvh;max-height:205px;min-height:120px;padding:10px}
   #modalBg .self-flow{padding:3px 0}
   #modalBg .self-step{font-size:12px;padding:7px 11px}
   #modalBg .self-flow #selfStepPrompt{font-size:16px;margin:10px 0}
-  #modalBg .self-textarea{min-height:100px;padding:12px}
+  #modalBg .self-textarea{height:24dvh;max-height:175px;min-height:110px;padding:12px}
   #modalBg .self-note{font-size:11px;margin-bottom:7px}
   #modalBg .self-options{gap:6px}
   #modalBg .self-options .self-option{min-height:0;padding:7px;font-size:11px}
