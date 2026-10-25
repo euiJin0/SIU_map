@@ -373,6 +373,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 .train-note{margin-left:auto;color:#ffffffd9;font-size:9px;opacity:1}
 .train-icon{display:none}
 .station-row{width:100%;min-width:0;max-width:100%;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:start;min-height:62px;padding:14px 0}
+.station-row .plus{justify-self:start;transform:translateX(-4px)}
 .station-dot,.station-dot.transfer{justify-self:center;margin-top:1px}
 .station-title{font-size:15px;line-height:20px}
 .station-desc{margin-top:3px}
@@ -392,16 +393,20 @@ body{background:#f2f3f5;overflow-y:hidden}
 .answer-mode{display:flex;gap:7px;margin:4px 0 9px}
 .mode-btn{border:1px solid #ddd;border-radius:999px;background:#fff;padding:10px 15px;font-size:13px}
 .mode-btn.active{background:#111;border-color:#111;color:#fff}
-.essay-answer{width:100%;min-height:145px;resize:vertical;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;line-height:1.5}
+.essay-answer{width:90%;max-width:520px;min-height:145px;margin:0 auto;resize:vertical;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;line-height:1.5}
 .essay-answer:focus{outline:2px solid #7654e855;border-color:#7654e8}
 .self-flow{padding:10px 0}
 .self-step{font-size:12px;font-weight:900;color:var(--purple);background:#f3efff;border-radius:999px;padding:8px 12px;width:max-content}
 .self-flow #selfStepPrompt{font-size:18px;font-weight:850;color:#222;margin:16px 0}
-.self-textarea{width:100%;min-height:145px;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;resize:vertical}
+.self-textarea{width:90%;max-width:520px;min-height:145px;margin:0 auto;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;resize:vertical}
 .self-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .self-option{display:flex;align-items:center;justify-content:center;min-height:60px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:15px;padding:12px;font-size:13px;font-weight:700;text-align:center;line-height:1.45;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
 .self-option:active{transform:scale(.98)}
 .self-option.selected{border-color:#7654e8;background:#f1ebff;color:#5537a3;font-weight:850;box-shadow:0 4px 12px #7654e826}
+.self-field-options .self-option{display:flex;flex-direction:column;gap:4px}
+.field-option-label{font-size:13px;font-weight:900;line-height:1.2}
+.field-option-detail{font-size:10px;font-weight:600;color:#777;line-height:1.25}
+.self-option.selected .field-option-detail{color:#654bb0}
 .self-note{font-size:13px;color:#777;margin:0 0 11px}
 .self-nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
 .self-nav button{flex:1}
@@ -488,18 +493,20 @@ body{background:#f2f3f5;overflow-y:hidden}
   #modalBg .mode-btn{min-height:40px;padding:8px 13px;font-size:13px}
   #modalBg .answers{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr);align-content:stretch;gap:8px;overflow:hidden}
   #modalBg .answer{min-height:0;padding:9px 12px;font-size:14px;line-height:1.35}
-  #modalBg .essay-answer{flex:1;min-height:0;padding:13px;font-size:15px;resize:none}
+  #modalBg .essay-answer{flex:1;width:90%;min-height:0;padding:13px;font-size:15px;resize:none}
   #modalBg .complete{flex:none;min-height:50px;padding:12px;font-size:14px;margin:9px 0 0}
   #modalBg .self-flow{flex:1;min-height:0;display:flex;flex-direction:column;padding:4px 0}
   #modalBg .self-step{font-size:12px;padding:7px 11px;flex:none}
   #modalBg .self-flow #selfStepPrompt{font-size:17px;line-height:1.35;margin:8px 0;flex:none}
-  #modalBg .self-textarea{flex:1;min-height:0;padding:13px;font-size:15px;resize:none}
+  #modalBg .self-textarea{flex:1;width:90%;min-height:0;padding:13px;font-size:15px;resize:none}
   #modalBg .essay-answer,#modalBg .self-textarea,.report-panel textarea{font-size:16px!important}
   #modalBg .self-note{font-size:11px;margin:0 0 6px;flex:none}
   #modalBg .self-input{flex:1;min-height:0;display:flex;flex-direction:column}
   #modalBg .self-options{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr);align-content:stretch;gap:7px}
   #modalBg .self-option{height:100%;min-height:0;padding:8px;font-size:12px;line-height:1.3}
-  #modalBg .self-field-options .self-option{padding:5px 7px;font-size:11px;line-height:1.2}
+  #modalBg .self-field-options .self-option{padding:6px 7px;font-size:11px;line-height:1.2}
+  #modalBg .self-field-options .field-option-label{font-size:12px}
+  #modalBg .self-field-options .field-option-detail{font-size:9px}
   #modalBg .self-yes-no{flex:0 0 auto}
   #modalBg .self-nav{gap:8px;margin-top:8px;flex:none}
   #modalBg .self-nav .mode-btn{min-height:42px;font-size:13px}
@@ -1019,6 +1026,13 @@ const careerFields=[
   "사람과 지역사회를 연결해 관계와 참여를 넓히는 분야",
   "아직 잘 모르겠지만 새로운 분야를 탐색해 보고 싶다"
 ];
+const careerFieldCards=[
+  ["문화·콘텐츠","새로운 경험 만들기"],["기업·비즈니스","새로운 가치 만들기"],
+  ["금융·경제","더 나은 생활 돕기"],["건강·의료","삶의 질 높이기"],
+  ["기술·제품","일상 불편 해결하기"],["교육·학습","배움의 기회 열기"],
+  ["도시·주거","더 나은 공간 만들기"],["사람·지역사회","관계와 참여 넓히기"],
+  ["새로운 분야","더 탐색해 보기"]
+];
 const randomSlips=[
   "문제를 발견하고 해결하는 일","사람을 이해하고 연결하는 일",
   "정보를 수집하고 분석하는 일","아이디어를 기획하고 표현하는 일",
@@ -1026,7 +1040,7 @@ const randomSlips=[
   "가르치고 성장하도록 돕는 일","새로운 가능성을 탐색하는 일"
 ];
 let selfStep=0;
-let selfExploration={interest:"",keywords:[],field:"",randomDone:null,randomChoice:""};
+let selfExploration={interest:"",keywords:[],field:[],randomDone:null,randomChoice:""};
 function saveSelfProgress(){
   if(!participantId)return;
   localStorage.setItem(selfProgressKey(),JSON.stringify({step:selfStep,...selfExploration}));
@@ -1038,10 +1052,10 @@ function resetSelfExploration(){
   selfExploration=saved?{
     interest:typeof saved.interest==="string"?saved.interest:"",
     keywords:Array.isArray(saved.keywords)?saved.keywords:[],
-    field:typeof saved.field==="string"?saved.field:"",
+    field:Array.isArray(saved.field)?saved.field:(typeof saved.field==="string"&&saved.field?[saved.field]:[]),
     randomDone:typeof saved.randomDone==="boolean"?saved.randomDone:null,
     randomChoice:typeof saved.randomChoice==="string"?saved.randomChoice:""
-  }:{interest:"",keywords:[],field:"",randomDone:null,randomChoice:""};
+  }:{interest:"",keywords:[],field:[],randomDone:null,randomChoice:""};
   renderSelfStep();
 }
 function renderSelfStep(){
@@ -1062,7 +1076,7 @@ function renderSelfStep(){
   }else if(selfStep===1){
     input.innerHTML='<p class="self-note">여러 개를 선택할 수 있어요.</p><div class="self-options">'+selfKeywords.map((word,i)=>`<button type="button" class="self-option ${selfExploration.keywords.includes(word)?"selected":""}" onclick="toggleSelfChoice('keywords',${i})">${word}</button>`).join("")+'</div>';
   }else if(selfStep===2){
-    input.innerHTML='<p class="self-note">분야 하나를 골라 주세요.</p><div class="self-options self-field-options">'+careerFields.map((word,i)=>`<button type="button" class="self-option ${selfExploration.field===word?"selected":""}" onclick="setCareerField(${i})">${word}</button>`).join("")+'</div>';
+    input.innerHTML='<p class="self-note">관심 있는 분야를 여러 개 골라도 돼요.</p><div class="self-options self-field-options">'+careerFields.map((word,i)=>`<button type="button" class="self-option ${selfExploration.field.includes(word)?"selected":""}" onclick="toggleSelfChoice(\'field\',${i})"><b class="field-option-label">${careerFieldCards[i][0]}</b><span class="field-option-detail">${careerFieldCards[i][1]}</span></button>`).join("")+'</div>';
   }else{
     let html='<div class="self-options self-yes-no"><button type="button" class="self-option '+(selfExploration.randomDone===true?"selected":"")+'" onclick="setRandomDone(true)">했어요</button><button type="button" class="self-option '+(selfExploration.randomDone===false?"selected":"")+'" onclick="setRandomDone(false)">안 했어요</button></div>';
     if(selfExploration.randomDone===true){
@@ -1079,18 +1093,17 @@ function updateSelfControls(){
   let valid=true;
   if(selfStep===0)valid=!!selfExploration.interest.trim();
   if(selfStep===1)valid=selfExploration.keywords.length>0;
-  if(selfStep===2)valid=!!selfExploration.field;
+  if(selfStep===2)valid=selfExploration.field.length>0;
   document.getElementById("selfNext").disabled=!valid;
   document.getElementById("complete").disabled=selfExploration.randomDone===null||
     (selfExploration.randomDone===true&&!selfExploration.randomChoice);
 }
 function toggleSelfChoice(field,index){
-  const list=selfExploration[field],value=selfKeywords[index];
+  const list=selfExploration[field],value=field==="field"?careerFields[index]:selfKeywords[index];
   if(list.includes(value))selfExploration[field]=list.filter(item=>item!==value);
   else selfExploration[field]=list.concat(value);
   saveSelfProgress();renderSelfStep();
 }
-function setCareerField(index){selfExploration.field=careerFields[index];saveSelfProgress();renderSelfStep()}
 function setRandomDone(value){
   selfExploration.randomDone=value;
   if(!value)selfExploration.randomChoice="";
@@ -1105,7 +1118,7 @@ async function completeSelfExploration(){
   const entries=[
     ["초중고 공통 관심사","기록지 Q2에서 적은 반복해서 나타나는 관심은 무엇인가요?",selfExploration.interest,"서술형"],
     ["듣고 싶은 말","Q3에서 고른 사진 뒷장에 있는 키워드들을 선택하세요.",selfExploration.keywords.join(" / "),"복수 선택"],
-    ["어떤 분야에 새로운 가능성 펼치기","기록지 Q4에서 선택한 분야는 무엇인가요?",selfExploration.field,"선택"],
+    ["어떤 분야에 새로운 가능성 펼치기","기록지 Q4에서 선택한 분야는 무엇인가요?",selfExploration.field.join(" / "),"복수 선택"],
     ["랜덤뽑기","랜덤뽑기를 했나요? 했다면 뽑은 쪽지를 선택하세요.",selfExploration.randomDone?selfExploration.randomChoice:"안 했어요",selfExploration.randomDone?"랜덤 쪽지 선택":"선택"]
   ];
   for(const [summaryColumn,question,answer,answerType] of entries){
@@ -1214,7 +1227,7 @@ function latestAnswers(){
   records.forEach(record=>{const key=record.stationId==="career"?`career:${record.summaryColumn}`:record.stationId;result[key]=record.answer});return result;
 }
 function reportInsights(next){
-  const a=latestAnswers(),interest=a["career:초중고 공통 관심사"]||"나를 설명하는 관심",keywords=(a["career:듣고 싶은 말"]||"").split(" / ").filter(Boolean),field=a["career:어떤 분야에 새로운 가능성 펼치기"]||"";
+  const a=latestAnswers(),interest=a["career:초중고 공통 관심사"]||"나를 설명하는 관심",keywords=(a["career:듣고 싶은 말"]||"").split(" / ").filter(Boolean),field=(a["career:어떤 분야에 새로운 가능성 펼치기"]||"").split(" / ").filter(Boolean);
   const firstIdea=a.senior||"시니어도 저마다 다른 취향과 가능성을 지닌 사람이라는 관점";
   const expandedIdea=a.seniorBusiness||"시니어의 필요를 새로운 경험으로 연결하는 일";
   const transfer=a.transfer||"관심 분야";
@@ -1241,16 +1254,20 @@ function reportInsights(next){
     "사람과 지역사회를 연결해 관계와 참여를 넓히는 분야":["사람·지역사회","관계와 참여의 연결을 넓히는 일"],
     "아직 잘 모르겠지만 새로운 분야를 탐색해 보고 싶다":["새로운 분야 탐색","가능성을 열어 두고 경험해 보는 일"]
   };
-  const fieldInsight=fieldReadings[field]||["관심 분야","새로운 가능성을 탐색하는 일"];
+  const fieldInsights=field.map(value=>fieldReadings[value]).filter(Boolean);
+  const fieldInsight=fieldInsights[0]||["관심 분야","새로운 가능성을 탐색하는 일"];
+  const fieldLabels=fieldInsights.map(item=>item[0]);
+  const fieldLabel=fieldLabels.length>2?`${fieldLabels.slice(0,2).join(" · ")} 외 ${fieldLabels.length-2}개`:fieldLabels.join(" · ")||fieldInsight[0];
+  const fieldInterpretation=fieldInsights.slice(0,2).map(item=>item[1]).join(" 그리고 ")||fieldInsight[1];
   const traitText=keywords.slice(0,2).map(word=>traitReadings[word]).filter(Boolean);
   const selfSentence=traitText.length
-    ?`‘${interest}’에 끌리는 마음은 ${traitText[0]} 강점과 닿아 있어요. ${fieldInsight[1]}에도 관심을 보였어요.`
-    :`‘${interest}’에서 출발해 ${fieldInsight[1]}에 관심을 보였어요. 마음이 움직이는 방향을 직접 탐색하고 있어요.`;
+    ?`‘${interest}’에 끌리는 마음은 ${traitText[0]} 강점과 닿아 있어요. ${fieldInterpretation}에도 관심을 보였어요.`
+    :`‘${interest}’에서 출발해 ${fieldInterpretation}에 관심을 보였어요. 마음이 움직이는 방향을 직접 탐색하고 있어요.`;
   const journeySentence=`‘${firstIdea}’라는 관점이 ‘${expandedIdea}’라는 가능성으로 확장됐어요.`;
   const nextSentence=stops.length
     ?`이번 여정에서 ${stops.map(([title])=>title).join(", ")}에 머물렀어요. 선택한 답을 따라 관심이 구체적인 장면으로 바뀌었고, 다음에는 ‘${next}’를 직접 시도해 보려 해요.`
     :`아직 선택한 역이 많지 않아도 괜찮아요. ‘${transfer}’에 대한 관심에서 출발해 ‘${next}’라는 다음 행동을 정했어요. 이 문장이 다음 여정의 첫 정거장이 될 수 있어요.`;
-  return {interest,keywords,field,fieldLabel:fieldInsight[0],firstIdea,expandedIdea,transfer,areas,stops,selfSentence,journeySentence,nextSentence,next};
+  return {interest,keywords,field,fieldLabel,firstIdea,expandedIdea,transfer,areas,stops,selfSentence,journeySentence,nextSentence,next};
 }
 function areasLabel(id){return ({culture:"문화콘텐츠",welfare:"사회복지",sports:"체육",realestate:"부동산·주거",education:"교육"})[id]||id}
 function htmlEscape(value){return String(value||"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char])}
