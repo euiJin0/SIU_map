@@ -430,6 +430,23 @@ body{background:#f2f3f5;overflow-y:hidden}
 .route-clear:active{background:#f1eff5}
 .route-form-divider{height:1px;margin-left:34px;background:#ececf0}
 .route-form-line{position:absolute;left:24px;top:34px;bottom:34px;z-index:2;border-left:1px dashed #c9c8d0;pointer-events:none}
+.transport-modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 13px}
+.transport-mode{min-width:0;min-height:51px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:1px solid transparent;border-radius:12px;color:#70727a;font-size:9px;font-weight:750;white-space:nowrap}
+.transport-mode .mode-icon{font-size:17px;line-height:1}
+.transport-mode.active{background:#e8f2ff;border-color:#d3e6ff;color:#1976d2}
+.route-preview{padding:13px 12px 11px;border:1px solid #e7e7ec;border-radius:13px;background:#fff;margin-bottom:17px}
+.route-preview-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.route-preview-head strong{font-size:11px;color:#333}
+.route-preview-head span{font-size:9px;color:#80818a}
+.route-preview-line{display:flex;align-items:center;justify-content:space-between;gap:3px}
+.preview-endpoint{width:9px;height:9px;flex:none;border:2px solid #50b887;border-radius:50%;background:#fff}
+.preview-endpoint.finish{border-color:#d86570}
+.preview-line{height:3px;min-width:8px;flex:1;border-radius:9px;background:#d7d8dd}
+.preview-line.discovery{background:#3278e7}
+.preview-line.expansion{background:#7654e8}
+.preview-badge{width:22px;height:22px;flex:none;display:grid;place-items:center;border-radius:7px;background:#3278e7;color:#fff;font-size:10px;font-weight:900}
+.preview-badge.expansion{background:#7654e8}
+.route-preview-labels{display:grid;grid-template-columns:1fr 1.15fr 1.4fr 1fr;gap:2px;margin-top:6px;text-align:center;color:#7b7c85;font-size:8px;line-height:1.2}
 .location-actions{display:flex;gap:8px}
 .location-back{height:48px;padding:0 18px;border:1px solid #e1dced;border-radius:12px;background:#fff;color:#594e72;font-size:13px;font-weight:800}
 .location-actions .intro-submit{flex:1;margin:0}
@@ -810,6 +827,22 @@ body{background:#f2f3f5;overflow-y:hidden}
           <span aria-hidden="true"></span>
         </div>
       </div>
+    </div>
+    <div class="transport-modes" aria-label="경로 이동 방식">
+      <div class="transport-mode active"><span class="mode-icon">🚇</span><span>대중교통</span></div>
+      <div class="transport-mode"><span class="mode-icon">🚗</span><span>자동차</span></div>
+      <div class="transport-mode"><span class="mode-icon">🚶</span><span>도보</span></div>
+      <div class="transport-mode"><span class="mode-icon">🚲</span><span>자전거</span></div>
+    </div>
+    <div class="route-preview">
+      <div class="route-preview-head"><strong>추천 전시 경로</strong><span>열차 · 도보 환승</span></div>
+      <div class="route-preview-line" aria-hidden="true">
+        <span class="preview-endpoint"></span><span class="preview-line"></span>
+        <span class="preview-badge">나</span><span class="preview-line discovery"></span>
+        <span class="preview-badge expansion">가</span><span class="preview-line expansion"></span>
+        <span class="preview-endpoint finish"></span>
+      </div>
+      <div class="route-preview-labels"><span>출발</span><span>나를발견행</span><span>가능성을 확장행</span><span>도착</span></div>
     </div>
     <div class="location-actions"><button class="location-back" onclick="backToName()">이전</button><button class="intro-submit" onclick="beginJourney()">길 찾기 시작</button></div>
   </div>
