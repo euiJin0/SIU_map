@@ -383,6 +383,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 .plus{border-color:#c5b9ec;color:var(--purple)}
 .plus.done{position:relative;width:30px;height:30px;min-width:30px;min-height:30px;padding:0;border:0;background:transparent;box-shadow:none;overflow:visible;display:grid;place-items:center}
 .plus.done img{position:absolute;left:50%;top:50%;display:block;width:46px;height:46px;max-width:none;object-fit:contain;transform:translate(-50%,-50%)}
+.next-station-plus.done{margin-right:8px}
 .s-circle img{display:block;width:100%;height:100%;object-fit:contain}
 .stamp.on .s-circle{width:70px;height:70px;border:0}
 .stamp .s-circle{width:70px;height:70px;border:0}
@@ -976,7 +977,9 @@ function setParticipant(name,origin=""){
   const departmentTag=document.getElementById("firstStationDepartment");
   departmentTag.textContent=savedOrigin?`나의 현재 위치 : ${savedOrigin}`:"";departmentTag.hidden=!savedOrigin;
   docentTracks[0].description=`${firstStationName}에서 나의 다음 역까지, SIU MAP 여정을 소개합니다.`;
-  done=JSON.parse(localStorage.getItem(participantDoneKey())||"[]").filter(id=>id!=="interest"&&id!=="senior");
+  const savedStamps=JSON.parse(localStorage.getItem(participantDoneKey())||"[]");
+  done=[...new Set(savedStamps.filter(id=>Object.prototype.hasOwnProperty.call(stations,id)))];
+  localStorage.setItem(participantDoneKey(),JSON.stringify(done));
 }
 function restoreParticipant(){
   const pendingName=localStorage.getItem("siuMetroPendingParticipant")||"";
