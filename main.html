@@ -250,6 +250,7 @@ button{font:inherit}
 /* ===== 환승/활동 안내 ===== */
 .route-chip{display:inline-flex;align-items:center;min-height:22px;padding:3px 9px;border:1px solid #ece0a9;border-radius:7px;background:#fff9df;color:#756d4d;font-size:10px;font-weight:850;line-height:1.2;white-space:nowrap}
 .station-title-line,.route-name-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.route-origin-tag{display:inline-flex;align-items:center;min-height:20px;padding:2px 8px;border:1px solid #e5e5ea;border-radius:99px;background:#f4f4f6;color:#72747d;font-size:9px;font-weight:750;line-height:1.2}
 .destination-card{margin-top:-9px}
 .activity-chip{
   display:flex;align-items:center;gap:8px;margin:2px 0 8px;padding:10px 12px;
@@ -633,7 +634,7 @@ body{background:#f2f3f5;overflow-y:hidden}
       <div class="route-item start-route">
         <div class="marker start"><span>출발</span></div>
         <div>
-          <div class="route-name" id="firstStationTitle">나의 역</div>
+          <div class="route-name-line"><div class="route-name" id="firstStationTitle">나의 역</div><span class="route-origin-tag" id="firstStationDepartment" hidden></span></div>
           <div class="route-sub">나의 현재 위치에서 전시 여정을 시작합니다.</div>
         </div>
       </div>
@@ -959,9 +960,11 @@ function setParticipant(name,origin=""){
   document.getElementById("newParticipantBtn").hidden=false;
   const savedOrigin=origin.trim()||localStorage.getItem(participantOriginKey(name))||"";
   if(savedOrigin)localStorage.setItem(participantOriginKey(name),savedOrigin);
-  const firstStationName=savedOrigin||`${name}의 역`;
+  const firstStationName=`${name}의 역`;
   document.getElementById("firstStationTitle").textContent=firstStationName;
   document.getElementById("firstStationMeta").textContent=firstStationName;
+  const departmentTag=document.getElementById("firstStationDepartment");
+  departmentTag.textContent=savedOrigin;departmentTag.hidden=!savedOrigin;
   docentTracks[0].description=`${firstStationName}에서 나의 다음 역까지, SIU MAP 여정을 소개합니다.`;
   done=JSON.parse(localStorage.getItem(participantDoneKey())||"[]").filter(id=>id!=="interest"&&id!=="senior");
 }
