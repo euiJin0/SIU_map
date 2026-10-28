@@ -294,11 +294,15 @@ button{font:inherit}
 .report-bg{position:fixed;inset:0;z-index:180;background:#101115b8;display:none;align-items:center;justify-content:center;padding:12px}
 .report-bg.show{display:flex}
 .report-panel{width:min(100%,500px);max-height:94dvh;overflow:auto;background:#f8f9fb;border-radius:22px;padding:14px;box-shadow:0 18px 60px #0004}
+.report-bg.report-image-mode{padding:8px}
+.report-image-mode .report-panel{width:min(100%,650px);max-height:98dvh;padding:10px}
 .report-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .report-toolbar strong{font-size:13px}.report-toolbar button{border:0;background:#eceef3;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800}
 .report-paper{background:#fff;border:1px solid #e1e3e8;border-radius:14px;padding:10px;color:#191b20;font-family:"Pretendard","Noto Sans KR",Arial,sans-serif}
 .report-image-preview{display:block;width:100%;height:auto;border-radius:9px}
 .report-image-preview{max-height:65dvh;object-fit:contain}
+#reportView .report-paper{padding:4px}
+#reportView .report-image-preview{max-height:calc(88dvh - 72px)}
 .report-head{padding:14px 13px;background:#f1f3f9;border-radius:10px;margin-bottom:9px}
 .report-eyebrow{font-size:8px;color:#7965c6;letter-spacing:.08em;font-weight:800}
 .report-head h2{font-size:21px;margin:4px 0 3px;letter-spacing:-.05em}
@@ -320,6 +324,13 @@ button{font:inherit}
 .report-next{background:#f1f3f9;border-radius:10px;padding:11px;margin-top:10px}
 .report-next b{font-size:12px;display:block;margin:3px 0}.report-next p{font-size:9px;line-height:1.55;color:#626775;margin:0}
 .report-actions{display:flex;gap:8px;margin-top:10px}.report-actions button{flex:1;border:0;border-radius:11px;padding:12px 8px;font-size:11px;font-weight:900;background:#7654e8;color:white}.report-actions .secondary{background:#fff;color:#5134a1;border:1px solid #ddd4f4}
+.report-route-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:center;min-width:0;padding:1px 0 14px}
+.report-route-copy{grid-column:2;min-width:0}
+.report-route-copy .route-name{font-size:17px;line-height:1.25}
+.report-route-go{grid-column:3;width:34px;height:34px;border:1px solid #dedfe3;border-radius:11px;background:#eceef1;color:#a4a7ad;font-size:22px;font-weight:800;line-height:1;display:grid;place-items:center;transition:background .18s ease,color .18s ease,transform .18s ease}
+.report-route-go:disabled{cursor:not-allowed}
+.report-route-go:not(:disabled){background:#7654e8;border-color:#7654e8;color:#fff;cursor:pointer;box-shadow:0 4px 12px #7654e83a}
+.report-route-go:not(:disabled):active{transform:scale(.94)}
 
 .next-answer{width:100%;min-height:100px;resize:vertical;border:1px solid #ddd4f4;border-radius:12px;padding:13px;font:inherit;font-size:15px;line-height:1.5;margin:8px 0}
 
@@ -752,6 +763,10 @@ body{background:#f2f3f5;overflow-y:hidden}
         <button class="plus next-station-plus" data-station="nextStation" type="button" aria-label="나의 다음 역 한 줄 쓰기" onclick="event.stopPropagation();openNextStation()">＋</button>
       </div>
     </div>
+    <div class="report-route-row">
+      <div class="report-route-copy"><div class="route-name">나의 여정 레포트 만들러 가기</div></div>
+      <button class="report-route-go" id="reportRouteButton" type="button" aria-label="나의 여정 레포트 만들러 가기" title="나의 다음 역 스탬프를 받으면 활성화됩니다" disabled onclick="createJourneyReport()">›</button>
+    </div>
     <div class="stamp-title">내 스탬프</div>
     <div class="stamp-grid" id="stampGrid"></div>
   </div>
@@ -763,8 +778,8 @@ body{background:#f2f3f5;overflow-y:hidden}
 <div class="report-bg" id="reportBg" onclick="closeReport(event)">
   <div class="report-panel" onclick="event.stopPropagation()">
     <div class="report-toolbar"><strong id="reportToolbarTitle">나의 여정 리포트</strong><button onclick="closeReport()">닫기</button></div>
-    <div id="nextStationForm"><div class="report-paper"><div class="report-eyebrow">MY NEXT STATION</div><h2 style="font-size:20px;margin:5px 0">내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?</h2><p class="report-copy">떠오르는 가능성을 한 줄로 적어주세요.</p><textarea class="next-answer" id="nextAnswer" maxlength="180" placeholder="예: 시니어의 취향을 담은 문화 콘텐츠를 직접 기획해 보고 싶다."></textarea><div style="font-size:9px;color:#888">작성한 문장을 바탕으로 여정 리포트가 만들어집니다.</div></div><button class="complete" id="createReportBtn" disabled onclick="createJourneyReport()">나의 여정 리포트 만들기</button></div>
-    <div id="reportView" hidden><div class="report-paper" id="reportPaper"></div><div class="report-actions"><button onclick="saveReportImage()">JPG로 저장</button></div></div>
+    <div id="nextStationForm"><div class="report-paper"><div class="report-eyebrow">MY NEXT STATION</div><h2 style="font-size:20px;margin:5px 0">내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?</h2><p class="report-copy">떠오르는 가능성을 한 줄로 적어주세요.</p><textarea class="next-answer" id="nextAnswer" maxlength="180" placeholder="예: 시니어의 취향을 담은 문화 콘텐츠를 직접 기획해 보고 싶다."></textarea><div style="font-size:9px;color:#888">한 줄을 저장하면 나의 다음 역 스탬프를 받을 수 있어요.</div></div><button class="complete" id="saveNextStationBtn" disabled onclick="saveNextStationAnswer()">답변하고 스탬프 받기</button></div>
+    <div id="reportView" hidden><div class="report-paper" id="reportPaper"></div><div class="report-actions"><button onclick="saveReportImage()">이미지 저장</button></div></div>
   </div>
 </div>
 
@@ -1081,7 +1096,12 @@ function render(){
     btn.innerHTML=stamped?'<img src="stamp-display.png" alt="스탬프 완료">':"＋";
   });
 
-  document.getElementById("stampGrid").innerHTML=Object.entries(stations).map(([id,s])=>`
+  const reportButton=document.getElementById("reportRouteButton");
+  const hasNextLine=!!(localStorage.getItem(participantNextStationKey())||"").trim();
+  reportButton.disabled=!done.includes("nextStation")||!hasNextLine;
+  reportButton.title=reportButton.disabled?"나의 다음 역 한 줄을 저장해 스탬프를 받으면 활성화됩니다":"나의 관심 지도를 확인합니다";
+  const hiddenStampStations=new Set(["culture","welfare","sports","realestate","education"]);
+  document.getElementById("stampGrid").innerHTML=Object.entries(stations).filter(([id])=>!hiddenStampStations.has(id)).map(([id,s])=>`
     <div class="stamp ${done.includes(id)?"on":""}">
       <div class="s-circle">${done.includes(id)?'<img src="stamp-display.png" alt="획득한 스탬프">':"＋"}</div>
       <small>${s.title}</small>
@@ -1321,13 +1341,32 @@ function openNextStation(){
   if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
   const saved=localStorage.getItem(participantNextStationKey())||"";
   document.getElementById("nextAnswer").value=saved;
-  document.getElementById("nextAnswer").oninput=event=>{localStorage.setItem(participantNextStationKey(),event.target.value);document.getElementById("createReportBtn").disabled=!event.target.value.trim()};
-  document.getElementById("createReportBtn").disabled=!saved.trim();
+  document.getElementById("nextAnswer").oninput=event=>{
+    localStorage.setItem(participantNextStationKey(),event.target.value);
+    document.getElementById("saveNextStationBtn").disabled=!event.target.value.trim();
+    document.getElementById("reportRouteButton").disabled=!done.includes("nextStation")||!event.target.value.trim();
+  };
+  document.getElementById("saveNextStationBtn").disabled=!saved.trim();
+  document.getElementById("saveNextStationBtn").textContent=done.includes("nextStation")?"한 줄 저장하기":"답변하고 스탬프 받기";
   document.getElementById("nextStationForm").hidden=false;document.getElementById("reportView").hidden=true;
   document.getElementById("reportToolbarTitle").textContent="나의 다음 역";
+  document.getElementById("reportBg").classList.remove("report-image-mode");
   document.getElementById("reportBg").classList.add("show");
 }
 function closeReport(event){if(!event||event.target===document.getElementById("reportBg"))document.getElementById("reportBg").classList.remove("show")}
+function saveNextStationAnswer(){
+  const next=document.getElementById("nextAnswer").value.trim();
+  if(!next)return;
+  localStorage.setItem(participantNextStationKey(),next);
+  const answerRecords=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]");
+  if(!answerRecords.some(record=>record.stationId==="nextStation"&&record.answer===next)){
+    submitResponse({stationId:"nextStation",stationTitle:"나의 다음 역",summaryColumn:"나의 다음 역 한 줄",question:"내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?",answerType:"서술형",answer:next});
+  }
+  if(!done.includes("nextStation"))done.push("nextStation");
+  localStorage.setItem(participantDoneKey(),JSON.stringify(done));
+  document.getElementById("reportBg").classList.remove("show");
+  render();
+}
 function latestAnswers(){
   const records=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]"),result={};
   records.forEach(record=>{const key=record.stationId==="career"?`career:${record.summaryColumn}`:record.stationId;result[key]=record.answer});return result;
@@ -1379,17 +1418,13 @@ function areasLabel(id){return ({culture:"문화콘텐츠",welfare:"사회복지
 function htmlEscape(value){return String(value||"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char])}
 function reportTag(text,color=""){return `<span class="report-tag ${color}">${htmlEscape(text)}</span>`}
 async function createJourneyReport(){
-  const next=document.getElementById("nextAnswer").value.trim();if(!next)return;
-  localStorage.setItem(participantNextStationKey(),next);
-  const answerRecords=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]");
-  if(!answerRecords.some(record=>record.stationId==="nextStation"&&record.answer===next)){
-  await submitResponse({stationId:"nextStation",stationTitle:"나의 다음 역",summaryColumn:"나의 다음 역 한 줄",question:"내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?",answerType:"서술형",answer:next});
-  }
+  const next=localStorage.getItem(participantNextStationKey())||"";
+  if(!done.includes("nextStation")||!next.trim())return;
   const canvas=reportCanvas();
-  document.getElementById("reportPaper").innerHTML=`<img class="report-image-preview" src="${canvas.toDataURL("image/png")}" alt="${htmlEscape(participantId||"나")}의 SIU MAP 여정 리포트 이미지">`;
+  document.getElementById("reportPaper").innerHTML=`<img class="report-image-preview" src="${canvas.toDataURL("image/png")}" alt="${htmlEscape(participantId||"나")}의 관심 지도">`;
   document.getElementById("nextStationForm").hidden=true;document.getElementById("reportView").hidden=false;
-  if(!done.includes("nextStation")){done.push("nextStation");localStorage.setItem(participantDoneKey(),JSON.stringify(done));render()}
-  document.getElementById("reportToolbarTitle").textContent="나의 여정 리포트";
+  document.getElementById("reportToolbarTitle").textContent=`${participantId}의 관심 지도`;
+  document.getElementById("reportBg").classList.add("show","report-image-mode");
 }
 function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=4){
   let line="",lines=0;for(const char of Array.from(String(text||""))){const candidate=line+char;if(ctx.measureText(candidate).width>maxWidth&&line){ctx.fillText(line,x,y);y+=lineHeight;lines++;line=char;if(lines>=maxLines)return y} else line=candidate}if(line){ctx.fillText(line,x,y);y+=lineHeight}return y;
@@ -1407,7 +1442,7 @@ function reportCanvas(){
   const hero=ctx.createLinearGradient(42,30,858,174);hero.addColorStop(0,"#24223b");hero.addColorStop(1,"#55428b");
   rounded(42,32,816,148,22,hero);text("SIU MAP   /   PERSONAL JOURNEY",72,66,14,"#d5c9ff",800);
   para(`${participantId||"나"}의 관심 지도`,72,111,744,36,"#fff",40,1,800);
-  text("관심에서 가능성으로, 나의 다음 장면까지",72,151,16,"#e1dced",500);
+  text("관심에서 가능성까지 이어진 나의 여정 지도",72,151,16,"#e1dced",500);
 
   card(42,196,816,270);label("01   나를 움직이는 관심",72,226,"#3776e8");
   para(d.interest,72,265,744,27,"#20232a",32,2,800);
@@ -1416,13 +1451,18 @@ function reportCanvas(){
   para(d.selfSentence,72,400,744,17,"#444954",23,3,500);
 
   card(42,482,816,260,"#fff","#e4def2");label("02   관심이 확장된 순간",72,512,"#7654e8");
-  const nodeY=538,nodeW=166,nodeH=98,nodeGap=26,nodeX=72;
+  const nodeY=570,nodeW=166,nodeH=98,nodeGap=26,nodeX=72,stationY=548;
   const nodes=[["나의 관심",d.interest],["처음 관점",d.firstIdea],["환승 분야",d.transfer],["확장된 가능성",d.expandedIdea]];
+  const stationCenters=nodes.map((_,index)=>nodeX+index*(nodeW+nodeGap)+nodeW/2);
+  ctx.save();ctx.lineCap="round";ctx.lineWidth=5;ctx.strokeStyle="#d8cff1";ctx.beginPath();ctx.moveTo(stationCenters[0],stationY);ctx.lineTo(stationCenters[stationCenters.length-1],stationY);ctx.stroke();
+  stationCenters.forEach((center,index)=>{
+    ctx.strokeStyle=index===3?"#7654e8":"#b5a5df";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(center,stationY+9);ctx.lineTo(center,nodeY);ctx.stroke();
+    ctx.beginPath();ctx.arc(center,stationY,9,0,Math.PI*2);ctx.fillStyle="#fff";ctx.fill();ctx.strokeStyle=index===3?"#7654e8":"#9c89d0";ctx.lineWidth=3;ctx.stroke();
+  });ctx.restore();
   nodes.forEach(([title,value],index)=>{
     const x=nodeX+index*(nodeW+nodeGap);rounded(x,nodeY,nodeW,nodeH,13,index===3?"#f2efff":"#f7f8fb",index===3?"#d8cdf7":"#e6e8ed");
     text(title,x+13,nodeY+25,13,index===3?"#7654e8":"#6f7480",750);
     para(value,x+13,nodeY+49,nodeW-26,13,"#343945",16,3,600);
-    if(index<3)text("›",x+nodeW+4,nodeY+62,22,"#aaa5bb",700,"center");
   });
   para(d.journeySentence,72,681,744,14,"#4c465b",19,3,550);
 
@@ -1439,11 +1479,11 @@ async function saveReportImage(){
   try{
     const canvas=reportCanvas();
     const jpeg=await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("JPG 변환에 실패했습니다.")),"image/jpeg",.94));
-    const filename=`${(participantId||"SIU-MAP").replace(/[\\/:*?"<>|]/g,"_")}-여정리포트.jpg`;
+    const filename=`${(participantId||"나").replace(/[\\/:*?"<>|]/g,"_")}-의-관심-지도.jpg`;
     if(typeof File==="function"&&navigator.share&&navigator.canShare){
       const file=new File([jpeg],filename,{type:"image/jpeg",lastModified:Date.now()});
       if(navigator.canShare({files:[file]})){
-        try{await navigator.share({files:[file],title:"SIU MAP 여정 리포트"});return}
+        try{await navigator.share({files:[file],title:"SIU MAP 나의 관심 지도"});return}
         catch(error){if(error&&error.name==="AbortError")return;console.warn("공유 저장을 지원하지 않아 다운로드로 전환합니다.",error)}
       }
     }
