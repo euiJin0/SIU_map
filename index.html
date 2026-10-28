@@ -413,21 +413,23 @@ body{background:#f2f3f5;overflow-y:hidden}
 .location-card{width:min(100%,390px);text-align:left}
 .location-progress{font-size:10px;font-weight:900;letter-spacing:.1em;color:#7654e8;margin:2px 0 13px}
 .location-title{font-size:21px;line-height:1.35;letter-spacing:-.05em;margin:0 0 7px}
-.location-help{font-size:12px;color:#777;line-height:1.5;margin:0 0 20px}
-.route-fields{display:flex;flex-direction:column;gap:0;margin:0 0 18px}
-.route-field{position:relative;display:flex;align-items:center;gap:11px;min-height:68px;padding:12px 13px;border:1px solid #e4e4ea;border-radius:13px;background:#fff}
-.route-field.from{border-color:#d9d2f1;background:#fcfbff}
-.route-field.to{background:#f7f7f9}
-.route-field-icon{width:11px;height:11px;flex:none;border:3px solid #50b887;border-radius:50%;box-shadow:0 0 0 3px #50b88718}
-.route-field.to .route-field-icon{border-color:#7654e8;box-shadow:0 0 0 3px #7654e818}
-.route-field-copy{min-width:0;flex:1}
-.route-field-label{display:block;font-size:10px;font-weight:850;color:#8b8c94;margin-bottom:4px}
-.route-field input{width:100%;height:26px;border:0;outline:0;background:transparent;padding:0;font:inherit;font-size:16px;font-weight:750;color:#25242a}
-.route-field input::placeholder{font-size:14px;font-weight:500;color:#a7a7af;opacity:1}
-.route-field.to .route-destination{font-size:16px;font-weight:800;color:#333}
-.route-fixed-label{font-size:9px;font-weight:800;color:#84848e}
-.route-connector{height:25px;display:flex;align-items:center;gap:9px;padding-left:17px;color:#aaa;font-size:10px}
-.route-connector:before{content:"";height:100%;border-left:1px dashed #c9c8d0}
+.location-help{font-size:12px;color:#777;line-height:1.5;margin:0 0 18px}
+.route-fields{margin:0 0 18px}
+.route-search-card{position:relative;display:flex;flex-direction:column;padding:3px 9px;border:1px solid #e4e4ea;border-radius:14px;background:#fff;box-shadow:0 3px 12px #2420330b}
+.route-form-row{position:relative;z-index:1;display:grid;grid-template-columns:24px minmax(0,1fr) 32px;align-items:center;gap:8px;min-height:61px;padding:6px 4px;background:#fff}
+.route-form-row.from{border-radius:11px 11px 0 0}
+.route-form-row.to{border-radius:0 0 11px 11px}
+.route-point{justify-self:center;width:10px;height:10px;border:3px solid #50b887;border-radius:50%;background:#fff}
+.route-point.to{border-color:#d86570}
+.route-form-copy{display:block;min-width:0}
+.route-field-label{display:block;font-size:10px;font-weight:850;color:#8b8c94;margin-bottom:3px}
+.route-form-row input{width:100%;height:25px;border:0;outline:0;background:transparent;padding:0;font:inherit;font-size:16px;font-weight:750;color:#25242a}
+.route-form-row input::placeholder{font-size:14px;font-weight:500;color:#a7a7af;opacity:1}
+.route-destination{display:block;font-size:16px;font-weight:800;color:#333;line-height:25px}
+.route-clear{width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:#7e8088;font-size:23px;font-weight:400;line-height:1}
+.route-clear:active{background:#f1eff5}
+.route-form-divider{height:1px;margin-left:34px;background:#ececf0}
+.route-form-line{position:absolute;left:24px;top:34px;bottom:34px;z-index:2;border-left:1px dashed #c9c8d0;pointer-events:none}
 .location-actions{display:flex;gap:8px}
 .location-back{height:48px;padding:0 18px;border:1px solid #e1dced;border-radius:12px;background:#fff;color:#594e72;font-size:13px;font-weight:800}
 .location-actions .intro-submit{flex:1;margin:0}
@@ -792,17 +794,21 @@ body{background:#f2f3f5;overflow-y:hidden}
     <div class="intro-logo">SIU <em>MAP</em></div>
     <div class="location-progress">01&nbsp; 이름 설정 &nbsp;·&nbsp; 02&nbsp; 출발 위치</div>
     <h1 class="location-title">지금 어디에서 출발하나요?</h1>
-    <p class="location-help">현재 위치를 적으면 나의 전시 여정 출발점으로 표시돼요.</p>
+    <p class="location-help">출발지를 정하고 나만의 전시 여정을 시작해요.</p>
     <div class="route-fields">
-      <label class="route-field from" for="originLocation">
-        <span class="route-field-icon" aria-hidden="true"></span>
-        <span class="route-field-copy"><span class="route-field-label">출발지</span><input id="originLocation" maxlength="60" autocomplete="organization" placeholder="본인의 학부/과" onkeydown="if(event.key==='Enter')beginJourney()"></span>
-      </label>
-      <div class="route-connector">도착지는 정해져 있어요</div>
-      <div class="route-field to" aria-label="도착지: 나의 다음 역, 변경할 수 없음">
-        <span class="route-field-icon" aria-hidden="true"></span>
-        <span class="route-field-copy"><span class="route-field-label">도착지</span><span class="route-destination">나의 다음 역</span></span>
-        <span class="route-fixed-label">변경 불가</span>
+      <div class="route-search-card">
+        <div class="route-form-line" aria-hidden="true"></div>
+        <div class="route-form-row from">
+          <span class="route-point" aria-hidden="true"></span>
+          <label class="route-form-copy" for="originLocation"><span class="route-field-label">출발</span><input id="originLocation" maxlength="60" autocomplete="organization" placeholder="본인의 학부/과" onkeydown="if(event.key==='Enter')beginJourney()"></label>
+          <button class="route-clear" type="button" onclick="clearOriginLocation()" aria-label="출발지 지우기">×</button>
+        </div>
+        <div class="route-form-divider" aria-hidden="true"></div>
+        <div class="route-form-row to" aria-label="도착지: 나의 다음 역">
+          <span class="route-point to" aria-hidden="true"></span>
+          <span class="route-form-copy"><span class="route-field-label">도착</span><span class="route-destination">나의 다음 역</span></span>
+          <span aria-hidden="true"></span>
+        </div>
       </div>
     </div>
     <div class="location-actions"><button class="location-back" onclick="backToName()">이전</button><button class="intro-submit" onclick="beginJourney()">길 찾기 시작</button></div>
@@ -966,6 +972,10 @@ function backToName(){
   document.getElementById("locationScreen").hidden=true;
   document.getElementById("welcomeScreen").hidden=false;
   window.setTimeout(()=>document.getElementById("participantName").focus(),50);
+}
+function clearOriginLocation(){
+  const input=document.getElementById("originLocation");
+  input.value="";input.setCustomValidity("");input.focus();
 }
 function beginJourney(){
   const originInput=document.getElementById("originLocation"),origin=originInput.value.trim();
