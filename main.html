@@ -395,7 +395,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 .self-flow{padding:10px 0}
 .self-step{font-size:12px;font-weight:900;color:var(--purple);background:#f3efff;border-radius:999px;padding:8px 12px;width:max-content}
 .self-flow #selfStepPrompt{font-size:18px;font-weight:850;color:#222;margin:16px 0}
-.self-textarea{width:90%;max-width:520px;min-height:110px;margin:0 auto;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;resize:vertical}
+.self-textarea{width:100%;max-width:520px;min-height:110px;margin:0 auto;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;resize:vertical}
 .self-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .self-option{display:flex;align-items:center;justify-content:center;min-height:60px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:15px;padding:12px;font-size:13px;font-weight:700;text-align:center;line-height:1.45;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
 .self-option:active{transform:scale(.98)}
@@ -540,7 +540,7 @@ body{background:#f2f3f5;overflow-y:hidden}
   #modalBg .self-flow{flex:1;min-height:0;display:flex;flex-direction:column;padding:4px 0}
   #modalBg .self-step{font-size:12px;padding:7px 11px;flex:none}
   #modalBg .self-flow #selfStepPrompt{font-size:17px;line-height:1.35;margin:8px 0;flex:none}
-  #modalBg .self-textarea{flex:none;width:90%;height:26dvh;max-height:220px;min-height:120px;padding:13px;font-size:15px;resize:none}
+  #modalBg .self-textarea{flex:none;width:100%;height:26dvh;max-height:220px;min-height:120px;padding:13px;font-size:15px;resize:none}
   #modalBg .essay-answer,#modalBg .self-textarea,.report-panel textarea{font-size:16px!important}
   #modalBg .self-note{font-size:11px;margin:0 0 6px;flex:none}
   #modalBg .self-input{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -1458,7 +1458,7 @@ function renderTracks(){document.getElementById("trackList").innerHTML=docentTra
 function openDocent(){document.getElementById("docentBg").classList.add("show");renderTracks()}
 function closeDocent(e){if(!e||e.target===document.getElementById("docentBg"))document.getElementById("docentBg").classList.remove("show")}
 function selectTrack(index){activeTrack=index;const track=docentTracks[index];docentAudio.src=track.src;document.getElementById("dockTitle").textContent=track.title;document.getElementById("dockStatus").textContent="재생 중";document.getElementById("audioDock").classList.add("show");docentAudio.play().catch(()=>{document.getElementById("dockStatus").textContent="재생 버튼을 눌러 시작하세요"});renderTracks()}
-function dismissAudioDock(){document.getElementById("audioDock").classList.remove("show")}
+function dismissAudioDock(){docentAudio.pause();document.getElementById("audioDock").classList.remove("show")}
 function toggleAudio(){if(!docentAudio.src){selectTrack(activeTrack);return}if(docentAudio.paused)docentAudio.play();else docentAudio.pause()}
 docentAudio.addEventListener("play",()=>{document.getElementById("dockPlay").textContent="Ⅱ";document.getElementById("dockStatus").textContent="재생 중 · 질문을 열어도 계속 재생돼요";renderTracks()});
 docentAudio.addEventListener("pause",()=>{document.getElementById("dockPlay").textContent="▶";document.getElementById("dockStatus").textContent="일시정지";renderTracks()});
