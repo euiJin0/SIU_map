@@ -6,13 +6,13 @@
  * Execute as: Me. Access: Anyone.
  */
 const RAW_HEADERS = ['응답시각', '참여자 아이디', '역 이름', '질문', '답변 유형', '답변'];
-const SELF_FIELDS = ['초중고 공통 관심사', '듣고 싶은 말', '어떤 분야에 새로운 가능성 펼치기', '랜덤뽑기'];
-const REPORT_FIELDS = ['나의 다음 역 한 줄'];
+const SELF_FIELDS = ['Q2. 초중고 공통 관심사', 'Q3. 듣고 싶은 말', 'Q4. 새로운 가능성', '랜덤뽑기'];
+const REPORT_FIELDS = ['답변 | 나의 다음 역'];
 const STATION_FIELDS = [
   '답변 | 시니어비즈니스역',
   '답변 | 환승센터역'
 ];
-// 참여자별 보기의 요약 열: 시니어비즈니스역 → 환승센터역 → 나의 다음 역 한 줄.
+// 참여자별 보기의 열 순서: 기본 응답 → 시니어비즈니스역 → 환승센터역 → 나의 다음 역.
 const SUMMARY_HEADERS = ['응답시각', '참여자 아이디'].concat(SELF_FIELDS, STATION_FIELDS, REPORT_FIELDS);
 const SHEET_DATE_FORMAT = 'yyyy-mm-dd hh:mm';
 
@@ -141,7 +141,7 @@ function fitSummaryColumns(sheet, requiredColumns) {
 
 function mapLegacyStationHeader(header) {
   const aliases = [
-    [['나의 다음 역 한 줄', '답변 | 나의 다음 역', '나의 다음 역'], '나의 다음 역 한 줄'],
+    [['나의 다음 역 한 줄', '답변 | 나의 다음 역', '나의 다음 역'], '답변 | 나의 다음 역'],
     [['(interest)', '답변 | 관심분야역', '관심분야역'], '__DROP__'],
     [['(career)', '진로발견역', '자기탐색역'], '__DROP__'],
     // 이전 가능성발견역 및 분야별 과 X 시비즈 답변은 요약 보기에서 제거합니다.
@@ -163,8 +163,19 @@ function mapLegacyStationHeader(header) {
 
 function normalizeLegacyAnswerHeader(header) {
   const label = String(header || '').replace(/^답변\s*\|\s*/, '').trim();
-  if (label === '나의 다음 역' || label === '나의 다음 역 한 줄') return '나의 다음 역 한 줄';
-  if (label === '진로기준') return '어떤 분야에 새로운 가능성 펼치기';
+  const aliases = {
+    '초중고 공통 관심사': 'Q2. 초중고 공통 관심사',
+    'Q2. 초중고 공통 관심사': 'Q2. 초중고 공통 관심사',
+    '듣고 싶은 말': 'Q3. 듣고 싶은 말',
+    'Q3. 듣고 싶은 말': 'Q3. 듣고 싶은 말',
+    '어떤 분야에 새로운 가능성 펼치기': 'Q4. 새로운 가능성',
+    '새로운 가능성': 'Q4. 새로운 가능성',
+    'Q4. 새로운 가능성': 'Q4. 새로운 가능성',
+    '진로기준': 'Q4. 새로운 가능성',
+    '나의 다음 역': '답변 | 나의 다음 역',
+    '나의 다음 역 한 줄': '답변 | 나의 다음 역'
+  };
+  if (aliases[label]) return aliases[label];
   const compactLabel = label.replace(/\s+/g, '');
   const selfHeader = SELF_FIELDS.find(function (field) {
     const compactField = field.replace(/\s+/g, '');
@@ -249,7 +260,7 @@ function updateParticipantSummary(sheet, response, participantId, submittedAt) {
   }
   sheet.getRange(rowNumber, timeColumn).setNumberFormat(SHEET_DATE_FORMAT);
 
-  const answerColumn = response.summaryColumn || stationSummaryColumn(response.stationId);
+  const answerColumn = response.summaryColumn ? normalizeLegacyAnswerHeader(response.summaryColumn) : stationSummaryColumn(response.stationId);
   const answerColumnIndex = headers.indexOf(answerColumn);
   if (answerColumnIndex >= 0 && answerColumnIndex !== participantColumn - 1 && answerColumnIndex !== timeColumn - 1) {
     sheet.getRange(rowNumber, answerColumnIndex + 1).setValue(asPlainText(response.answer || ''));
@@ -258,7 +269,7 @@ function updateParticipantSummary(sheet, response, participantId, submittedAt) {
 
 function stationSummaryColumn(stationId) {
   const columns = {
-    nextStation: '나의 다음 역 한 줄',
+    nextStation: '답변 | 나의 다음 역',
     seniorBusiness: '답변 | 시니어비즈니스역',
     transfer: '답변 | 환승센터역',
   };
@@ -293,7 +304,7 @@ function backfillNextStationAnswers(rawSheet, summary) {
   const timeIndex = rawHeaders.indexOf('응답시각');
   const summaryHeaders = summary.getRange(1, 1, 1, summary.getLastColumn()).getValues()[0].map(String);
   const summaryParticipantIndex = summaryHeaders.indexOf('참여자 아이디');
-  const summaryAnswerIndex = summaryHeaders.indexOf('나의 다음 역 한 줄');
+  const summaryAnswerIndex = summaryHeaders.indexOf('답변 | 나의 다음 역');
   if ([participantIndex, stationIndex, questionIndex, answerIndex, timeIndex, summaryParticipantIndex, summaryAnswerIndex].some(function (index) { return index < 0; })) return;
 
   const latestByParticipant = Object.create(null);
