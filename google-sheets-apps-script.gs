@@ -127,6 +127,14 @@ function ensureSummarySchema(spreadsheet) {
   return sheet;
 }
 
+// Apps Script 편집기에서 한 번 실행하면 질문이 없는 이전 역 열을 참여자별 보기에서 즉시 정리합니다.
+function refreshParticipantSummary() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  if (!spreadsheet) throw new Error('대상 스프레드시트를 찾을 수 없습니다. 시트에서 Apps Script를 열어 실행하세요.');
+  ensureSummarySchema(spreadsheet);
+  spreadsheet.toast('참여자별 보기의 질문 없는 역 열을 정리했습니다.', 'SIU MAP', 5);
+}
+
 function fitSummaryColumns(sheet, requiredColumns) {
   const currentColumns = sheet.getMaxColumns();
   if (currentColumns < requiredColumns) {
