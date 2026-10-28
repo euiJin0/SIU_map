@@ -536,7 +536,9 @@ body{background:#f2f3f5;overflow-y:hidden}
   #modalBg .answers{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr);align-content:stretch;gap:8px;overflow:hidden}
   #modalBg .answer{min-height:0;padding:9px 12px;font-size:14px;line-height:1.35}
   #modalBg .essay-answer{flex:none;width:90%;height:30dvh;max-height:250px;min-height:130px;padding:13px;font-size:15px;resize:none}
+  #modalBg.essay-station .essay-answer{width:100%}
   #modalBg .complete{flex:none;min-height:50px;padding:12px;font-size:14px;margin:9px 0 0}
+  #modalBg.essay-station #complete{margin-top:auto}
   #modalBg .self-flow{flex:1;min-height:0;display:flex;flex-direction:column;padding:4px 0}
   #modalBg .self-step{font-size:12px;padding:7px 11px;flex:none}
   #modalBg .self-flow #selfStepPrompt{font-size:17px;line-height:1.35;margin:8px 0;flex:none}
@@ -563,6 +565,7 @@ body{background:#f2f3f5;overflow-y:hidden}
   #modalBg .answers{gap:8px}
   #modalBg .answer{min-height:0;padding:8px;font-size:12px}
   #modalBg .essay-answer{height:28dvh;max-height:205px;min-height:120px;padding:10px}
+  #modalBg.essay-station .essay-answer{width:100%}
   #modalBg .self-flow{padding:3px 0}
   #modalBg .self-step{font-size:12px;padding:7px 11px}
   #modalBg .self-flow #selfStepPrompt{font-size:16px;margin:10px 0}
@@ -573,6 +576,7 @@ body{background:#f2f3f5;overflow-y:hidden}
   #modalBg .self-nav{margin-top:5px;gap:7px}
   #modalBg .self-nav .mode-btn{min-height:38px;font-size:12px}
   #modalBg .complete{min-height:44px;padding:9px;font-size:12px;margin-top:6px}
+  #modalBg.essay-station #complete{margin-top:auto}
 }
 @media(max-width:360px){
   .map-wrap{min-height:130px}.phone.map-focus .map-wrap{flex-basis:64%}
@@ -657,7 +661,7 @@ body{background:#f2f3f5;overflow-y:hidden}
           <div class="station-dot"></div>
           <div>
             <div class="station-title">자기탐색역</div>
-            <div class="station-desc">반복해서 나타나는 나의 관심과 강점 찾기</div>
+            <div class="station-desc">반복해서 나타나는 나의 관심 알아보기</div>
           </div>
           <button class="plus" data-station="career" aria-label="스탬프" onclick="event.stopPropagation();openStation('career')">＋</button>
         </div>
@@ -1227,7 +1231,7 @@ async function completeSelfExploration(){
 }
 function openStation(id){
   current=id;selected=null;
-  document.getElementById("modalBg").classList.remove("self-random-expanded");
+  document.getElementById("modalBg").classList.remove("self-random-expanded","essay-station");
   const s=stations[id];
   document.getElementById("tag").textContent=s.tag;
   document.getElementById("modalTitle").textContent=s.title;
@@ -1249,6 +1253,7 @@ function openStation(id){
   complete.hidden=false;
   document.getElementById("question").hidden=false;
   const essayOnly=s.answerMode==="essay";
+  document.getElementById("modalBg").classList.toggle("essay-station",essayOnly);
   document.querySelector(".answer-mode").hidden=essayOnly;
   document.getElementById("question").textContent=s.q;
   document.getElementById("answers").innerHTML=s.a.map((a,i)=>
@@ -1449,7 +1454,7 @@ async function saveReportImage(){
 }
 function closeModal(e){
   if(!e||e.target===document.getElementById("modalBg"))
-    document.getElementById("modalBg").classList.remove("show");
+    document.getElementById("modalBg").classList.remove("show","essay-station");
 }
 restoreParticipant();
 render();
