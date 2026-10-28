@@ -758,7 +758,7 @@ body{background:#f2f3f5;overflow-y:hidden}
 <div class="report-bg" id="reportBg" onclick="closeReport(event)">
   <div class="report-panel" onclick="event.stopPropagation()">
     <div class="report-toolbar"><strong id="reportToolbarTitle">나의 여정 리포트</strong><button onclick="closeReport()">닫기</button></div>
-    <div id="nextStationForm"><div class="report-paper"><div class="report-eyebrow">MY NEXT STATION</div><h2 style="font-size:20px;margin:5px 0">나의 다음 역은?</h2><p class="report-copy">이번 여정에서 발견한 관심과 가능성을 다음 경험으로 이어가는 한 문장을 적어주세요.</p><textarea class="next-answer" id="nextAnswer" maxlength="180" placeholder="예: 시니어의 취향을 담은 문화 콘텐츠를 직접 기획해 보고 싶다."></textarea><div style="font-size:9px;color:#888">작성한 문장을 바탕으로 여정 리포트가 만들어집니다.</div></div><button class="complete" id="createReportBtn" disabled onclick="createJourneyReport()">나의 여정 리포트 만들기</button></div>
+    <div id="nextStationForm"><div class="report-paper"><div class="report-eyebrow">MY NEXT STATION</div><h2 style="font-size:20px;margin:5px 0">내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?</h2><p class="report-copy">떠오르는 가능성을 한 줄로 적어주세요.</p><textarea class="next-answer" id="nextAnswer" maxlength="180" placeholder="예: 시니어의 취향을 담은 문화 콘텐츠를 직접 기획해 보고 싶다."></textarea><div style="font-size:9px;color:#888">작성한 문장을 바탕으로 여정 리포트가 만들어집니다.</div></div><button class="complete" id="createReportBtn" disabled onclick="createJourneyReport()">나의 여정 리포트 만들기</button></div>
     <div id="reportView" hidden><div class="report-paper" id="reportPaper"></div><div class="report-actions"><button onclick="saveReportImage()">JPG로 저장</button></div></div>
   </div>
 </div>
@@ -897,8 +897,8 @@ const stations={
   },
   seniorBusiness:{
     title:"시니어비즈니스역",tag:"SENIOR BUSINESS",
-    q:"시니어비즈니스에서 어떤 가능성을 발견하고 싶나요?",
-    a:["일상의 필요를 해결하는 서비스","새로운 취향과 경험을 만드는 콘텐츠","세대와 사람을 연결하는 활동","삶의 선택을 넓히는 제품과 공간"]
+    q:"시니어비즈니스에서 새롭게 발견한 점은 무엇인가요?",
+    a:[],answerMode:"essay",answerType:"서술형"
   },
   transfer:{
     title:"환승센터역",tag:"TRANSFER STATION",
@@ -930,7 +930,7 @@ const stations={
     q:"앞으로 새롭게 배우거나 다른 사람과 나누고 싶은 것은 무엇인가요?",
     a:["디지털 기기와 기술","취미와 문화 활동","일과 진로에 필요한 지식","경험과 지혜를 나누는 수업"]
   },
-  nextStation:{title:"나의 다음 역",tag:"MY NEXT STATION",q:"여정 리포트를 확인하고 다음 한 줄을 남겨 보세요.",a:[]}
+  nextStation:{title:"나의 다음 역",tag:"MY NEXT STATION",q:"내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?",a:[]}
 };
 
 let participantId="";
@@ -1248,14 +1248,16 @@ function openStation(id){
   selfFlow.hidden=true;
   complete.hidden=false;
   document.getElementById("question").hidden=false;
-  document.querySelector(".answer-mode").hidden=false;
+  const essayOnly=s.answerMode==="essay";
+  document.querySelector(".answer-mode").hidden=essayOnly;
   document.getElementById("question").textContent=s.q;
   document.getElementById("answers").innerHTML=s.a.map((a,i)=>
     `<button class="answer" onclick="selectAnswer(this,${i})">${a}</button>`).join("");
-  answerMode="choice";document.getElementById("essayAnswer").value="";document.getElementById("essayAnswer").hidden=true;
-  document.getElementById("answers").hidden=false;document.getElementById("choiceMode").classList.add("active");document.getElementById("essayMode").classList.remove("active");
+  answerMode=essayOnly?"essay":"choice";document.getElementById("essayAnswer").value="";document.getElementById("essayAnswer").hidden=!essayOnly;
+  document.getElementById("essayAnswer").placeholder=essayOnly?"시니어비즈니스에서 새롭게 발견한 점을 적어 주세요.":"답변을 자유롭게 적어 주세요.";
+  document.getElementById("answers").hidden=essayOnly;document.getElementById("choiceMode").classList.toggle("active",!essayOnly);document.getElementById("essayMode").classList.toggle("active",essayOnly);
   const b=complete;b.hidden=false;
-  b.disabled=done.includes(id);
+  b.disabled=done.includes(id)||essayOnly;
   b.textContent=done.includes(id)?"이미 획득한 스탬프":"답변하고 스탬프 받기";
   document.getElementById("modalBg").classList.add("show");
 }
@@ -1302,7 +1304,7 @@ function completeStation(){
   if(current==="career"){completeSelfExploration();return}
   const essay=document.getElementById("essayAnswer").value.trim();
   if(!current||(answerMode==="choice"&&selected===null)||(answerMode==="essay"&&!essay))return;
-  const s=stations[current];submitResponse({stationId:current,stationTitle:s.title,question:s.q,answerType:answerMode,answer:answerMode==="choice"?s.a[selected]:essay});
+  const s=stations[current];submitResponse({stationId:current,stationTitle:s.title,question:s.q,answerType:s.answerType||answerMode,answer:answerMode==="choice"?s.a[selected]:essay});
   if(!done.includes(current))done.push(current);
   localStorage.setItem(participantDoneKey(),JSON.stringify(done));
   closeModal();render();
@@ -1373,7 +1375,7 @@ async function createJourneyReport(){
   localStorage.setItem(participantNextStationKey(),next);
   const answerRecords=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]");
   if(!answerRecords.some(record=>record.stationId==="nextStation"&&record.answer===next)){
-    await submitResponse({stationId:"nextStation",stationTitle:"나의 다음 역",summaryColumn:"나의 다음 역 한 줄",question:"이번 여정에서 발견한 관심과 가능성을 다음 경험으로 이어가는 한 문장을 적어주세요.",answerType:"서술형",answer:next});
+  await submitResponse({stationId:"nextStation",stationTitle:"나의 다음 역",summaryColumn:"나의 다음 역 한 줄",question:"내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?",answerType:"서술형",answer:next});
   }
   const canvas=reportCanvas();
   document.getElementById("reportPaper").innerHTML=`<img class="report-image-preview" src="${canvas.toDataURL("image/png")}" alt="${htmlEscape(participantId||"나")}의 SIU MAP 여정 리포트 이미지">`;
