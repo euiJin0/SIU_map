@@ -250,7 +250,7 @@ button{font:inherit}
 /* ===== 환승/활동 안내 ===== */
 .route-chip{display:inline-flex;align-items:center;min-height:22px;padding:3px 9px;border:1px solid #ece0a9;border-radius:7px;background:#fff9df;color:#756d4d;font-size:10px;font-weight:850;line-height:1.2;white-space:nowrap}
 .station-title-line,.route-name-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.route-origin-tag{display:inline-flex;align-items:center;min-height:20px;padding:2px 8px;border:1px solid #e5e5ea;border-radius:99px;background:#f4f4f6;color:#72747d;font-size:9px;font-weight:750;line-height:1.2}
+.route-origin-tag{display:inline-flex;align-items:center;max-width:100%;min-height:20px;padding:2px 8px;border:1px solid #e5e5ea;border-radius:99px;background:#f4f4f6;color:#72747d;font-size:9px;font-weight:750;line-height:1.2;white-space:normal;overflow-wrap:anywhere}
 .destination-card{margin-top:-9px}
 .activity-chip{
   display:flex;align-items:center;gap:8px;margin:2px 0 8px;padding:10px 12px;
@@ -439,15 +439,20 @@ body{background:#f2f3f5;overflow-y:hidden}
 .route-preview-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
 .route-preview-head strong{font-size:11px;color:#333}
 .route-preview-head span{font-size:9px;color:#80818a}
-.route-preview-line{display:flex;align-items:center;justify-content:space-between;gap:3px}
-.preview-endpoint{width:9px;height:9px;flex:none;border:2px solid #50b887;border-radius:50%;background:#fff}
+.route-preview-line{display:grid;grid-template-columns:30px minmax(0,1fr) 22px minmax(0,1fr) 22px minmax(0,1fr) 30px;align-items:center;gap:0}
+.preview-endpoint{justify-self:center;width:9px;height:9px;flex:none;border:2px solid #50b887;border-radius:50%;background:#fff}
 .preview-endpoint.finish{border-color:#d86570}
 .preview-line{height:3px;min-width:8px;flex:1;border-radius:9px;background:#d7d8dd}
 .preview-line.discovery{background:#3278e7}
 .preview-line.expansion{background:#7654e8}
-.preview-badge{width:22px;height:22px;flex:none;display:grid;place-items:center;border-radius:7px;background:#3278e7;color:#fff;font-size:10px;font-weight:900}
+.preview-badge{justify-self:center;width:22px;height:22px;flex:none;display:grid;place-items:center;border-radius:7px;background:#3278e7;color:#fff;font-size:10px;font-weight:900}
 .preview-badge.expansion{background:#7654e8}
-.route-preview-labels{display:grid;grid-template-columns:1fr 1.15fr 1.4fr 1fr;gap:2px;margin-top:6px;text-align:center;color:#7b7c85;font-size:8px;line-height:1.2}
+.route-preview-labels{display:grid;grid-template-columns:30px minmax(0,1fr) 22px minmax(0,1fr) 22px minmax(0,1fr) 30px;align-items:start;gap:0;margin-top:6px;text-align:center;color:#7b7c85;font-size:8px;line-height:1.2}
+.route-preview-labels span{width:max-content;max-width:84px;justify-self:center;text-align:center;white-space:nowrap}
+.route-preview-labels span:nth-child(1){grid-column:1}
+.route-preview-labels span:nth-child(2){grid-column:3}
+.route-preview-labels span:nth-child(3){grid-column:5}
+.route-preview-labels span:nth-child(4){grid-column:7}
 .location-actions{display:flex;gap:8px}
 .location-back{height:48px;padding:0 18px;border:1px solid #e1dced;border-radius:12px;background:#fff;color:#594e72;font-size:13px;font-weight:800}
 .location-actions .intro-submit{flex:1;margin:0}
@@ -945,7 +950,8 @@ const ORIGIN_KEY_PREFIX="siuMetroOrigin:";
 // 도슨트 음원과 제목/설명은 아래 목록에서 교체하거나 항목을 추가하세요.
 const docentTracks=[
   {id:"welcome",title:"전시 여정 안내",description:"나의 역에서 나의 다음 역까지, SIU MAP 여정을 소개합니다.",src:"docent-sample.wav"},
-  {id:"senior",title:"시니어비즈니스란?",description:"시니어를 새로운 소비자이자 다양한 취향을 지닌 한 사람으로 바라봅니다.",src:"docent-senior.wav"}
+  {id:"senior",title:"시니어비즈니스란?",description:"시니어를 새로운 소비자이자 다양한 취향을 지닌 한 사람으로 바라봅니다.",src:"docent-senior.wav"},
+  {id:"test-docent",title:"테스트도슨트파일",description:"첨부된 테스트용 도슨트 음성입니다.",src:"test-docent.m4a"}
 ];
 let activeTrack=0;
 
@@ -964,7 +970,7 @@ function setParticipant(name,origin=""){
   document.getElementById("firstStationTitle").textContent=firstStationName;
   document.getElementById("firstStationMeta").textContent=firstStationName;
   const departmentTag=document.getElementById("firstStationDepartment");
-  departmentTag.textContent=savedOrigin;departmentTag.hidden=!savedOrigin;
+  departmentTag.textContent=savedOrigin?`나의 현재 위치 : ${savedOrigin}`:"";departmentTag.hidden=!savedOrigin;
   docentTracks[0].description=`${firstStationName}에서 나의 다음 역까지, SIU MAP 여정을 소개합니다.`;
   done=JSON.parse(localStorage.getItem(participantDoneKey())||"[]").filter(id=>id!=="interest"&&id!=="senior");
 }
