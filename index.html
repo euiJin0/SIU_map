@@ -714,7 +714,7 @@ body{background:#f2f3f5;overflow-y:hidden}
             <div class="station-title-line"><div class="station-title">환승센터역</div><span class="route-chip">AI 학점 계산기</span></div>
             <div class="station-desc">나의 관심 분야와 시니어비즈니스를 연결</div>
           </div>
-          <button class="plus" data-station="transfer" aria-label="스탬프" onclick="event.stopPropagation();openStation('transfer')">＋</button>
+          <button class="plus" data-station="transfer" aria-label="AI 학점 계산기 둘러보기" onclick="event.stopPropagation();openTransferJourney()">＋</button>
         </div>
 
         <div class="station-row clickable" onclick="openStation('culture')">
@@ -881,8 +881,8 @@ body{background:#f2f3f5;overflow-y:hidden}
 <section class="loading-screen" id="loadingScreen" hidden>
   <div class="loading-content">
     <div class="intro-logo">SIU <em>MAP</em></div>
-    <h1>나의 길 찾기 여정이 시작됩니다.</h1>
-    <p>잠시만 기다려 주세요</p>
+    <h1 id="loadingTitle">나의 길 찾기 여정이 시작됩니다.</h1>
+    <p id="loadingMessage">잠시만 기다려 주세요</p>
     <div class="train-loading-track">
       <div class="train-loading-fill"></div>
       <div class="loading-train" aria-hidden="true">
@@ -972,6 +972,8 @@ const SELF_STATE_KEY_PREFIX="siuMetroSelfProgress:";
 const ANSWERS_KEY_PREFIX="siuMetroAnswers:";
 const NEXT_STATION_KEY_PREFIX="siuMetroNextStation:";
 const ORIGIN_KEY_PREFIX="siuMetroOrigin:";
+const TRANSFER_RETURN_KEY="siuMetroReturnToTransfer";
+const GRADE_CALCULATOR_URL="https://siu-study-roadmap.agnesmarketing.chatgpt.site/";
 // 도슨트 음원과 제목/설명은 아래 목록에서 교체하거나 항목을 추가하세요.
 const docentTracks=[
   {id:"welcome",title:"전시 여정 안내",description:"나의 역에서 나의 다음 역까지, SIU MAP 여정을 소개합니다.",src:"docent-sample.wav"},
@@ -1294,6 +1296,33 @@ function openStation(id){
   b.textContent=done.includes(id)?"이미 획득한 스탬프":"답변하고 스탬프 받기";
   document.getElementById("modalBg").classList.add("show");
 }
+function openTransferJourney(){
+  if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
+  sessionStorage.setItem(TRANSFER_RETURN_KEY,participantId);
+  const transitTab=window.open("about:blank","_blank");
+  playTrainSound();
+  if(!transitTab){
+    const screen=document.getElementById("loadingScreen");
+    document.getElementById("loadingTitle").textContent="AI 학점 계산기로 이동합니다.";
+    document.getElementById("loadingMessage").textContent="둘러본 뒤 이 창으로 돌아오면 환승센터역 질문이 열려요.";
+    screen.hidden=false;
+    document.querySelectorAll(".train-loading-fill,.loading-train").forEach(element=>{
+      element.style.animation="none";void element.offsetWidth;element.style.animation="";
+    });
+    window.setTimeout(()=>window.location.assign(GRADE_CALCULATOR_URL),5200);
+    return;
+  }
+  const transitionPage=`<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>AI 학점 계산기로 이동 중</title><style>
+    *{box-sizing:border-box}body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#f3efff,#fff 55%,#f4f5f8);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#292536}.wrap{width:min(100%,390px);text-align:center}.logo{font-size:23px;font-weight:950;letter-spacing:-1px;color:#25232c}.logo em{font-style:normal;color:#7654e8}h1{font-size:21px;line-height:1.45;margin:20px 0 7px;letter-spacing:-.05em}p{font-size:12px;color:#777;margin:0 0 65px}.track{height:12px;position:relative;margin:0 12px;border-radius:99px;background:#e4e1ed;box-shadow:inset 0 1px 3px #0002}.fill{position:absolute;inset:0 auto 0 0;width:0;border-radius:inherit;background:linear-gradient(90deg,#9a7af0,#7654e8);animation:fill 5.2s cubic-bezier(.18,.72,.28,1) forwards}.train{position:absolute;z-index:2;left:0;bottom:2px;width:112px;height:70px;animation:move 5.2s cubic-bezier(.18,.72,.28,1) forwards}.train svg{width:112px;height:70px;overflow:visible;filter:drop-shadow(0 3px 2px #2222)}.steam{position:absolute;left:18px;top:1px;width:7px;height:15px;border:2px solid #a99bca;border-bottom:0;border-radius:50%;opacity:0;animation:steam 1.2s ease-out infinite}.steam:nth-child(2){left:31px;animation-delay:.35s}.steam:nth-child(3){left:43px;animation-delay:.7s}.return{margin-top:50px;border:0;background:#fff;color:#625487;border-radius:999px;padding:11px 17px;font-weight:750;box-shadow:0 3px 12px #29223a12} @keyframes fill{to{width:100%}}@keyframes move{to{left:calc(100% - 112px)}}@keyframes steam{0%{transform:translateY(9px) scale(.7);opacity:0}40%{opacity:.8}100%{transform:translateY(-12px) scale(1.2);opacity:0}}
+  </style></head><body><main class="wrap"><div class="logo">SIU <em>MAP</em></div><h1>AI 학점 계산기로 이동합니다.</h1><p>잠시 후 학점 계산기가 열려요.<br>둘러본 다음 SIU MAP 탭으로 돌아오면 환승센터역 질문이 열립니다.</p><div class="track"><div class="fill"></div><div class="train"><span class="steam"></span><span class="steam"></span><span class="steam"></span><svg viewBox="0 0 160 100" aria-hidden="true"><path d="M5 20Q5 11 15 11h91q16 0 27 12l20 22q8 9 8 20 0 17-17 20H5z" fill="#eee8ff"/><path d="M5 70h156v7q-3 8-15 8H5z" fill="#7654e8"/><rect x="14" y="23" width="72" height="25" rx="8" fill="#514b61"/><path d="M22 24v23m25-23v23m25-23v23" stroke="#777087" stroke-width="2"/><path d="M101 22h7q7 0 12 6l20 20h-39z" fill="#514b61"/><path d="M5 57h84q4 0 4 4t-4 4H5z" fill="#aa95ef"/><circle cx="22" cy="84" r="8" fill="#656071"/><circle cx="52" cy="84" r="8" fill="#656071"/><circle cx="111" cy="84" r="8" fill="#656071"/><circle cx="137" cy="84" r="8" fill="#656071"/><path d="M5 94h150" stroke="#7654e8" stroke-width="5" stroke-linecap="round"/></svg></div></div><button class="return" onclick="window.close()">SIU MAP으로 돌아가기</button></main></body></html>`;
+  try{
+    transitTab.document.open();transitTab.document.write(transitionPage);transitTab.document.close();
+    window.setTimeout(()=>{
+      if(transitTab.closed)return;
+      try{transitTab.opener=null;transitTab.location.replace(GRADE_CALCULATOR_URL)}catch(error){transitTab.location.href=GRADE_CALCULATOR_URL}
+    },5200);
+  }catch(error){transitTab.location.href=GRADE_CALCULATOR_URL}
+}
 function selectAnswer(el,i){
   selected=i;
   document.querySelectorAll(".answer").forEach(x=>x.classList.remove("selected"));
@@ -1504,6 +1533,18 @@ function closeModal(e){
 }
 restoreParticipant();
 render();
+function resumeTransferQuestion(){
+  if(document.visibilityState!=="visible")return;
+  const returningParticipant=sessionStorage.getItem(TRANSFER_RETURN_KEY);
+  if(!returningParticipant||returningParticipant!==participantId)return;
+  sessionStorage.removeItem(TRANSFER_RETURN_KEY);
+  document.getElementById("loadingScreen").hidden=true;
+  document.getElementById("loadingTitle").textContent="나의 길 찾기 여정이 시작됩니다.";
+  document.getElementById("loadingMessage").textContent="잠시만 기다려 주세요";
+  window.setTimeout(()=>openStation("transfer"),180);
+}
+document.addEventListener("visibilitychange",resumeTransferQuestion);
+window.addEventListener("pageshow",resumeTransferQuestion);
 window.addEventListener("resize",()=>{requestAnimationFrame(alignTrainRails);requestAnimationFrame(alignRouteRail)},{passive:true});
 
 const docentAudio=document.getElementById("docentAudio");
