@@ -248,12 +248,8 @@ button{font:inherit}
 .walk-text b{font-size:12px}.walk-text span{display:inline;color:inherit;font-size:12px;margin-left:4px;margin-top:0}
 
 /* ===== 환승/활동 안내 ===== */
-.transfer-card{
-  margin:2px 0 7px 46px;padding:6px 9px;width:fit-content;max-width:calc(100% - 46px);
-  border:1px solid #ece0a9;background:#fff9df;border-radius:8px;color:#756d4d;
-  /* 환승역 아래 노란 안내 문구 글씨 크기 조절 */
-  font-size:10px;line-height:1.4;white-space:normal;overflow-wrap:anywhere
-}
+.route-chip{display:inline-flex;align-items:center;min-height:22px;padding:3px 9px;border:1px solid #ece0a9;border-radius:7px;background:#fff9df;color:#756d4d;font-size:10px;font-weight:850;line-height:1.2;white-space:nowrap}
+.station-title-line,.route-name-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .destination-card{margin-top:-9px}
 .activity-chip{
   display:flex;align-items:center;gap:8px;margin:2px 0 8px;padding:10px 12px;
@@ -413,7 +409,28 @@ body{background:#f2f3f5;overflow-y:hidden}
 .self-flow+.complete{margin-top:8px}
 .intro-screen,.loading-screen{position:fixed;inset:0;z-index:250;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#f3efff,#fff 55%,#f4f5f8)}
 .intro-card,.loading-content{width:min(100%,390px);text-align:center}
-.intro-card{padding:30px 22px;background:#fff;border:1px solid #eeeaf7;border-radius:25px;box-shadow:0 16px 45px #34206418}
+.intro-card,.location-card{padding:30px 22px;background:#fff;border:1px solid #eeeaf7;border-radius:25px;box-shadow:0 16px 45px #34206418}
+.location-card{width:min(100%,390px);text-align:left}
+.location-progress{font-size:10px;font-weight:900;letter-spacing:.1em;color:#7654e8;margin:2px 0 13px}
+.location-title{font-size:21px;line-height:1.35;letter-spacing:-.05em;margin:0 0 7px}
+.location-help{font-size:12px;color:#777;line-height:1.5;margin:0 0 20px}
+.route-fields{display:flex;flex-direction:column;gap:0;margin:0 0 18px}
+.route-field{position:relative;display:flex;align-items:center;gap:11px;min-height:68px;padding:12px 13px;border:1px solid #e4e4ea;border-radius:13px;background:#fff}
+.route-field.from{border-color:#d9d2f1;background:#fcfbff}
+.route-field.to{background:#f7f7f9}
+.route-field-icon{width:11px;height:11px;flex:none;border:3px solid #50b887;border-radius:50%;box-shadow:0 0 0 3px #50b88718}
+.route-field.to .route-field-icon{border-color:#7654e8;box-shadow:0 0 0 3px #7654e818}
+.route-field-copy{min-width:0;flex:1}
+.route-field-label{display:block;font-size:10px;font-weight:850;color:#8b8c94;margin-bottom:4px}
+.route-field input{width:100%;height:26px;border:0;outline:0;background:transparent;padding:0;font:inherit;font-size:16px;font-weight:750;color:#25242a}
+.route-field input::placeholder{font-size:14px;font-weight:500;color:#a7a7af;opacity:1}
+.route-field.to .route-destination{font-size:16px;font-weight:800;color:#333}
+.route-fixed-label{font-size:9px;font-weight:800;color:#84848e}
+.route-connector{height:25px;display:flex;align-items:center;gap:9px;padding-left:17px;color:#aaa;font-size:10px}
+.route-connector:before{content:"";height:100%;border-left:1px dashed #c9c8d0}
+.location-actions{display:flex;gap:8px}
+.location-back{height:48px;padding:0 18px;border:1px solid #e1dced;border-radius:12px;background:#fff;color:#594e72;font-size:13px;font-weight:800}
+.location-actions .intro-submit{flex:1;margin:0}
 .intro-logo{font-size:17px;font-weight:950;letter-spacing:-.06em}
 .intro-logo em{font-style:normal;color:var(--purple)}
 .intro-card p{font-size:14px;font-weight:800;line-height:1.7;margin:18px 0 24px}
@@ -579,7 +596,7 @@ body{background:#f2f3f5;overflow-y:hidden}
   <div class="result-head">
     <div class="duration">전시 여정</div>
   </div>
-  <div class="meta"><b id="firstStationMeta">나의 역</b> → <b>가능성을 확장행</b> · 환승 1회 · 전시 이동 경로</div>
+  <div class="meta"><b id="firstStationMeta">나의 역</b> → <b>나의 다음 역</b> · 환승 1회 · 전시 이동 경로</div>
 
   <div class="route-summary">
     <div class="segment walk">🚶</div>
@@ -598,7 +615,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="marker start"><span>출발</span></div>
         <div>
           <div class="route-name" id="firstStationTitle">나의 역</div>
-          <div class="route-sub">내가 좋아하고 관심 있는 것에서 출발합니다.</div>
+          <div class="route-sub">나의 현재 위치에서 전시 여정을 시작합니다.</div>
         </div>
       </div>
 
@@ -624,7 +641,7 @@ body{background:#f2f3f5;overflow-y:hidden}
       <!-- 걷기 -->
       <div class="walk-block">
         <div class="walk-person">🚶</div>
-        <div class="walk-text"><b>가능성발견역까지 도보 이동</b> <span>(환승통로 이용)</span></div>
+        <div class="walk-text"><b>시니어비즈니스역까지 도보 이동</b> <span>(환승통로 이용)</span></div>
       </div>
 
       <!-- 가능성을 확장행 -->
@@ -632,23 +649,14 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="train-head">
           <span class="line-badge">가</span>
           <div class="train-bar senior">
-            <b>가능성을 확장행 열차</b><span class="train-note">8개 역</span>
+            <b>가능성을 확장행 열차</b><span class="train-note">7개 역</span>
           </div>
-        </div>
-
-        <div class="station-row clickable" onclick="openStation('senior')">
-          <div class="station-dot"></div>
-          <div>
-            <div class="station-title">가능성발견역</div>
-            <div class="station-desc">시니어를 새로운 소비자 관점에서 바라보기</div>
-          </div>
-          <button class="plus" data-station="senior" aria-label="스탬프" onclick="event.stopPropagation();openStation('senior')">＋</button>
         </div>
 
         <div class="station-row clickable" onclick="openStation('seniorBusiness')">
           <div class="station-dot"></div>
           <div>
-            <div class="station-title">시니어비즈니스역</div>
+            <div class="station-title-line"><div class="station-title">시니어비즈니스역</div><span class="route-chip">씨유레터</span></div>
             <div class="station-desc">시니어의 삶을 이해하고 새로운 비즈니스 가능성 발견하기</div>
           </div>
           <button class="plus" data-station="seniorBusiness" aria-label="스탬프" onclick="event.stopPropagation();openStation('seniorBusiness')">＋</button>
@@ -657,14 +665,11 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="station-row clickable" onclick="openStation('transfer')">
           <div class="station-dot transfer"></div>
           <div>
-            <div class="station-title">환승센터역</div>
+            <div class="station-title-line"><div class="station-title">환승센터역</div><span class="route-chip">AI 학점 계산기</span></div>
             <div class="station-desc">나의 관심 분야와 시니어비즈니스를 연결</div>
           </div>
           <button class="plus" data-station="transfer" aria-label="스탬프" onclick="event.stopPropagation();openStation('transfer')">＋</button>
         </div>
-
-        <!-- AI 학점 계산기는 환승 구간에서 동시에 진행 -->
-        <div class="transfer-card">AI 학점 계산기도 함께 진행해요</div>
 
         <div class="station-row clickable" onclick="openStation('culture')">
           <div class="station-dot"></div>
@@ -672,7 +677,6 @@ body{background:#f2f3f5;overflow-y:hidden}
             <div class="station-title">문화콘텐츠 X 시비즈역</div>
             <div class="station-desc">문화·콘텐츠와 시니어의 접점 발견</div>
           </div>
-          <button class="plus" data-station="culture" aria-label="스탬프" onclick="event.stopPropagation();openStation('culture')">＋</button>
         </div>
 
         <div class="station-row clickable" onclick="openStation('welfare')">
@@ -681,7 +685,6 @@ body{background:#f2f3f5;overflow-y:hidden}
             <div class="station-title">사회복지 X 시비즈역</div>
             <div class="station-desc">사회문제와 비즈니스가 만나는 지점</div>
           </div>
-          <button class="plus" data-station="welfare" aria-label="스탬프" onclick="event.stopPropagation();openStation('welfare')">＋</button>
         </div>
 
         <div class="station-row clickable" onclick="openStation('sports')">
@@ -690,7 +693,6 @@ body{background:#f2f3f5;overflow-y:hidden}
             <div class="station-title">체육 X 시비즈역</div>
             <div class="station-desc">운동과 건강한 생활을 위한 경험 탐색</div>
           </div>
-          <button class="plus" data-station="sports" aria-label="체육역 스탬프" onclick="event.stopPropagation();openStation('sports')">＋</button>
         </div>
 
         <div class="station-row clickable" onclick="openStation('realestate')">
@@ -699,7 +701,6 @@ body{background:#f2f3f5;overflow-y:hidden}
             <div class="station-title">부동산건설 X 시비즈역</div>
             <div class="station-desc">모두가 편안하게 살아갈 공간과 주거 탐색</div>
           </div>
-          <button class="plus" data-station="realestate" aria-label="부동산건설역 스탬프" onclick="event.stopPropagation();openStation('realestate')">＋</button>
         </div>
 
         <div class="station-row clickable" onclick="openStation('education')">
@@ -708,7 +709,6 @@ body{background:#f2f3f5;overflow-y:hidden}
             <div class="station-title">교육 X 시비즈역</div>
             <div class="station-desc">새로운 배움과 세대별 교육 기회 탐색</div>
           </div>
-          <button class="plus" data-station="education" aria-label="교육역 스탬프" onclick="event.stopPropagation();openStation('education')">＋</button>
         </div>
       </div>
 
@@ -716,7 +716,7 @@ body{background:#f2f3f5;overflow-y:hidden}
       <div class="route-item destination-route next-station-trigger" onclick="openNextStation()">
         <div class="marker arrive"><span>도착</span></div>
         <div>
-          <div class="route-name">나의 다음 역</div>
+          <div class="route-name-line"><div class="route-name">나의 다음 역</div><span class="route-chip">나만의 노선</span></div>
           <div class="route-sub">전시에서 찾은 나의 관심을 다음 경험으로 이어갑니다.</div>
         </div>
         <button class="plus next-station-plus" data-station="nextStation" type="button" aria-label="나의 다음 역 한 줄 쓰기" onclick="event.stopPropagation();openNextStation()">＋</button>
@@ -784,7 +784,28 @@ body{background:#f2f3f5;overflow-y:hidden}
     <p>길찾기 여정을 시작하기 전에<br>이름이나 닉네임을 적어주세요.</p>
     <label for="participantName">이름 또는 닉네임</label>
     <input id="participantName" maxlength="30" autocomplete="name" placeholder="예: 강씨융" onkeydown="if(event.key==='Enter')startJourney()">
-    <button class="intro-submit" onclick="startJourney()">여정 시작하기</button>
+    <button class="intro-submit" onclick="startJourney()">다음</button>
+  </div>
+</section>
+<section class="intro-screen" id="locationScreen" hidden>
+  <div class="location-card">
+    <div class="intro-logo">SIU <em>MAP</em></div>
+    <div class="location-progress">01&nbsp; 이름 설정 &nbsp;·&nbsp; 02&nbsp; 출발 위치</div>
+    <h1 class="location-title">지금 어디에서 출발하나요?</h1>
+    <p class="location-help">현재 위치를 적으면 나의 전시 여정 출발점으로 표시돼요.</p>
+    <div class="route-fields">
+      <label class="route-field from" for="originLocation">
+        <span class="route-field-icon" aria-hidden="true"></span>
+        <span class="route-field-copy"><span class="route-field-label">출발지</span><input id="originLocation" maxlength="60" autocomplete="organization" placeholder="본인의 학부/과" onkeydown="if(event.key==='Enter')beginJourney()"></span>
+      </label>
+      <div class="route-connector">도착지는 정해져 있어요</div>
+      <div class="route-field to" aria-label="도착지: 나의 다음 역, 변경할 수 없음">
+        <span class="route-field-icon" aria-hidden="true"></span>
+        <span class="route-field-copy"><span class="route-field-label">도착지</span><span class="route-destination">나의 다음 역</span></span>
+        <span class="route-fixed-label">변경 불가</span>
+      </div>
+    </div>
+    <div class="location-actions"><button class="location-back" onclick="backToName()">이전</button><button class="intro-submit" onclick="beginJourney()">길 찾기 시작</button></div>
   </div>
 </section>
 <section class="loading-screen" id="loadingScreen" hidden>
@@ -828,11 +849,6 @@ const stations={
     title:"자기탐색역",tag:"MY DISCOVERY LINE",
     q:"나를 알아가는 네 단계 질문에 답해 주세요.",
     a:[]
-  },
-  senior:{
-    title:"가능성발견역",tag:"POSSIBILITY DISCOVERY",
-    q:"시니어를 바라보는 새로운 관점은 무엇일까요?",
-    a:["나이와 관계없이 다양한 취향을 가진 소비자","새로운 상품과 서비스를 선택하는 소비자","각자의 라이프스타일이 다른 한 명의 고객","더 알아보고 싶은 새로운 시장의 소비자"]
   },
   seniorBusiness:{
     title:"시니어비즈니스역",tag:"SENIOR BUSINESS",
@@ -885,6 +901,7 @@ const PARTICIPANT_KEY="siuMetroActiveParticipant";
 const SELF_STATE_KEY_PREFIX="siuMetroSelfProgress:";
 const ANSWERS_KEY_PREFIX="siuMetroAnswers:";
 const NEXT_STATION_KEY_PREFIX="siuMetroNextStation:";
+const ORIGIN_KEY_PREFIX="siuMetroOrigin:";
 // 도슨트 음원과 제목/설명은 아래 목록에서 교체하거나 항목을 추가하세요.
 const docentTracks=[
   {id:"welcome",title:"전시 여정 안내",description:"나의 역에서 나의 다음 역까지, SIU MAP 여정을 소개합니다.",src:"docent-sample.wav"},
@@ -896,17 +913,22 @@ function participantDoneKey(){return DONE_KEY_PREFIX+participantId.trim()}
 function selfProgressKey(){return SELF_STATE_KEY_PREFIX+participantId.trim()}
 function participantAnswersKey(){return ANSWERS_KEY_PREFIX+participantId.trim()}
 function participantNextStationKey(){return NEXT_STATION_KEY_PREFIX+participantId.trim()}
-function setParticipant(name){
+function participantOriginKey(name=participantId){return ORIGIN_KEY_PREFIX+name.trim()}
+function setParticipant(name,origin=""){
   participantId=name;
   localStorage.setItem(PARTICIPANT_KEY,name);
   document.getElementById("newParticipantBtn").hidden=false;
-  const firstStationName=`${name}의 역`;
+  const savedOrigin=origin.trim()||localStorage.getItem(participantOriginKey(name))||"";
+  if(savedOrigin)localStorage.setItem(participantOriginKey(name),savedOrigin);
+  const firstStationName=savedOrigin||`${name}의 역`;
   document.getElementById("firstStationTitle").textContent=firstStationName;
   document.getElementById("firstStationMeta").textContent=firstStationName;
   docentTracks[0].description=`${firstStationName}에서 나의 다음 역까지, SIU MAP 여정을 소개합니다.`;
-  done=JSON.parse(localStorage.getItem(participantDoneKey())||"[]").filter(id=>id!=="interest");
+  done=JSON.parse(localStorage.getItem(participantDoneKey())||"[]").filter(id=>id!=="interest"&&id!=="senior");
 }
 function restoreParticipant(){
+  const pendingName=localStorage.getItem("siuMetroPendingParticipant")||"";
+  if(pendingName)document.getElementById("participantName").value=pendingName;
   const name=localStorage.getItem(PARTICIPANT_KEY);
   if(!name)return;
   const input=document.getElementById("participantName");
@@ -920,9 +942,12 @@ function startNewParticipation(){
   participantId="";done=[];current=null;selected=null;
   document.getElementById("newParticipantBtn").hidden=true;
   document.getElementById("participantName").value="";
+  document.getElementById("originLocation").value="";
   document.getElementById("loadingScreen").hidden=true;
+  document.getElementById("locationScreen").hidden=true;
   document.getElementById("modalBg").classList.remove("show","self-random-expanded");
   document.getElementById("welcomeScreen").hidden=false;
+  localStorage.removeItem("siuMetroPendingParticipant");
   render();
   window.setTimeout(()=>document.getElementById("participantName").focus(),50);
 }
@@ -931,9 +956,27 @@ function startJourney(){
   const name=input.value.trim();
   if(!name){input.focus();input.setCustomValidity("이름이나 닉네임을 입력해 주세요.");input.reportValidity();return}
   input.setCustomValidity("");
-  setParticipant(name);
-  render();
+  localStorage.setItem("siuMetroPendingParticipant",name);
+  document.getElementById("originLocation").value=localStorage.getItem(participantOriginKey(name))||"";
   document.getElementById("welcomeScreen").hidden=true;
+  document.getElementById("locationScreen").hidden=false;
+  window.setTimeout(()=>document.getElementById("originLocation").focus(),50);
+}
+function backToName(){
+  document.getElementById("locationScreen").hidden=true;
+  document.getElementById("welcomeScreen").hidden=false;
+  window.setTimeout(()=>document.getElementById("participantName").focus(),50);
+}
+function beginJourney(){
+  const originInput=document.getElementById("originLocation"),origin=originInput.value.trim();
+  const name=localStorage.getItem("siuMetroPendingParticipant")||document.getElementById("participantName").value.trim();
+  if(!name){document.getElementById("locationScreen").hidden=true;document.getElementById("welcomeScreen").hidden=false;return}
+  if(!origin){originInput.focus();originInput.setCustomValidity("출발하는 학부 또는 학과를 적어 주세요.");originInput.reportValidity();return}
+  originInput.setCustomValidity("");
+  localStorage.removeItem("siuMetroPendingParticipant");
+  setParticipant(name,origin);
+  render();
+  document.getElementById("locationScreen").hidden=true;
   document.getElementById("loadingScreen").hidden=false;
   playTrainSound();
   window.setTimeout(()=>{
@@ -942,6 +985,7 @@ function startJourney(){
   },5200);
 }
 document.getElementById("participantName").addEventListener("input",event=>event.currentTarget.setCustomValidity(""));
+document.getElementById("originLocation").addEventListener("input",event=>event.currentTarget.setCustomValidity(""));
 
 function playTrainSound(){
   const AudioContextClass=window.AudioContext||window.webkitAudioContext;
@@ -1228,11 +1272,11 @@ function latestAnswers(){
 }
 function reportInsights(next){
   const a=latestAnswers(),interest=a["career:초중고 공통 관심사"]||"나를 설명하는 관심",keywords=(a["career:듣고 싶은 말"]||"").split(" / ").filter(Boolean),field=(a["career:어떤 분야에 새로운 가능성 펼치기"]||"").split(" / ").filter(Boolean);
-  const firstIdea=a.senior||"시니어도 저마다 다른 취향과 가능성을 지닌 사람이라는 관점";
+  const firstIdea="나의 관심과 기준";
   const expandedIdea=a.seniorBusiness||"시니어의 필요를 새로운 경험으로 연결하는 일";
   const transfer=a.transfer||"관심 분야";
   const areas=Object.entries({culture:"문화콘텐츠",welfare:"사회복지",sports:"체육",realestate:"공간·주거",education:"교육"}).filter(([id])=>a[id]).map(([id])=>`${areasLabel(id)} · ${a[id]}`);
-  const stops=[["가능성발견역",a.senior],["시니어비즈니스역",a.seniorBusiness],["환승센터역",a.transfer],["문화콘텐츠 X 시비즈역",a.culture],["사회복지 X 시비즈역",a.welfare],["체육 X 시비즈역",a.sports],["부동산건설 X 시비즈역",a.realestate],["교육 X 시비즈역",a.education]].filter(([,answer])=>!!answer);
+  const stops=[["시니어비즈니스역",a.seniorBusiness],["환승센터역",a.transfer],["문화콘텐츠 X 시비즈역",a.culture],["사회복지 X 시비즈역",a.welfare],["체육 X 시비즈역",a.sports],["부동산건설 X 시비즈역",a.realestate],["교육 X 시비즈역",a.education]].filter(([,answer])=>!!answer);
   const traitReadings={
     "리더십과 조율":"여러 사람의 생각을 모아 함께 갈 방향을 만드는",
     "제작과 구현":"떠올린 생각을 구체적인 결과로 옮기는",
