@@ -10,14 +10,9 @@ const SELF_FIELDS = ['초중고 공통 관심사', '듣고 싶은 말', '어떤 
 const REPORT_FIELDS = ['나의 다음 역 한 줄'];
 const STATION_FIELDS = [
   '답변 | 시니어비즈니스역',
-  '답변 | 환승센터역',
-  '답변 | 문화콘텐츠 X 시비즈역',
-  '답변 | 사회복지 X 시비즈역',
-  '답변 | 체육 X 시비즈역',
-  '답변 | 부동산건설 X 시비즈역',
-  '답변 | 교육 X 시비즈역'
+  '답변 | 환승센터역'
 ];
-// 참여자별 보기의 열 순서: 기본 답변 → 시니어비즈니스역 → 환승센터역 및 분야별 답변 → 나의 다음 역 한 줄.
+// 참여자별 보기의 요약 열: 시니어비즈니스역 → 환승센터역 → 나의 다음 역 한 줄.
 const SUMMARY_HEADERS = ['응답시각', '참여자 아이디'].concat(SELF_FIELDS, STATION_FIELDS, REPORT_FIELDS);
 const SHEET_DATE_FORMAT = 'yyyy-mm-dd hh:mm';
 
@@ -149,16 +144,16 @@ function mapLegacyStationHeader(header) {
     [['나의 다음 역 한 줄', '답변 | 나의 다음 역', '나의 다음 역'], '나의 다음 역 한 줄'],
     [['(interest)', '답변 | 관심분야역', '관심분야역'], '__DROP__'],
     [['(career)', '진로발견역', '자기탐색역'], '__DROP__'],
-    // 현재 질문이 없는 이전 가능성발견역 열은 요약 보기에서 제거합니다.
+    // 이전 가능성발견역 및 분야별 과 X 시비즈 답변은 요약 보기에서 제거합니다.
     [['(senior)', '가능성발견역', '가능성 발견역', '시니어역'], '__DROP__'],
     [['(seniorBusiness)', '시니어비즈니스역', '시니어 비즈니스역'], '답변 | 시니어비즈니스역'],
     [['(transfer)', '환승역', '환승센터역'], '답변 | 환승센터역'],
     [['(business)', '경영역', '경영 X 시비즈역'], '__DROP__'],
-    [['(culture)', '문화콘텐츠역', '문화콘텐츠 X 시비즈역'], '답변 | 문화콘텐츠 X 시비즈역'],
-    [['(welfare)', '사회복지역', '사회복지 X 시비즈역'], '답변 | 사회복지 X 시비즈역'],
-    [['(sports)', '체육역', '체육 X 시비즈역'], '답변 | 체육 X 시비즈역'],
-    [['(realestate)', '부동산건설역', '부동산건설 X 시비즈역'], '답변 | 부동산건설 X 시비즈역'],
-    [['(education)', '교육역', '교육 X 시비즈역'], '답변 | 교육 X 시비즈역']
+    [['(culture)', '문화콘텐츠역', '문화콘텐츠 X 시비즈역'], '__DROP__'],
+    [['(welfare)', '사회복지역', '사회복지 X 시비즈역'], '__DROP__'],
+    [['(sports)', '체육역', '체육 X 시비즈역'], '__DROP__'],
+    [['(realestate)', '부동산건설역', '부동산건설 X 시비즈역'], '__DROP__'],
+    [['(education)', '교육역', '교육 X 시비즈역'], '__DROP__']
   ];
   for (let i = 0; i < aliases.length; i++) {
     if (aliases[i][0].some(function (alias) { return header.indexOf(alias) >= 0; })) return aliases[i][1];
@@ -266,11 +261,6 @@ function stationSummaryColumn(stationId) {
     nextStation: '나의 다음 역 한 줄',
     seniorBusiness: '답변 | 시니어비즈니스역',
     transfer: '답변 | 환승센터역',
-    culture: '답변 | 문화콘텐츠 X 시비즈역',
-    welfare: '답변 | 사회복지 X 시비즈역',
-    sports: '답변 | 체육 X 시비즈역',
-    realestate: '답변 | 부동산건설 X 시비즈역',
-    education: '답변 | 교육 X 시비즈역'
   };
   return columns[stationId] || '';
 }
