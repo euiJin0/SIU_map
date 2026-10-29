@@ -1536,15 +1536,23 @@ function reportCanvas(){
   const heroY=48,heroH=178,departureY=244,departureH=360,discoveryY=622,discoveryH=158,connectionY=798,connectionH=d.didRandom?190:160;
   const finalY=connectionY+connectionH+18,finalH=150;
   const card=(x,y,w,h,fill="#fff")=>rounded(x,y,w,h,18,fill,"#e6e0ee");
-  const sectionHead=(x,y,num,english,korean,topic)=>{
+  const sectionHead=(x,y,num,english,korean,topic,topicBelow=false)=>{
     text(num,x,y,9,purple,850);text(english,x+40,y,9,purple,850);
     text(korean,x,y+30,15,purple,850);
-    if(topic)text(topic,x,y+52,9,ink,550);
+    if(topic){
+      const titleFont=`850 30px "Noto Sans KR",sans-serif`,topicFont=`550 18px "Noto Sans KR",sans-serif`;
+      ctx.font=titleFont;const titleWidth=ctx.measureText(korean).width;
+      ctx.font=topicFont;const topicWidth=ctx.measureText(`- ${topic}`).width;
+      if(!topicBelow&&titleWidth+topicWidth+18<=innerW){
+        ctx.font=topicFont;ctx.fillStyle="#77717f";ctx.textAlign="left";ctx.fillText(`- ${topic}`,x+titleWidth+14,y+28);
+      }else{
+        ctx.font=topicFont;ctx.fillStyle="#77717f";ctx.textAlign="left";ctx.fillText(`- ${topic}`,x,y+58);
+      }
+    }
   };
   const hero=ctx.createLinearGradient(cardX,heroY,cardX+reportW,heroY+heroH);hero.addColorStop(0,"#29243e");hero.addColorStop(1,"#5a4781");
   rounded(cardX,heroY,reportW,heroH,22,hero);
-  text("SIU MAP",innerX,heroY+28,10,"#fff",850);
-  text("JOURNAL 01",cardX+reportW-30,heroY+28,8,"#fff",750,"right");
+  text("SIU MAP",cardX+reportW-30,heroY+28,10,"#fff",850,"right");
   text("MY NEXT STATION",innerX,heroY+65,17,"#fff",850);
   text("나의 관심에서 시작된 여정",innerX,heroY+89,9,"#fff",600);
   const metaY=heroY+123,metaWidth=(reportW-90)/3;
@@ -1556,23 +1564,21 @@ function reportCanvas(){
   });
 
   card(cardX,departureY,reportW,departureH);
-  sectionHead(innerX,departureY+30,"01","DEPARTURE","나의 출발점","나는 무엇에 관심이 있는 사람인가?");
-  text("평소 관심을 두고 있는 분야 :",innerX,departureY+111,9,purple,800);
+  sectionHead(innerX,departureY+36,"01","DEPARTURE","나의 출발점","나는 무엇에 관심이 있는 사람인가?");
+  text("평소 관심을 두고 있는 분야 :",innerX,departureY+126,9,purple,800);
   const interests=`반복 관심 · ${d.interest}\n선택 분야 · ${d.fields.length?d.fields.join(" · "):"아직 선택한 분야가 없어요."}`;
-  fitPara(interests,innerX,departureY+121,innerW,86,18,11,ink,600);
-  text("내가 중요하게 생각하는 가치 :",innerX,departureY+230,9,purple,800);
+  fitPara(interests,innerX,departureY+136,innerW,86,18,11,ink,600);
+  text("내가 중요하게 생각하는 가치 :",innerX,departureY+246,9,purple,800);
   const valueLines=d.keywordDetails.length?d.keywordDetails.map(item=>`${item.word} · ${item.meaning}`).join("\n"):"나의 가치와 강점을 더 찾아가는 중이에요.";
-  fitPara(valueLines,innerX,departureY+241,innerW,100,17,16,ink,600);
+  fitPara(valueLines,innerX,departureY+252,innerW,96,17,16,ink,600);
 
   card(cardX,discoveryY,reportW,discoveryH);
-  sectionHead(innerX,discoveryY+25,"02","DISCOVERY","전시에서 발견한 것","시니어 비즈니스를 새로운 관점에서 바라보다.");
-  text("WHAT I DISCOVERED",innerX,discoveryY+94,8,purple,800);
-  fitPara(d.discovery,innerX,discoveryY+105,innerW,discoveryH-115,18,10,ink,600);
+  sectionHead(innerX,discoveryY+32,"02","DISCOVERY","전시에서 발견한 것","시니어 비즈니스를 새로운 관점에서 바라보다.");
+  fitPara(d.discovery,innerX,discoveryY+92,innerW,discoveryH-104,18,10,ink,600);
 
   card(cardX,connectionY,reportW,connectionH);
-  sectionHead(innerX,connectionY+25,"03","CONNECTION","나의 관심과 비즈니스의 연결","내가 좋아하는 것과 사회의 새로운 가능성은 어떻게 연결될 수 있을까?");
-  text("환승센터역에서 적은 내용 :",innerX,connectionY+91,9,purple,800);
-  fitPara(d.connection,innerX,connectionY+101,innerW,d.didRandom?42:connectionH-111,18,10,ink,600);
+  sectionHead(innerX,connectionY+32,"03","CONNECTION","나의 관심과 비즈니스의 연결","내가 좋아하는 것과 사회의 새로운 가능성은 어떻게 연결될 수 있을까?",true);
+  fitPara(d.connection,innerX,connectionY+104,innerW,d.didRandom?40:connectionH-116,18,10,ink,600);
   if(d.didRandom){
     text("오늘 내가 계속 생각해 볼 것 :",innerX,connectionY+151,9,purple,800);
     fitPara(d.randomPrompt,innerX,connectionY+160,innerW,25,16,11,ink,600);
@@ -1583,8 +1589,6 @@ function reportCanvas(){
   text("MY NEXT STATION",innerX,finalY+55,14,purple,850);
   text("나의 다음 역은...",innerX,finalY+78,9,ink,600);
   fitPara(d.next,innerX,finalY+86,innerW-40,finalH-96,18,10,ink,700);
-  ctx.beginPath();ctx.arc(cardX+reportW-36,finalY+finalH-25,7,0,Math.PI*2);ctx.fillStyle=purple;ctx.fill();
-  text("도착",cardX+reportW-52,finalY+finalH-21,7,purple,750,"right");
   text("SIU MAP · MY JOURNEY REPORT",cardX,H-26,7,ink,650);
   return canvas;
 }
