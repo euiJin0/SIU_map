@@ -927,7 +927,7 @@ const stations={
   transfer:{
     title:"환승센터역",tag:"TRANSFER STATION",
     q:"내가 관심 있는 분야와 시니어비즈니스를 연결한다면 어디에서 만날 수 있을까요?",
-    a:["콘텐츠와 문화","마케팅과 경영","복지와 사회문제","기술과 새로운 서비스"]
+    a:[],answerMode:"essay",answerType:"서술형"
   },
   culture:{
     title:"문화콘텐츠 X 시비즈역",tag:"SENIOR BUSINESS LINE",
@@ -1300,7 +1300,7 @@ function openStation(id){
   document.getElementById("answers").innerHTML=s.a.map((a,i)=>
     `<button class="answer" onclick="selectAnswer(this,${i})">${a}</button>`).join("");
   answerMode=essayOnly?"essay":"choice";document.getElementById("essayAnswer").value="";document.getElementById("essayAnswer").hidden=!essayOnly;
-  document.getElementById("essayAnswer").placeholder=essayOnly?"시니어비즈니스에서 새롭게 발견한 점을 적어 주세요.":"답변을 자유롭게 적어 주세요.";
+  document.getElementById("essayAnswer").placeholder=id==="transfer"?"선택한 분야와 시니어비즈니스를 연결할 아이디어를 적어 주세요.":(id==="seniorBusiness"?"시니어비즈니스에서 새롭게 발견한 점을 적어 주세요.":"답변을 자유롭게 적어 주세요.");
   document.getElementById("answers").hidden=essayOnly;document.getElementById("choiceMode").classList.toggle("active",!essayOnly);document.getElementById("essayMode").classList.toggle("active",essayOnly);
   const b=complete;b.hidden=false;
   b.disabled=done.includes(id)||essayOnly;
