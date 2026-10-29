@@ -1461,6 +1461,9 @@ function reportInsights(next){
   const interestUnknown=!interestAnswer||/^(아직\s*)?(잘\s*)?모르겠(?:어요|습니다|다|음|는데요)?[.!?\s]*$/i.test(interestAnswer);
   const interest=interestUnknown?(interestAnswer?"아직 찾아가는 중이에요":"아직 기록되지 않았어요"):interestAnswer;
   const keywords=(a["career:듣고 싶은 말"]||"").split(" / ").filter(Boolean);
+  const fields=(a["career:어떤 분야에 새로운 가능성 펼치기"]||"").split(" / ").filter(Boolean);
+  const randomAnswer=String(a["career:랜덤뽑기"]||"").trim();
+  const didRandom=!!randomAnswer&&randomAnswer!=="안 했어요"&&randomAnswer!=="했어요";
   const traitReadings={
     "리더십과 조율":"여러 사람의 생각을 모아 함께 갈 방향을 만드는",
     "도전과 성취, 돌파":"어려운 과제에 도전해 성취와 돌파구를 만드는",
@@ -1488,7 +1491,7 @@ function reportInsights(next){
   };
   const keywordDetails=keywordReadings.map(item=>({word:item.word,meaning:keywordMeanings[item.word]||item.meaning}));
   return {
-    department,interest,interestUnknown,keywords,keywordDetails,startingPoint,dateText,
+    department,interest,interestUnknown,keywords,keywordDetails,fields,didRandom,randomPrompt:didRandom?randomAnswer:"",startingPoint,dateText,
     discovery:a.seniorBusiness||"아직 답변이 기록되지 않았어요.",
     connection:a.transfer||"아직 답변이 기록되지 않았어요.",
     next:next||"아직 답변이 기록되지 않았어요."
@@ -1512,19 +1515,24 @@ function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=4){
 function reportCanvas(){
   const d=reportInsights(localStorage.getItem(participantNextStationKey())||"");
   const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d");
-  const cssW=Math.max(320,document.documentElement.clientWidth||window.innerWidth||390);
-  const cssH=Math.max(560,window.visualViewport?.height||window.innerHeight||844);
-  const pixelRatio=Math.min(window.devicePixelRatio||1,2);
-  canvas.width=Math.round(cssW*pixelRatio);canvas.height=Math.round(cssH*pixelRatio);
-  ctx.scale(pixelRatio,pixelRatio);
-  const W=cssW,H=cssH,pad=Math.max(16,Math.min(26,W*.055)),gap=Math.max(7,Math.min(13,H*.014)),cardW=W-pad*2;
-  const fontScale=Math.max(.88,Math.min(1.25,W/390));
-  const fs=n=>Math.round(n*fontScale),line=n=>Math.round(n*fontScale);
+  const W=900,H=1200,pad=42,gap=16,cardW=W-pad*2;
+  canvas.width=W;canvas.height=H;
+  const fs=n=>n,line=n=>n;
   const rounded=(x,y,w,h,r,color,stroke)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=color;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}};
-  const text=(s,x,y,size=14,color="#292c33",weight=500,align="left")=>{ctx.font=`${weight} ${fs(size)}px "Noto Sans KR",sans-serif`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(String(s||""),x,y);ctx.textAlign="left"};
-  const para=(value,x,y,width,size=13,color="#424650",lineHeight=19,maxLines=3,weight=500)=>{ctx.font=`${weight} ${fs(size)}px "Noto Sans KR",sans-serif`;ctx.fillStyle=color;return wrapCanvasText(ctx,value,x,y,width,line(lineHeight),maxLines)};
+  const text=(s,x,y,size=14,color="#292c33",weight=500,align="left")=>{ctx.font=`${weight} ${Math.round(fs(size)*2)}px "Noto Sans KR",sans-serif`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(String(s||""),x,y);ctx.textAlign="left"};
+  const para=(value,x,y,width,size=13,color="#424650",lineHeight=19,maxLines=3,weight=500)=>{ctx.font=`${weight} ${Math.round(fs(size)*2)}px "Noto Sans KR",sans-serif`;ctx.fillStyle=color;return wrapCanvasText(ctx,value,x,y,width,line(lineHeight)*2,maxLines)};
+  const fitPara=(value,x,y,width,height,size=18,minSize=12,color="#30333a",weight=600)=>{
+    const source=String(value||""),wrapAt=fontSize=>{ctx.font=`${weight} ${fontSize}px "Noto Sans KR",sans-serif`;const rows=[];let row="";for(const ch of Array.from(source)){if(ch==="\n"){rows.push(row);row="";continue}const candidate=row+ch;if(row&&ctx.measureText(candidate).width>width){rows.push(row);row=ch}else row=candidate}if(row||!rows.length)rows.push(row);return rows};
+    let chosen=minSize,rows=wrapAt(minSize),leading=Math.ceil(minSize*1.25);
+    for(let fontSize=size;fontSize>=minSize;fontSize--){const test=wrapAt(fontSize),step=Math.ceil(fontSize*1.25);if(test.length*step<=height){chosen=fontSize;rows=test;leading=step;break}}
+    ctx.font=`${weight} ${chosen}px "Noto Sans KR",sans-serif`;
+    const visibleRows=Math.max(1,Math.floor(height/leading));
+    if(rows.length>visibleRows){rows=rows.slice(0,visibleRows);let last=rows[visibleRows-1]||"";while(last&&ctx.measureText(`${last}…`).width>width)last=last.slice(0,-1);rows[visibleRows-1]=`${last}…`}
+    ctx.fillStyle=color;rows.forEach((row,index)=>ctx.fillText(row,x,y+chosen+index*leading));
+    return {fontSize:chosen,lines:rows.length,height:rows.length*leading};
+  };
   ctx.fillStyle="#fbfaf8";ctx.fillRect(0,0,W,H);ctx.strokeStyle="#e4e2df";ctx.lineWidth=1;ctx.strokeRect(7,7,W-14,H-14);
-  const usableH=H-pad*2-gap*4,heights=[usableH*.21,usableH*.25,usableH*.18,usableH*.18,usableH*.16];
+  const usableH=H-pad*2-gap*4,heights=[usableH*.16,usableH*.32,usableH*.15,usableH*.18,usableH*.17];
   let y=pad;
   const hero=ctx.createLinearGradient(pad,y,pad+cardW,y+heights[0]);hero.addColorStop(0,"#24223b");hero.addColorStop(1,"#514078");
   rounded(pad,y,cardW,heights[0],fs(17),hero);
@@ -1538,7 +1546,7 @@ function reportCanvas(){
     const x=metaX+index*metaW;
     if(index){ctx.strokeStyle="#ffffff35";ctx.beginPath();ctx.moveTo(x-fs(9),metaTop-fs(3));ctx.lineTo(x-fs(9),metaTop+fs(25));ctx.stroke()}
     text(metaLabel,x,metaTop,7,"#cfc3ed",750);
-    para(String(value),x,metaTop+fs(17),metaW-fs(14),9,"#fff",line(11),1,650);
+    fitPara(String(value),x,metaTop+fs(3),metaW-fs(14),fs(24),18,12,"#fff",650);
   });
   const headerBottom=y+heights[0];ctx.strokeStyle="#dad6df";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,headerBottom+gap/2);ctx.lineTo(W-pad,headerBottom+gap/2);ctx.stroke();
   y=headerBottom+gap;
@@ -1557,32 +1565,37 @@ function reportCanvas(){
     text(title,contentX+fs(5),top+fs(40),13,"#282a30",800);
     para(topic,contentX+fs(5),top+fs(56),contentW-fs(18),index===2?7:8,"#7c7c84",line(10),index===2?2:1,500);
     if(index===0){
-      text("MY STARTING POINT",contentX+fs(5),top+fs(77),7,color,800);
-      para(d.startingPoint,contentX+fs(5),top+fs(94),contentW-fs(18),9,"#30333a",line(12),2,650);
-      const q3Y=top+height-fs(45);
-      text("Q3 사진에서 고른 키워드의 의미",contentX+fs(5),q3Y,7,"#77727f",750);
+      text("평소 관심을 두고 있는 분야",contentX+fs(5),top+fs(88),11,color,800);
+      text("Q1 · 반복해서 나타나는 관심",contentX+fs(5),top+fs(112),7,"#81808a",700);
+      fitPara(d.interest,contentX+fs(5),top+fs(121),contentW-fs(18),fs(62),18,12,"#30333a",600);
+      text("Q3 · 새롭게 눈길이 간 분야",contentX+fs(5),top+fs(196),7,"#81808a",700);
+      fitPara(d.fields.length?d.fields.join(" · "):"아직 선택한 분야가 없어요.",contentX+fs(5),top+fs(205),contentW-fs(18),fs(59),17,12,"#30333a",600);
+      text("내가 중요하게 생각하는 가치 · Q2",contentX+fs(5),top+fs(273),9,color,800);
       const details=d.keywordDetails.length?d.keywordDetails:[{word:"선택한 키워드 없음",meaning:"나의 가치와 강점을 더 찾아가는 중이에요."}];
-      details.slice(0,2).forEach((item,detailIndex)=>{
-        para(`${item.word} · ${item.meaning}`,contentX+fs(5),q3Y+fs(13)+detailIndex*fs(13),contentW-fs(18),7,"#5c5668",line(9),1,550);
-      });
+      details.slice(0,2).forEach((item,detailIndex)=>fitPara(`${item.word} · ${item.meaning}`,contentX+fs(5),top+fs(282)+detailIndex*fs(24),contentW-fs(18),fs(20),14,11,"#504b5b",550));
     }else if(index===1){
       text("WHAT I DISCOVERED",contentX+fs(5),top+fs(78),7,color,800);
-      para(answer,contentX+fs(5),top+fs(96),contentW-fs(18),10,"#30333a",line(14),Math.max(2,Math.floor((height-fs(103))/line(14))),600);
+      fitPara(answer,contentX+fs(5),top+fs(88),contentW-fs(18),height-fs(105),21,12,"#30333a",600);
     }else{
       text("환승센터역에서 적은 나의 연결",contentX+fs(5),top+fs(78),7,color,800);
-      para(answer,contentX+fs(5),top+fs(96),contentW-fs(18),10,"#30333a",line(14),Math.max(2,Math.floor((height-fs(103))/line(14))),600);
+      fitPara(answer,contentX+fs(5),top+fs(88),contentW-fs(18),d.didRandom?fs(49):height-fs(105),20,12,"#30333a",600);
+      if(d.didRandom){
+        const promptY=top+height-fs(43);
+        text("오늘 내가 계속 생각해 볼 것",contentX+fs(5),promptY,8,color,800);
+        fitPara(d.randomPrompt,contentX+fs(5),promptY+fs(7),contentW-fs(18),fs(30),16,11,"#504b5b",600);
+      }
     }
   };
   drawEntry(0,"DEPARTURE","나의 출발점","나는 무엇에 관심이 있는 사람인가?",d.startingPoint,"#4777dc");
   drawEntry(1,"DISCOVERY","전시에서 발견한 것","시니어 비즈니스를 새로운 관점에서 바라보다",d.discovery,"#8061d8");
-  drawEntry(2,"CONNECTION","나의 관심 × 시니어 비즈니스","내가 좋아하는 것과 사회의 새로운 가능성은 어떻게 연결될 수 있을까?",d.connection,"#d38a29");
+  drawEntry(2,"CONNECTION","나의 관심 × 시니어 비즈니스","좋아하는 일과 사회의 가능성은 어떻게 만날까?",d.connection,"#d38a29");
 
   const finalY=rowTop,finalH=heights[4];
   rounded(pad,finalY,cardW,finalH,fs(15),"#eef5f1","#d9e7de");
   text("FINAL DESTINATION",pad+fs(15),finalY+fs(17),8,"#37977e",800);
   text("MY NEXT STATION",pad+fs(15),finalY+fs(40),14,"#27332e",850);
   text("“나의 다음 역에서...”",pad+fs(15),finalY+fs(61),8,"#76867e",550);
-  para(d.next,pad+fs(15),finalY+fs(82),cardW-fs(54),11,"#27332e",line(15),Math.max(2,Math.floor((finalH-fs(87))/line(15))),700);
+  fitPara(d.next,pad+fs(15),finalY+fs(69),cardW-fs(54),finalH-fs(82),22,12,"#27332e",700);
   ctx.beginPath();ctx.arc(W-pad-fs(15),finalY+finalH-fs(13),fs(5),0,Math.PI*2);ctx.fillStyle="#37977e";ctx.fill();
   text("도착",W-pad-fs(25),finalY+finalH-fs(10),7,"#37977e",750,"right");
   text("SIU MAP · MY JOURNEY REPORT",pad,H-pad/2,7,"#858a95",650);
