@@ -310,8 +310,11 @@ button{font:inherit}
 .report-image-preview{max-height:65dvh;object-fit:contain}
 #reportView .report-paper{padding:4px}
 #reportView .report-image-preview{max-height:calc(88dvh - 72px)}
-.report-image-mode #reportView .report-paper{width:100%;height:100%;padding:0;border:0;border-radius:0;display:grid;place-items:center;overflow:hidden;background:#fbfbfc}
+.report-image-mode #reportView .report-paper{position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;padding:8px 0 calc(88px + env(safe-area-inset-bottom));border:0;border-radius:0;display:grid;place-items:center;overflow:hidden;background:#fbfbfc}
 .report-image-mode #reportView .report-image-preview{width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;border-radius:0}
+.report-image-save{display:none}
+.report-image-mode .report-image-save{position:absolute;z-index:3;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:10px;width:min(84vw,360px);min-height:54px;padding:0 24px;border:0;border-radius:999px;background:linear-gradient(135deg,#7654cf,#5f3caf);color:#fff;font:800 15px "Pretendard","Noto Sans KR",Arial,sans-serif;box-shadow:0 8px 24px #38206d40;touch-action:manipulation}
+.report-image-save:active{transform:translateX(-50%) scale(.98)}
 .report-head{padding:14px 13px;background:#f1f3f9;border-radius:10px;margin-bottom:9px}
 .report-eyebrow{font-size:8px;color:#7965c6;letter-spacing:.08em;font-weight:800}
 .report-head h2{font-size:21px;margin:4px 0 3px;letter-spacing:-.05em}
@@ -808,7 +811,7 @@ body{background:#f2f3f5;overflow-y:hidden}
   <div class="report-panel" onclick="event.stopPropagation()">
     <div class="report-toolbar"><strong id="reportToolbarTitle">나의 여정 리포트</strong><button onclick="closeReport()">닫기</button></div>
     <div id="nextStationForm"><div class="report-paper"><div class="report-eyebrow">MY NEXT STATION</div><h2 style="font-size:20px;margin:5px 0">내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?</h2><p class="report-copy">떠오르는 가능성을 한 줄로 적어주세요.</p><textarea class="next-answer" id="nextAnswer" maxlength="180" placeholder="예: 시니어의 취향을 담은 문화 콘텐츠를 직접 기획해 보고 싶다."></textarea><div style="font-size:9px;color:#888">한 줄을 저장하면 나의 다음 역 스탬프를 받을 수 있어요.</div></div><button class="complete" id="saveNextStationBtn" disabled onclick="saveNextStationAnswer()">답변하고 스탬프 받기</button></div>
-    <div id="reportView" hidden><button class="report-image-close" type="button" aria-label="결과 이미지 닫기" onclick="closeReport()">×</button><div class="report-paper" id="reportPaper"></div></div>
+    <div id="reportView" hidden><button class="report-image-close" type="button" aria-label="결과 이미지 닫기" onclick="closeReport()">×</button><div class="report-paper" id="reportPaper"></div><button class="report-image-save" type="button" onclick="saveReportImage()"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 16v4h14v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>이미지로 저장</span></button></div>
   </div>
 </div>
 
