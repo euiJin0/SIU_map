@@ -1531,8 +1531,7 @@ function reportCanvas(){
   const sectionTitle=(x,y,n,title)=>{badge(x,y-25,n);text(title,x+65,y+2,26,C.ink,760)};
   const label=(s,x,y)=>text(s,x,y,18,C.purple,760);
   const left=48,width=804,inside=82,insideW=736;
-  ctx.fillStyle=C.paper;ctx.fillRect(0,0,W,H);
-  ctx.fillStyle="#e9e4f0";ctx.beginPath();ctx.arc(831,1092,106,0,Math.PI*2);ctx.fill();ctx.fillStyle="#f5e9cf";ctx.beginPath();ctx.arc(51,715,64,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#f8f7f4";ctx.fillRect(0,0,W,H);ctx.strokeStyle="#e8e4ec";ctx.lineWidth=2;ctx.strokeRect(14,14,W-28,H-28);
 
   const heroY=38,heroH=220;
   const gradient=ctx.createLinearGradient(left,heroY,left+width,heroY+heroH);gradient.addColorStop(0,"#272238");gradient.addColorStop(.58,"#44315f");gradient.addColorStop(1,"#6846bd");
@@ -1549,9 +1548,8 @@ function reportCanvas(){
     text(k,x+14,metaY+20,11,"#d7c9f4",800);fitted(String(v),x+14,metaY+23,metaW-28,26,17,12,"#fffefa",650);
   });
 
-  const departureY=280,departureH=360,discoveryY=658,discoveryH=160,connectionY=836,connectionH=180,finalY=1034,finalH=130;
+  const departureY=280,departureH=320,discoveryY=618,discoveryH=160,connectionY=796,connectionH=d.didRandom?220:180,finalY=connectionY+connectionH+18,finalH=130;
   card(left,departureY,width,departureH);
-  ctx.fillStyle=C.purple;rounded(left,departureY,7,departureH,4,C.purple);
   sectionTitle(inside,departureY+53,"01","나의 출발점");
   label("평소 관심을 두고 있는 분야",inside,departureY+101);
   const interests=`${d.interest}\n${d.fields.length?d.fields.join("  ·  "):"아직 선택한 분야가 없어요."}`;
@@ -1559,21 +1557,21 @@ function reportCanvas(){
   label("내가 중요하게 생각하는 가치",inside,departureY+225);
   const valueLines=d.keywordDetails.length?d.keywordDetails.map(item=>`${item.word}  ·  ${item.meaning}`).join("\n"):"나의 가치와 강점을 더 찾아가는 중이에요.";
   fitted(valueLines,inside,departureY+235,insideW,58,19,13,C.ink,560);
-  if(d.didRandom){
-    label("오늘 내가 계속 생각해 볼 것",inside,departureY+310);
-    fitted(d.randomPrompt,inside,departureY+318,insideW,32,18,12,C.ink,600);
-  }
-
   card(left,discoveryY,width,discoveryH);
   sectionTitle(inside,discoveryY+49,"02","전시에서 발견한 것");
   fitted(d.discovery,inside,discoveryY+78,insideW,65,21,13,C.ink,560);
 
   card(left,connectionY,width,connectionH);
   sectionTitle(inside,connectionY+49,"03","나의 관심과 비즈니스의 연결");
-  fitted(d.connection,inside,connectionY+78,insideW,83,21,13,C.ink,560);
+  fitted(d.connection,inside,connectionY+78,insideW,d.didRandom?66:100,21,13,C.ink,560);
+  if(d.didRandom){
+    const sx=inside+8,sy=connectionY+160;
+    ctx.save();ctx.translate(sx,sy);ctx.strokeStyle=C.gold;ctx.lineWidth=3;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(0,8);ctx.moveTo(-8,0);ctx.lineTo(8,0);ctx.moveTo(-5,-5);ctx.lineTo(5,5);ctx.moveTo(-5,5);ctx.lineTo(5,-5);ctx.stroke();ctx.restore();
+    label("오늘 내가 계속 생각해 볼 것",inside+24,connectionY+165);
+    fitted(d.randomPrompt,inside+24,connectionY+173,insideW-24,38,18,12,C.ink,600);
+  }
 
-  card(left,finalY,width,finalH,"#eee8fb");
-  rounded(left,finalY,7,finalH,4,C.purple);
+  card(left,finalY,width,finalH,"#f0ecf8");
   text("MY NEXT STATION",inside,finalY+43,20,C.purple,850);
   fitted(d.next,inside,finalY+58,insideW,54,25,15,C.ink,650);
   text("SIU MAP  ·  MY JOURNEY REPORT",inside,H-17,12,C.muted,700);
