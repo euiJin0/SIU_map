@@ -1453,9 +1453,7 @@ function latestAnswers(){
 function reportInsights(next){
   const a=latestAnswers();
   const department=localStorage.getItem(participantOriginKey())||"";
-  const responseRecords=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]");
-  const dates=responseRecords.map(record=>Date.parse(record.submittedAt)).filter(Number.isFinite);
-  const explorationDate=new Date(dates.length?Math.min(...dates):Date.now());
+  const explorationDate=new Date();
   const dateText=`${explorationDate.getFullYear()}.${String(explorationDate.getMonth()+1).padStart(2,"0")}.${String(explorationDate.getDate()).padStart(2,"0")}`;
   const interestAnswer=String(a["career:초중고 공통 관심사"]||"").trim();
   const interestUnknown=!interestAnswer||/^(아직\s*)?(잘\s*)?모르겠(?:어요|습니다|다|음|는데요)?[.!?\s]*$/i.test(interestAnswer);
@@ -1519,13 +1517,14 @@ function reportCanvas(){
   canvas.width=W;canvas.height=H;
   const fs=n=>n,line=n=>n;
   const rounded=(x,y,w,h,r,color,stroke)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=color;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}};
-  const text=(s,x,y,size=14,color="#292c33",weight=500,align="left")=>{ctx.font=`${weight} ${Math.round(fs(size)*2)}px "Noto Sans KR",sans-serif`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(String(s||""),x,y);ctx.textAlign="left"};
-  const para=(value,x,y,width,size=13,color="#424650",lineHeight=19,maxLines=3,weight=500)=>{ctx.font=`${weight} ${Math.round(fs(size)*2)}px "Noto Sans KR",sans-serif`;ctx.fillStyle=color;return wrapCanvasText(ctx,value,x,y,width,line(lineHeight)*2,maxLines)};
+  const reportFont='"Pretendard", "Noto Sans KR", Arial, sans-serif';
+  const text=(s,x,y,size=14,color="#292c33",weight=500,align="left")=>{ctx.font=`${weight} ${Math.round(fs(size)*2)}px ${reportFont}`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(String(s||""),x,y);ctx.textAlign="left"};
+  const para=(value,x,y,width,size=13,color="#424650",lineHeight=19,maxLines=3,weight=500)=>{ctx.font=`${weight} ${Math.round(fs(size)*2)}px ${reportFont}`;ctx.fillStyle=color;return wrapCanvasText(ctx,value,x,y,width,line(lineHeight)*2,maxLines)};
   const fitPara=(value,x,y,width,height,size=18,minSize=12,color="#30333a",weight=600)=>{
-    const source=String(value||""),wrapAt=fontSize=>{ctx.font=`${weight} ${fontSize}px "Noto Sans KR",sans-serif`;const rows=[];let row="";for(const ch of Array.from(source)){if(ch==="\n"){rows.push(row);row="";continue}const candidate=row+ch;if(row&&ctx.measureText(candidate).width>width){rows.push(row);row=ch}else row=candidate}if(row||!rows.length)rows.push(row);return rows};
-    let chosen=minSize,rows=wrapAt(minSize),leading=Math.ceil(minSize*1.25);
-    for(let fontSize=size;fontSize>=minSize;fontSize--){const test=wrapAt(fontSize),step=Math.ceil(fontSize*1.25);if(test.length*step<=height){chosen=fontSize;rows=test;leading=step;break}}
-    ctx.font=`${weight} ${chosen}px "Noto Sans KR",sans-serif`;
+    const source=String(value||""),wrapAt=fontSize=>{ctx.font=`${weight} ${fontSize}px ${reportFont}`;const rows=[];let row="";for(const ch of Array.from(source)){if(ch==="\n"){rows.push(row);row="";continue}const candidate=row+ch;if(row&&ctx.measureText(candidate).width>width){rows.push(row);row=ch}else row=candidate}if(row||!rows.length)rows.push(row);return rows};
+    let chosen=minSize,rows=wrapAt(minSize),leading=Math.ceil(minSize*1.45);
+    for(let fontSize=size;fontSize>=minSize;fontSize--){const test=wrapAt(fontSize),step=Math.ceil(fontSize*1.45);if(test.length*step<=height){chosen=fontSize;rows=test;leading=step;break}}
+    ctx.font=`${weight} ${chosen}px ${reportFont}`;
     const visibleRows=Math.max(1,Math.floor(height/leading));
     if(rows.length>visibleRows){rows=rows.slice(0,visibleRows);let last=rows[visibleRows-1]||"";while(last&&ctx.measureText(`${last}…`).width>width)last=last.slice(0,-1);rows[visibleRows-1]=`${last}…`}
     ctx.fillStyle=color;rows.forEach((row,index)=>ctx.fillText(row,x,y+chosen+index*leading));
@@ -1533,14 +1532,14 @@ function reportCanvas(){
   };
   ctx.fillStyle="#faf9f6";ctx.fillRect(0,0,W,H);ctx.strokeStyle="#e7e2ed";ctx.lineWidth=2;ctx.strokeRect(12,12,W-24,H-24);
   const cardX=64,reportW=772,innerX=cardX+30,innerW=reportW-60,purple="#7059ad",ink="#19171d";
-  const heroY=48,heroH=178,departureY=244,departureH=360,discoveryY=622,discoveryH=158,connectionY=798,connectionH=d.didRandom?190:160;
-  const finalY=connectionY+connectionH+18,finalH=150;
+  const heroY=48,heroH=178,departureY=246,departureH=340,discoveryY=608,discoveryH=158,connectionY=788,connectionH=d.didRandom?190:172;
+  const finalY=connectionY+connectionH+22,finalH=150;
   const card=(x,y,w,h,fill="#fff")=>rounded(x,y,w,h,18,fill,"#e6e0ee");
   const sectionHead=(x,y,num,english,korean,topic,topicBelow=false)=>{
     text(num,x,y,9,purple,850);text(english,x+40,y,9,purple,850);
     text(korean,x,y+30,15,purple,850);
     if(topic){
-      const titleFont=`850 30px "Noto Sans KR",sans-serif`,topicFont=`550 18px "Noto Sans KR",sans-serif`;
+      const titleFont=`850 30px ${reportFont}`,topicFont=`550 19px ${reportFont}`;
       ctx.font=titleFont;const titleWidth=ctx.measureText(korean).width;
       ctx.font=topicFont;const topicWidth=ctx.measureText(`- ${topic}`).width;
       if(!topicBelow&&titleWidth+topicWidth+18<=innerW){
@@ -1564,31 +1563,31 @@ function reportCanvas(){
   });
 
   card(cardX,departureY,reportW,departureH);
-  sectionHead(innerX,departureY+36,"01","DEPARTURE","나의 출발점","나는 무엇에 관심이 있는 사람인가?");
-  text("평소 관심을 두고 있는 분야 :",innerX,departureY+126,9,purple,800);
+  sectionHead(innerX,departureY+44,"01","DEPARTURE","나의 출발점","나는 무엇에 관심이 있는 사람인가?");
+  text("평소 관심을 두고 있는 분야 :",innerX,departureY+128,9,purple,800);
   const interests=`반복 관심 · ${d.interest}\n선택 분야 · ${d.fields.length?d.fields.join(" · "):"아직 선택한 분야가 없어요."}`;
-  fitPara(interests,innerX,departureY+136,innerW,86,18,11,ink,600);
-  text("내가 중요하게 생각하는 가치 :",innerX,departureY+246,9,purple,800);
+  fitPara(interests,innerX,departureY+139,innerW,84,18,11,ink,600);
+  text("내가 중요하게 생각하는 가치 :",innerX,departureY+239,9,purple,800);
   const valueLines=d.keywordDetails.length?d.keywordDetails.map(item=>`${item.word} · ${item.meaning}`).join("\n"):"나의 가치와 강점을 더 찾아가는 중이에요.";
-  fitPara(valueLines,innerX,departureY+252,innerW,96,17,16,ink,600);
+  fitPara(valueLines,innerX,departureY+251,innerW,82,17,16,ink,600);
 
   card(cardX,discoveryY,reportW,discoveryH);
-  sectionHead(innerX,discoveryY+32,"02","DISCOVERY","전시에서 발견한 것","시니어 비즈니스를 새로운 관점에서 바라보다.");
-  fitPara(d.discovery,innerX,discoveryY+92,innerW,discoveryH-104,18,10,ink,600);
+  sectionHead(innerX,discoveryY+44,"02","DISCOVERY","전시에서 발견한 것","시니어 비즈니스를 새로운 관점에서 바라보다.");
+  fitPara(d.discovery,innerX,discoveryY+102,innerW,discoveryH-112,18,10,ink,600);
 
   card(cardX,connectionY,reportW,connectionH);
-  sectionHead(innerX,connectionY+32,"03","CONNECTION","나의 관심과 비즈니스의 연결","내가 좋아하는 것과 사회의 새로운 가능성은 어떻게 연결될 수 있을까?",true);
-  fitPara(d.connection,innerX,connectionY+104,innerW,d.didRandom?40:connectionH-116,18,10,ink,600);
+  sectionHead(innerX,connectionY+44,"03","CONNECTION","나의 관심과 비즈니스의 연결","내가 좋아하는 것과 사회의 새로운 가능성은 어떻게 연결될 수 있을까?",true);
+  fitPara(d.connection,innerX,connectionY+116,innerW,d.didRandom?32:connectionH-125,18,10,ink,600);
   if(d.didRandom){
-    text("오늘 내가 계속 생각해 볼 것 :",innerX,connectionY+151,9,purple,800);
-    fitPara(d.randomPrompt,innerX,connectionY+160,innerW,25,16,11,ink,600);
+    text("오늘 내가 계속 생각해 볼 것 :",innerX,connectionY+153,9,purple,800);
+    fitPara(d.randomPrompt,innerX,connectionY+160,innerW,24,16,11,ink,600);
   }
 
   card(cardX,finalY,reportW,finalH,"#f2eff8");
-  text("FINAL DESTINATION",innerX,finalY+25,8,purple,850);
-  text("MY NEXT STATION",innerX,finalY+55,14,purple,850);
-  text("나의 다음 역은...",innerX,finalY+78,9,ink,600);
-  fitPara(d.next,innerX,finalY+86,innerW-40,finalH-96,18,10,ink,700);
+  text("FINAL DESTINATION",innerX,finalY+44,8,purple,850);
+  text("MY NEXT STATION",innerX,finalY+74,14,purple,850);
+  text("나의 다음 역은...",innerX,finalY+98,9,ink,600);
+  fitPara(d.next,innerX,finalY+106,innerW-40,finalH-116,18,10,ink,700);
   text("SIU MAP · MY JOURNEY REPORT",cardX,H-26,7,ink,650);
   return canvas;
 }
