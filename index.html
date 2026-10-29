@@ -1513,71 +1513,70 @@ function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=4){
 function reportCanvas(){
   const d=reportInsights(localStorage.getItem(participantNextStationKey())||"");
   const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d");
-  const W=900,H=1200,pad=42,gap=16,cardW=W-pad*2;
+  const W=900,H=1200;
   canvas.width=W;canvas.height=H;
-  const fs=n=>n,line=n=>n;
-  const rounded=(x,y,w,h,r,color,stroke)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=color;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}};
-  const reportFont='"Pretendard", "Noto Sans KR", Arial, sans-serif';
-  const text=(s,x,y,size=14,color="#292c33",weight=500,align="left")=>{ctx.font=`${weight} ${Math.round(fs(size)*2)}px ${reportFont}`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(String(s||""),x,y);ctx.textAlign="left"};
-  const para=(value,x,y,width,size=13,color="#424650",lineHeight=19,maxLines=3,weight=500)=>{ctx.font=`${weight} ${Math.round(fs(size)*2)}px ${reportFont}`;ctx.fillStyle=color;return wrapCanvasText(ctx,value,x,y,width,line(lineHeight)*2,maxLines)};
-  const fitPara=(value,x,y,width,height,size=18,minSize=12,color="#30333a",weight=600)=>{
-    const source=String(value||""),wrapAt=fontSize=>{ctx.font=`${weight} ${fontSize}px ${reportFont}`;const rows=[];let row="";for(const ch of Array.from(source)){if(ch==="\n"){rows.push(row);row="";continue}const candidate=row+ch;if(row&&ctx.measureText(candidate).width>width){rows.push(row);row=ch}else row=candidate}if(row||!rows.length)rows.push(row);return rows};
-    let chosen=minSize,rows=wrapAt(minSize),leading=Math.ceil(minSize*1.45);
-    for(let fontSize=size;fontSize>=minSize;fontSize--){const test=wrapAt(fontSize),step=Math.ceil(fontSize*1.45);if(test.length*step<=height){chosen=fontSize;rows=test;leading=step;break}}
-    ctx.font=`${weight} ${chosen}px ${reportFont}`;
-    const visibleRows=Math.max(1,Math.floor(height/leading));
-    if(rows.length>visibleRows){rows=rows.slice(0,visibleRows);let last=rows[visibleRows-1]||"";while(last&&ctx.measureText(`${last}…`).width>width)last=last.slice(0,-1);rows[visibleRows-1]=`${last}…`}
-    ctx.fillStyle=color;rows.forEach((row,index)=>ctx.fillText(row,x,y+chosen+index*leading));
-    return {fontSize:chosen,lines:rows.length,height:rows.length*leading};
+  const font='"Pretendard", "Noto Sans KR", Arial, sans-serif';
+  const C={paper:"#f4f2ed",white:"#fffefa",ink:"#252236",muted:"#625e70",purple:"#6846bd",lavender:"#f0eafd",line:"#e7e1f1",mint:"#b9f0dc",gold:"#f1c66d"};
+  const rounded=(x,y,w,h,r,fill,stroke)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke()}};
+  const text=(s,x,y,size,color=C.ink,weight=500,align="left")=>{ctx.font=`${weight} ${size}px ${font}`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(String(s||""),x,y);ctx.textAlign="left"};
+  const fitted=(value,x,top,width,height,size=22,minSize=13,color=C.ink,weight=550)=>{
+    const source=String(value||""),wrapAt=fontSize=>{ctx.font=`${weight} ${fontSize}px ${font}`;const out=[];let row="";for(const ch of Array.from(source)){if(ch==="\n"){out.push(row);row="";continue}const next=row+ch;if(row&&ctx.measureText(next).width>width){out.push(row);row=ch}else row=next}if(row||!out.length)out.push(row);return out};
+    let chosen=minSize,rows=wrapAt(minSize),leading=Math.ceil(minSize*1.42);
+    for(let n=size;n>=minSize;n--){const test=wrapAt(n),step=Math.ceil(n*1.42);if(test.length*step<=height){chosen=n;rows=test;leading=step;break}}
+    const maxRows=Math.max(1,Math.floor(height/leading));if(rows.length>maxRows){rows=rows.slice(0,maxRows);ctx.font=`${weight} ${chosen}px ${font}`;let last=rows[maxRows-1];while(last&&ctx.measureText(last+"…").width>width)last=last.slice(0,-1);rows[maxRows-1]=last+"…"}
+    ctx.font=`${weight} ${chosen}px ${font}`;ctx.fillStyle=color;rows.forEach((row,i)=>ctx.fillText(row,x,top+chosen+i*leading));return rows.length;
   };
-  ctx.fillStyle="#faf9f6";ctx.fillRect(0,0,W,H);ctx.strokeStyle="#e7e2ed";ctx.lineWidth=2;ctx.strokeRect(12,12,W-24,H-24);
-  const cardX=64,reportW=772,innerX=cardX+30,innerW=reportW-60,purple="#7059ad",ink="#19171d";
-  const heroY=48,heroH=178,departureY=246,departureH=360,discoveryY=624,discoveryH=158,connectionY=800,connectionH=190;
-  const finalY=connectionY+connectionH+18,finalH=150;
-  const card=(x,y,w,h,fill="#fff")=>rounded(x,y,w,h,18,fill,"#e6e0ee");
-  const sectionHead=(x,y,num,korean)=>{
-    text(num,x,y+30,10,purple,850);text(korean,x+42,y+30,15,purple,850);
-  };
-  const hero=ctx.createLinearGradient(cardX,heroY,cardX+reportW,heroY+heroH);hero.addColorStop(0,"#29243e");hero.addColorStop(1,"#5a4781");
-  rounded(cardX,heroY,reportW,heroH,22,hero);
-  text("SIU MAP",cardX+reportW-30,heroY+28,10,"#fff",850,"right");
-  text("MY NEXT STATION",innerX,heroY+65,17,"#fff",850);
-  text("나의 관심에서 시작된 여정",innerX,heroY+89,9,"#fff",600);
-  const metaY=heroY+123,metaWidth=(reportW-90)/3;
-  [["NAME",participantId||"나"],["MAJOR",d.department||"미입력"],["DATE",d.dateText]].forEach(([label,value],i)=>{
-    const x=innerX+i*metaWidth;
-    if(i){ctx.strokeStyle="#ffffff70";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x-16,metaY-8);ctx.lineTo(x-16,metaY+30);ctx.stroke()}
-    text(label,x,metaY,7,"#fff",800);
-    fitPara(String(value),x,metaY+4,metaWidth-22,22,18,12,"#fff",700);
+  const card=(x,y,w,h,fill=C.white)=>{ctx.save();ctx.shadowColor="#32244f12";ctx.shadowBlur=18;ctx.shadowOffsetY=5;rounded(x,y,w,h,24,fill);ctx.restore();rounded(x,y,w,h,24,fill,C.line)};
+  const badge=(x,y,label)=>{rounded(x,y,48,38,13,C.lavender);text(label,x+24,y+26,17,C.purple,850,"center")};
+  const sectionTitle=(x,y,n,title)=>{badge(x,y-25,n);text(title,x+65,y+2,26,C.ink,760)};
+  const label=(s,x,y)=>text(s,x,y,18,C.purple,760);
+  const left=48,width=804,inside=82,insideW=736;
+  ctx.fillStyle=C.paper;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle="#e9e4f0";ctx.beginPath();ctx.arc(831,1092,106,0,Math.PI*2);ctx.fill();ctx.fillStyle="#f5e9cf";ctx.beginPath();ctx.arc(51,715,64,0,Math.PI*2);ctx.fill();
+
+  const heroY=38,heroH=220;
+  const gradient=ctx.createLinearGradient(left,heroY,left+width,heroY+heroH);gradient.addColorStop(0,"#272238");gradient.addColorStop(.58,"#44315f");gradient.addColorStop(1,"#6846bd");
+  ctx.save();ctx.shadowColor="#34234b30";ctx.shadowBlur=25;ctx.shadowOffsetY=10;rounded(left,heroY,width,heroH,30,gradient);ctx.restore();
+  // A compact three-stop route mark anchors the report to the SIU MAP identity.
+  text("SIU MAP",inside,heroY+39,16,"#d8cbff",850);
+  ctx.strokeStyle="#d8cbff88";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(680,heroY+32);ctx.lineTo(788,heroY+32);ctx.stroke();
+  [680,734,788].forEach((x,i)=>{ctx.beginPath();ctx.arc(x,heroY+32,i===1?5:4,0,Math.PI*2);ctx.fillStyle=i===1?C.mint:"#d8cbff";ctx.fill()});
+  text("나의 관심 지도",inside,heroY+99,40,"#fffefa",780);
+  text("관심에서 시작해 가능성으로 이어진 나의 여정",inside,heroY+128,17,"#e5ddf4",500);
+  const metaY=heroY+151,metaGap=12,metaW=(width-56-metaGap*2)/3,metaX=inside;
+  [["NAME",participantId||"나"],["MAJOR",d.department||"미입력"],["DATE",d.dateText]].forEach(([k,v],i)=>{
+    const x=metaX+i*(metaW+metaGap);rounded(x,metaY,metaW,54,14,"#ffffff16","#ffffff30");
+    text(k,x+14,metaY+20,11,"#d7c9f4",800);fitted(String(v),x+14,metaY+23,metaW-28,26,17,12,"#fffefa",650);
   });
 
-  const departureX=cardX-12,departureW=reportW+24,departureInnerX=innerX-12,departureInnerW=innerW+24;
-  card(departureX,departureY,departureW,departureH);
-  sectionHead(departureInnerX,departureY+44,"01","나의 출발점");
-  text("평소 관심을 두고 있는 분야 :",departureInnerX,departureY+124,9,purple,800);
-  const interests=`반복 관심 · ${d.interest}\n선택 분야 · ${d.fields.length?d.fields.join(" · "):"아직 선택한 분야가 없어요."}`;
-  fitPara(interests,departureInnerX,departureY+141,departureInnerW,66,18,11,ink,600);
-  text("내가 중요하게 생각하는 가치 :",departureInnerX,departureY+224,9,purple,800);
-  const valueLines=d.keywordDetails.length?d.keywordDetails.map(item=>`${item.word} · ${item.meaning}`).join("\n"):"나의 가치와 강점을 더 찾아가는 중이에요.";
-  fitPara(valueLines,departureInnerX,departureY+241,departureInnerW,58,17,16,ink,600);
+  const departureY=280,departureH=360,discoveryY=658,discoveryH=160,connectionY=836,connectionH=180,finalY=1034,finalH=130;
+  card(left,departureY,width,departureH);
+  ctx.fillStyle=C.purple;rounded(left,departureY,7,departureH,4,C.purple);
+  sectionTitle(inside,departureY+53,"01","나의 출발점");
+  label("평소 관심을 두고 있는 분야",inside,departureY+101);
+  const interests=`${d.interest}\n${d.fields.length?d.fields.join("  ·  "):"아직 선택한 분야가 없어요."}`;
+  fitted(interests,inside,departureY+111,insideW,93,21,13,C.ink,560);
+  label("내가 중요하게 생각하는 가치",inside,departureY+225);
+  const valueLines=d.keywordDetails.length?d.keywordDetails.map(item=>`${item.word}  ·  ${item.meaning}`).join("\n"):"나의 가치와 강점을 더 찾아가는 중이에요.";
+  fitted(valueLines,inside,departureY+235,insideW,58,19,13,C.ink,560);
   if(d.didRandom){
-    text("오늘 내가 계속 생각해 볼 것 :",departureInnerX,departureY+309,9,purple,800);
-    fitPara(d.randomPrompt,departureInnerX,departureY+326,departureInnerW,30,16,10,ink,600);
+    label("오늘 내가 계속 생각해 볼 것",inside,departureY+310);
+    fitted(d.randomPrompt,inside,departureY+318,insideW,32,18,12,C.ink,600);
   }
 
-  card(cardX,discoveryY,reportW,discoveryH);
-  sectionHead(innerX,discoveryY+44,"02","전시에서 발견한 것");
-  fitPara(d.discovery,innerX,discoveryY+102,innerW,discoveryH-112,18,10,ink,600);
+  card(left,discoveryY,width,discoveryH);
+  sectionTitle(inside,discoveryY+49,"02","전시에서 발견한 것");
+  fitted(d.discovery,inside,discoveryY+78,insideW,65,21,13,C.ink,560);
 
-  card(cardX,connectionY,reportW,connectionH);
-  sectionHead(innerX,connectionY+44,"03","나의 관심과 비즈니스의 연결");
-  fitPara(d.connection,innerX,connectionY+102,innerW,connectionH-112,18,10,ink,600);
+  card(left,connectionY,width,connectionH);
+  sectionTitle(inside,connectionY+49,"03","나의 관심과 비즈니스의 연결");
+  fitted(d.connection,inside,connectionY+78,insideW,83,21,13,C.ink,560);
 
-  card(cardX,finalY,reportW,finalH,"#f2eff8");
-  text("MY NEXT STATION",innerX,finalY+64,14,purple,850);
-  text("나의 다음 역은...",innerX,finalY+91,9,ink,600);
-  fitPara(d.next,innerX,finalY+108,innerW-40,finalH-118,18,10,ink,700);
-  text("SIU MAP · MY JOURNEY REPORT",cardX,H-26,7,ink,650);
+  card(left,finalY,width,finalH,"#eee8fb");
+  rounded(left,finalY,7,finalH,4,C.purple);
+  text("MY NEXT STATION",inside,finalY+43,20,C.purple,850);
+  fitted(d.next,inside,finalY+58,insideW,54,25,15,C.ink,650);
+  text("SIU MAP  ·  MY JOURNEY REPORT",inside,H-17,12,C.muted,700);
   return canvas;
 }
 async function saveReportImage(){
