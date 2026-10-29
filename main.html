@@ -281,7 +281,8 @@ button{font:inherit}
 .tag{font-size:10px;font-weight:950;color:var(--purple);letter-spacing:.12em}
 .modal h2{font-size:25px;margin:7px 0 10px;letter-spacing:-.05em}
 .modal p{font-size:14px;line-height:1.65;color:#6f737b;margin:0 0 16px}
-#question{font-weight:850;color:#25242b}
+#question{font-weight:850;color:#25242b;white-space:pre-line}
+#modalBg.station-question-spaced .modal h2{margin-bottom:20px}
 .close{border:0;background:#f1f2f4;border-radius:50%;width:42px;height:42px;font-size:23px}
 .answers{display:grid;gap:10px}
 .answer{display:flex;align-items:center;justify-content:center;min-height:68px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:16px;text-align:center;padding:17px 18px;font-size:15px;font-weight:750;line-height:1.5;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
@@ -1287,11 +1288,11 @@ function getTransferQuestion(){
   const focus=didDraw?randomAnswer:(fieldAnswer||"Q4에서 선택한 분야");
   const lastChar=focus.charCodeAt(focus.length-1);
   const hasBatchim=lastChar>=0xAC00&&lastChar<=0xD7A3&&(lastChar-0xAC00)%28!==0;
-  return `${focus}${hasBatchim?"과":"와"} 시니어비즈니스를 어떻게 연결 지을 수 있을까요?`;
+  return `${focus}${hasBatchim?"과":"와"}\n시니어비즈니스를 어떻게 연결 지을 수 있을까요?`;
 }
 function openStation(id){
   current=id;selected=null;
-  document.getElementById("modalBg").classList.remove("self-random-expanded","essay-station");
+  document.getElementById("modalBg").classList.remove("self-random-expanded","essay-station","station-question-spaced");
   const s=stations[id];
   document.getElementById("tag").textContent=s.tag;
   document.getElementById("modalTitle").textContent=s.title;
@@ -1314,6 +1315,7 @@ function openStation(id){
   document.getElementById("question").hidden=false;
   const essayOnly=s.answerMode==="essay";
   document.getElementById("modalBg").classList.toggle("essay-station",essayOnly);
+  document.getElementById("modalBg").classList.toggle("station-question-spaced",id==="seniorBusiness"||id==="transfer");
   document.querySelector(".answer-mode").hidden=essayOnly;
   currentQuestion=id==="transfer"?getTransferQuestion():s.q;
   document.getElementById("question").textContent=currentQuestion;
