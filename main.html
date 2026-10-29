@@ -1452,7 +1452,9 @@ function latestAnswers(){
 }
 function reportInsights(next){
   const a=latestAnswers();
-  const interest=a["career:초중고 공통 관심사"]||"반복해서 나타난 나의 관심";
+  const interestAnswer=String(a["career:초중고 공통 관심사"]||"").trim();
+  const interestUnknown=!interestAnswer||/^(아직\s*)?(잘\s*)?모르겠(?:어요|습니다|다|음|는데요)?[.!?\s]*$/i.test(interestAnswer);
+  const interest=interestUnknown?(interestAnswer?"아직 찾아가는 중이에요":"아직 기록되지 않았어요"):interestAnswer;
   const keywords=(a["career:듣고 싶은 말"]||"").split(" / ").filter(Boolean);
   const field=(a["career:어떤 분야에 새로운 가능성 펼치기"]||"").split(" / ").filter(Boolean);
   const seniorDiscovery=a.seniorBusiness||"시니어비즈니스와 경영, 씨유레터의 이야기를 살펴보는 중이에요.";
@@ -1483,11 +1485,13 @@ function reportInsights(next){
     "아직 잘 모르겠지만 새로운 분야를 탐색해 보고 싶다":["새로운 분야 탐색","가능성을 열어 두고 경험해 보는 일"]
   };
   const fieldLabels=field.map(value=>fieldReadings[value]?.[0]||value);
-  const traitText=keywords.slice(0,2).map(word=>traitReadings[word]).filter(Boolean);
-  const selfReading=traitText.length
-    ?`‘${interest}’에 반복해서 마음이 가고, 선택한 키워드에서는 ${traitText[0]} 모습이 보여요.`
-    :`반복해서 적은 관심 ‘${interest}’에서 나를 알아가는 실마리를 찾았어요.`;
-  return {interest,keywords,fieldLabels,seniorDiscovery,transferStops,selfReading,next};
+  const keywordReadings=keywords.slice(0,2).map(word=>({word,meaning:traitReadings[word]})).filter(item=>item.meaning);
+  const selfReading=interestUnknown
+    ?"아직 하나의 관심으로 정하지 않아도 괜찮아요. Q3 사진에서 고른 키워드가 나의 강점과 끌리는 방식을 살펴보는 단서가 돼요."
+    :keywordReadings.length
+      ?`Q2에 적은 관심 ‘${interest}’와 Q3 사진에서 고른 키워드를 함께 보면, 내가 중요하게 여기는 방향을 발견할 수 있어요.`
+      :`Q2에 적은 관심 ‘${interest}’에서 나를 알아가는 실마리를 찾았어요.`;
+  return {interest,interestUnknown,keywords,keywordReadings,fieldLabels,seniorDiscovery,transferStops,selfReading,next};
 }
 function areasLabel(id){return ({finance:"금융",welfare:"사회복지",culture:"문화콘텐츠",sports:"체육",education:"교육",realestate:"부동산·주거"})[id]||id}
 function htmlEscape(value){return String(value||"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char])}
@@ -1523,7 +1527,7 @@ function reportCanvas(){
   const pills=(values,x,y,maxWidth)=>{let px=x,py=y;ctx.font=`600 ${fs(10)}px "Noto Sans KR",sans-serif`;for(const value of values){const name=String(value),pillW=Math.min(maxWidth,ctx.measureText(name).width+fs(18)),pillH=fs(22);if(px+pillW>x+maxWidth){px=x;py+=pillH+fs(5)}rounded(px,py,pillW,pillH,pillH/2,"#f0edfb");text(name,px+fs(9),py+pillH*.69,10,"#67529d",650);px+=pillW+fs(6)}return py+fs(22)};
   ctx.fillStyle="#f5f6f9";ctx.fillRect(0,0,W,H);ctx.strokeStyle="#e2e4e8";ctx.lineWidth=1;ctx.strokeRect(7,7,W-14,H-14);
 
-  const usableH=H-pad*2-gap*4,heights=[usableH*.155,usableH*.185,usableH*.245,usableH*.145,usableH*.19];
+  const usableH=H-pad*2-gap*3,heights=[usableH*.16,usableH*.25,usableH*.32,usableH*.25];
   let y=pad;
   const hero=ctx.createLinearGradient(pad,y,pad+cardW,y+heights[0]);hero.addColorStop(0,"#24223b");hero.addColorStop(1,"#55428b");
   rounded(pad,y,cardW,heights[0],fs(17),hero);
@@ -1534,34 +1538,32 @@ function reportCanvas(){
 
   card(y,heights[1]);label("01   나를 알아가는 역",pad+fs(15),y+fs(19),"#3776e8");
   const interestY=y+fs(44),innerW=cardW-fs(30);
-  let cy=para(d.interest,pad+fs(15),interestY,innerW,15,"#20232a",line(20),2,800)+fs(4);
-  cy=pills(d.keywords.length?d.keywords.slice(0,2):["반복해서 나타난 나의 관심"],pad+fs(15),cy,innerW)+fs(7);
-  label("자기탐색에서 읽힌 나의 모습",pad+fs(15),cy,"#3776e8");
-  para(d.selfReading,pad+fs(15),cy+fs(17),innerW,10,"#444954",line(14),2,500);
+  let cy=para(d.interest,pad+fs(15),interestY,innerW,15,"#20232a",line(20),2,800)+fs(5);
+  label("Q3 사진에서 선택한 키워드",pad+fs(15),cy,"#3776e8");
+  cy+=fs(8);
+  const keywordDetails=d.keywordReadings.length?d.keywordReadings:[{word:"키워드 없음",meaning:"선택한 키워드가 아직 기록되지 않았어요."}];
+  keywordDetails.forEach((item,index)=>{
+    const rowY=cy+index*fs(30);
+    text(item.word,pad+fs(15),rowY+fs(10),10,"#55418f",750);
+    para(item.meaning,pad+fs(15),rowY+fs(25),innerW,9,"#565b66",line(12),1,500);
+  });
+  const insightY=cy+keywordDetails.length*fs(30)+fs(2);
+  para(d.selfReading,pad+fs(15),insightY,innerW,9,"#444954",line(12),2,500);
   y+=heights[1]+gap;
 
-  card(y,heights[2],"#fff","#e4def2");label("02   나의 여정에서 만난 역",pad+fs(15),y+fs(19),"#7654e8");
-  const nodes=[["자기탐색역","나를 알아보기"],["시니어비즈니스역","새 발견 적기"],["환승센터역","분야 둘러보기"],["나의 다음 역","해볼 일 정리"]];
-  const timelineY=y+fs(37),rowH=Math.min(fs(27),(heights[2]-fs(55))/4),nodeX=pad+fs(15),copyX=nodeX+fs(20);
-  nodes.forEach(([title,desc],i)=>{const rowY=timelineY+i*rowH;ctx.beginPath();ctx.arc(nodeX+fs(4),rowY-fs(3),fs(4),0,Math.PI*2);ctx.fillStyle=i===3?"#54a78d":"#9c89d0";ctx.fill();if(i<nodes.length-1){ctx.strokeStyle="#ded8ed";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(nodeX+fs(4),rowY+fs(2));ctx.lineTo(nodeX+fs(4),rowY+rowH-fs(5));ctx.stroke()}text(title,copyX,rowY,11,i===3?"#7654e8":"#4c4f59",750);text(`· ${desc}`,copyX+fs(100),rowY,9,"#85818f",500)});
-  const quoteY=y+heights[2]-fs(47);rounded(pad+fs(12),quoteY,cardW-fs(24),fs(37),fs(9),"#f6f3fc","#e6def5");
-  label("시니어비즈니스에서 새롭게 발견한 점",pad+fs(20),quoteY+fs(13),"#7654e8");
-  para(d.seniorDiscovery,pad+fs(20),quoteY+fs(29),cardW-fs(40),9,"#393442",line(12),1,600);
+  card(y,heights[2],"#fff","#e4def2");label("02   나의 여정과 발견",pad+fs(15),y+fs(20),"#7654e8");
+  para("자기탐색역  →  시니어비즈니스역  →  환승센터역  →  나의 다음 역",pad+fs(15),y+fs(46),innerW,10,"#55515f",line(15),2,650);
+  const discoveryLabelY=y+fs(46)+fs(37);
+  label("시니어비즈니스에서 새롭게 발견한 점",pad+fs(15),discoveryLabelY,"#7654e8");
+  const quoteY=discoveryLabelY+fs(15),quoteH=Math.max(fs(66),heights[2]-(quoteY-y)-fs(17));
+  rounded(pad+fs(12),quoteY,cardW-fs(24),quoteH,fs(11),"#f6f3fc","#e6def5");
+  text("새롭게 발견한 점",pad+fs(23),quoteY+fs(22),9,"#8b79b5",700);
+  para(d.seniorDiscovery,pad+fs(23),quoteY+fs(43),cardW-fs(46),12,"#393442",line(17),Math.max(2,Math.floor((quoteH-fs(49))/line(17))),600);
   y+=heights[2]+gap;
 
-  card(y,heights[3],"#28243a");text("03   나의 다음 한 줄",pad+fs(15),y+fs(20),11,"#c8b6ff",800);
-  para("나의 관심과 시니어비즈니스를 다음 경험으로 잇기",pad+fs(15),y+fs(39),innerW,9,"#d9d3e5",line(12),1,550);
-  para(d.next,pad+fs(15),y+fs(61),innerW,12,"#fff",line(16),3,650);
-  y+=heights[3]+gap;
-
-  card(y,heights[4],"#f0f2f7");label(`04   환승센터에서 둘러본 분야 · ${d.transferStops.length}곳`,pad+fs(15),y+fs(18),"#707681");
-  const routeTags=[...d.fieldLabels.slice(0,3),"AI 학점 계산기"];
-  if(d.fieldLabels.length>3)routeTags.push(`외 ${d.fieldLabels.length-3}개 분야`);
-  const tagsBottom=pills(routeTags.length?routeTags:["기록지 Q4 선택 분야","AI 학점 계산기"],pad+fs(15),y+fs(28),innerW);
-  const transferRows=d.transferStops.slice(0,3),rowBase=Math.min(tagsBottom+fs(4),y+heights[4]-fs(12));
-  if(!transferRows.length)text("아직 선택한 역이 없어요.",pad+fs(15),rowBase,9,"#858a95",550);
-  const rowStep=fs(15);
-  transferRows.forEach((stop,index)=>{const rowY=rowBase+index*rowStep;if(rowY>y+heights[4]-fs(5))return;ctx.beginPath();ctx.arc(pad+fs(18),rowY-fs(3),fs(2.5),0,Math.PI*2);ctx.fillStyle="#8a70df";ctx.fill();para(`${stop.title} · ${stop.answer}`,pad+fs(27),rowY,innerW-fs(12),8,"#424650",line(10),1,550)});
+  card(y,heights[3],"#28243a");text("03   나의 다음 한 줄",pad+fs(15),y+fs(23),11,"#c8b6ff",800);
+  para("나의 관심과 시니어비즈니스를 다음 경험으로 잇기",pad+fs(15),y+fs(45),innerW,9,"#d9d3e5",line(13),1,550);
+  para(d.next,pad+fs(15),y+fs(72),innerW,13,"#fff",line(18),4,650);
   text("SIU MAP · 나의 길 찾기 여정",pad,H-pad/2,8,"#858a95",600);
   text("관심에서 출발해 내가 해볼 일을 찾았어요",W-pad,H-pad/2,8,"#858a95",550,"right");
   return canvas;
