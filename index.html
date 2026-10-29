@@ -959,7 +959,7 @@ const stations={
 
 let participantId="";
 let done=[];
-let current=null,selected=null,answerMode="choice";
+let current=null,currentQuestion="",selected=null,answerMode="choice";
 let flushingResponses=false;
 
 // 응답을 보낼 Google Apps Script 웹 앱 URL을 여기에 입력하세요. 빈 문자열이면 브라우저에만 저장합니다.
@@ -1259,6 +1259,16 @@ async function completeSelfExploration(){
   localStorage.setItem(participantDoneKey(),JSON.stringify(done));
   closeModal();render();
 }
+function getTransferQuestion(){
+  const answers=latestAnswers();
+  const randomAnswer=String(answers["career:랜덤뽑기"]||"").trim();
+  const fieldAnswer=String(answers["career:어떤 분야에 새로운 가능성 펼치기"]||"").trim();
+  const didDraw=!!randomAnswer&&randomAnswer!=="안 했어요"&&randomAnswer!=="했어요";
+  const focus=didDraw?randomAnswer:(fieldAnswer||"Q4에서 선택한 분야");
+  const lastChar=focus.charCodeAt(focus.length-1);
+  const hasBatchim=lastChar>=0xAC00&&lastChar<=0xD7A3&&(lastChar-0xAC00)%28!==0;
+  return `${focus}${hasBatchim?"과":"와"} 시니어비즈니스를 어떻게 연결 지을 수 있을까요?`;
+}
 function openStation(id){
   current=id;selected=null;
   document.getElementById("modalBg").classList.remove("self-random-expanded","essay-station");
@@ -1285,7 +1295,8 @@ function openStation(id){
   const essayOnly=s.answerMode==="essay";
   document.getElementById("modalBg").classList.toggle("essay-station",essayOnly);
   document.querySelector(".answer-mode").hidden=essayOnly;
-  document.getElementById("question").textContent=s.q;
+  currentQuestion=id==="transfer"?getTransferQuestion():s.q;
+  document.getElementById("question").textContent=currentQuestion;
   document.getElementById("answers").innerHTML=s.a.map((a,i)=>
     `<button class="answer" onclick="selectAnswer(this,${i})">${a}</button>`).join("");
   answerMode=essayOnly?"essay":"choice";document.getElementById("essayAnswer").value="";document.getElementById("essayAnswer").hidden=!essayOnly;
@@ -1366,7 +1377,7 @@ function completeStation(){
   if(current==="career"){completeSelfExploration();return}
   const essay=document.getElementById("essayAnswer").value.trim();
   if(!current||(answerMode==="choice"&&selected===null)||(answerMode==="essay"&&!essay))return;
-  const s=stations[current];submitResponse({stationId:current,stationTitle:s.title,question:s.q,answerType:s.answerType||answerMode,answer:answerMode==="choice"?s.a[selected]:essay});
+  const s=stations[current];submitResponse({stationId:current,stationTitle:s.title,question:currentQuestion||s.q,answerType:s.answerType||answerMode,answer:answerMode==="choice"?s.a[selected]:essay});
   if(!done.includes(current))done.push(current);
   localStorage.setItem(participantDoneKey(),JSON.stringify(done));
   closeModal();render();
