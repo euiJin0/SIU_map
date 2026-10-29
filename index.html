@@ -1567,8 +1567,11 @@ function reportCanvas(){
   if(d.didRandom){
     const sx=inside+8,sy=connectionY+160;
     ctx.save();ctx.translate(sx,sy);ctx.strokeStyle=C.gold;ctx.lineWidth=3;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(0,8);ctx.moveTo(-8,0);ctx.lineTo(8,0);ctx.moveTo(-5,-5);ctx.lineTo(5,5);ctx.moveTo(-5,5);ctx.lineTo(5,-5);ctx.stroke();ctx.restore();
-    label("오늘 내가 계속 생각해 볼 것",inside+24,connectionY+165);
-    fitted(d.randomPrompt,inside+24,connectionY+173,insideW-24,38,18,12,C.ink,600);
+    const reflectionLabel="오늘 내가 계속 생각해 볼 것 :",reflectionText=String(d.randomPrompt||"");
+    let reflectionSize=17;ctx.font=`760 ${reflectionSize}px ${font}`;
+    while(reflectionSize>13&&ctx.measureText(reflectionLabel+reflectionText).width>insideW-38){reflectionSize--;ctx.font=`760 ${reflectionSize}px ${font}`}
+    const reflectionY=connectionY+166;ctx.fillStyle=C.purple;ctx.fillText(reflectionLabel,inside+24,reflectionY);
+    const labelWidth=ctx.measureText(reflectionLabel).width;ctx.font=`600 ${reflectionSize}px ${font}`;ctx.fillStyle=C.ink;ctx.fillText(reflectionText,inside+24+labelWidth+6,reflectionY);
   }
 
   card(left,finalY,width,finalH,"#f0ecf8");
