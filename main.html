@@ -282,8 +282,9 @@ button{font:inherit}
 .modal h2{font-size:25px;margin:7px 0 10px;letter-spacing:-.05em}
 .modal p{font-size:14px;line-height:1.65;color:#6f737b;margin:0 0 16px}
 #question{font-weight:850;color:#25242b;white-space:pre-line}
-#modalBg.station-question-spaced .modal h2{margin-bottom:20px}
-#modalBg.station-question-spaced #question{margin:8px 0 16px;padding:15px 16px;border:1px solid #e8e1f4;border-radius:15px;background:#f8f6fc;line-height:1.9}
+#modalBg.station-question-spaced .modal h2{margin-bottom:14px}
+#modalBg.station-question-spaced .station-question-step{margin:0 0 10px}
+#modalBg.station-question-spaced #question{line-height:1.9}
 .close{border:0;background:#f1f2f4;border-radius:50%;width:42px;height:42px;font-size:23px}
 .answers{display:grid;gap:10px}
 .answer{display:flex;align-items:center;justify-content:center;min-height:68px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:16px;text-align:center;padding:17px 18px;font-size:15px;font-weight:750;line-height:1.5;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
@@ -816,6 +817,7 @@ body{background:#f2f3f5;overflow-y:hidden}
       </div>
       <button class="close" onclick="closeModal()">×</button>
     </div>
+    <div class="self-step station-question-step" id="stationQuestionStep" hidden>질문 1 / 1</div>
     <p id="question"></p>
     <div class="answer-mode"><button class="mode-btn active" id="choiceMode" onclick="setAnswerMode('choice')">선택 답변</button><button class="mode-btn" id="essayMode" onclick="setAnswerMode('essay')">서술 답변</button></div>
     <div class="answers" id="answers"></div>
@@ -1294,6 +1296,8 @@ function getTransferQuestion(){
 function openStation(id){
   current=id;selected=null;
   document.getElementById("modalBg").classList.remove("self-random-expanded","essay-station","station-question-spaced");
+  const stationQuestionStep=document.getElementById("stationQuestionStep");
+  stationQuestionStep.hidden=id!=="seniorBusiness"&&id!=="transfer";
   const s=stations[id];
   document.getElementById("tag").textContent=s.tag;
   document.getElementById("modalTitle").textContent=s.title;
