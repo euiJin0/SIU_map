@@ -315,6 +315,8 @@ button{font:inherit}
 .report-image-save{display:none}
 .report-image-mode .report-image-save{position:absolute;z-index:3;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:10px;width:min(84vw,360px);min-height:54px;padding:0 24px;border:0;border-radius:999px;background:linear-gradient(135deg,#7654cf,#5f3caf);color:#fff;font:800 15px "Pretendard","Noto Sans KR",Arial,sans-serif;box-shadow:0 8px 24px #38206d40;touch-action:manipulation}
 .report-image-save:active{transform:translateX(-50%) scale(.98)}
+.sequence-notice{position:fixed;z-index:500;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,12px);width:max-content;max-width:calc(100vw - 40px);padding:13px 18px;border-radius:14px;background:#29243e;color:#fff;font-size:13px;font-weight:750;line-height:1.5;text-align:center;box-shadow:0 8px 26px #1d153533;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+.sequence-notice.show{opacity:1;transform:translate(-50%,0)}
 .report-head{padding:14px 13px;background:#f1f3f9;border-radius:10px;margin-bottom:9px}
 .report-eyebrow{font-size:8px;color:#7965c6;letter-spacing:.08em;font-weight:800}
 .report-head h2{font-size:21px;margin:4px 0 3px;letter-spacing:-.05em}
@@ -580,7 +582,6 @@ body{background:#f2f3f5;overflow-y:hidden}
   #modalBg .self-field-options .self-option{padding:6px 7px;font-size:11px;line-height:1.2}
   #modalBg .self-field-options .field-option-label{font-size:12px}
   #modalBg .self-field-options .field-option-detail{font-size:9px}
-  #modalBg .self-yes-no{flex:0 0 auto}
   #modalBg .self-nav{gap:8px;margin-top:8px;flex:none}
   #modalBg .self-nav .mode-btn{min-height:42px;font-size:13px}
 }
@@ -614,15 +615,6 @@ body{background:#f2f3f5;overflow-y:hidden}
   .audio-dock{gap:7px;padding:8px 9px}.dock-play{width:34px;height:34px}.dock-open{padding:7px;font-size:9px}
 }
 /* 랜덤 쪽지 8개가 모두 보이도록 마지막 단계에서만 선택 버튼 간격을 알맞게 조정합니다. */
-#modalBg.self-random-expanded .self-flow{padding:2px 0}
-#modalBg.self-random-expanded #selfStepPrompt{font-size:17px;margin:8px 0}
-#modalBg.self-random-expanded #selfInput .self-note{font-size:11px;margin:5px 0}
-#modalBg.self-random-expanded #selfInput .self-options{gap:6px}
-#modalBg.self-random-expanded #selfInput .self-yes-no .self-option{min-height:44px;padding:7px;font-size:12px}
-#modalBg.self-random-expanded #selfInput .self-options:not(.self-yes-no) .self-option{min-height:0;padding:7px;font-size:12px}
-#modalBg.self-random-expanded .self-nav{margin-top:8px}
-#modalBg.self-random-expanded .self-nav .mode-btn{min-height:44px}
-#modalBg.self-random-expanded .complete{min-height:50px;margin-top:7px;padding:10px;font-size:13px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -721,7 +713,7 @@ body{background:#f2f3f5;overflow-y:hidden}
           <div class="station-dot"></div>
           <div>
             <div class="station-title-line"><div class="station-title">시니어비즈니스역</div></div>
-            <div class="station-desc">시니어의 삶을 이해하고 새로운 비즈니스 가능성 발견하기</div>
+            <div class="station-desc">초고령사회, 새로운 기회와 가능성이 열리다.</div>
           </div>
           <button class="plus" data-station="seniorBusiness" aria-label="스탬프" onclick="event.stopPropagation();openStation('seniorBusiness')">＋</button>
         </div>
@@ -810,10 +802,12 @@ body{background:#f2f3f5;overflow-y:hidden}
 <div class="report-bg" id="reportBg" onclick="closeReport(event)">
   <div class="report-panel" onclick="event.stopPropagation()">
     <div class="report-toolbar"><strong id="reportToolbarTitle">나의 여정 리포트</strong><button onclick="closeReport()">닫기</button></div>
-    <div id="nextStationForm"><div class="report-paper"><div class="report-eyebrow">MY NEXT STATION</div><h2 style="font-size:20px;margin:5px 0">내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?</h2><p class="report-copy">떠오르는 가능성을 한 줄로 적어주세요.</p><textarea class="next-answer" id="nextAnswer" maxlength="180" placeholder="예: 시니어의 취향을 담은 문화 콘텐츠를 직접 기획해 보고 싶다."></textarea><div style="font-size:9px;color:#888">한 줄을 저장하면 나의 다음 역 스탬프를 받을 수 있어요.</div></div><button class="complete" id="saveNextStationBtn" disabled onclick="saveNextStationAnswer()">답변하고 스탬프 받기</button></div>
+    <div id="nextStationForm"><div class="report-paper"><div class="report-eyebrow">MY NEXT STATION</div><h2 style="font-size:20px;margin:5px 0">내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?</h2><p class="report-copy">체험 공간의 STEP 1-2-3을 실로 엮은 후, 떠오르는 가능성을 한 줄로 적어주세요.</p><textarea class="next-answer" id="nextAnswer" maxlength="180" placeholder="예: 시니어의 취향을 담은 문화 콘텐츠를 직접 기획해 보고 싶다."></textarea><div style="font-size:9px;color:#888">한 줄을 저장하면 나의 다음 역 스탬프를 받을 수 있어요.</div></div><button class="complete" id="saveNextStationBtn" disabled onclick="saveNextStationAnswer()">답변하고 스탬프 받기</button></div>
     <div id="reportView" hidden><button class="report-image-close" type="button" aria-label="결과 이미지 닫기" onclick="closeReport()">×</button><div class="report-paper" id="reportPaper"></div><button class="report-image-save" type="button" onclick="saveReportImage()"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 16v4h14v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>이미지로 저장</span></button></div>
   </div>
 </div>
+
+<div class="sequence-notice" id="sequenceNotice" role="status" aria-live="polite"></div>
 
 <!-- ===== 질문 바텀시트 ===== -->
 <div class="modal-bg" id="modalBg" onclick="closeModal(event)">
@@ -875,7 +869,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="route-form-line" aria-hidden="true"></div>
         <div class="route-form-row from">
           <span class="route-point" aria-hidden="true"></span>
-          <label class="route-form-copy" for="originLocation"><span class="route-field-label">출발</span><input id="originLocation" maxlength="60" autocomplete="organization" placeholder="본인의 학부/과" onkeydown="if(event.key==='Enter')beginJourney()"></label>
+          <label class="route-form-copy" for="originLocation"><span class="route-field-label">출발</span><input id="originLocation" maxlength="60" autocomplete="organization" placeholder="현재 본인의 학부/과" onkeydown="if(event.key==='Enter')beginJourney()"></label>
           <button class="route-clear" type="button" onclick="clearOriginLocation()" aria-label="출발지 지우기">×</button>
         </div>
         <div class="route-form-divider" aria-hidden="true"></div>
@@ -949,7 +943,7 @@ const stations={
   },
   seniorBusiness:{
     title:"시니어비즈니스역",tag:"SENIOR BUSINESS",
-    q:"시니어비즈니스에서 새롭게 발견한 점은 무엇인가요?",
+    q:"시니어비즈니스역이나 시니어비즈니스에 대해서 새롭게 발견한 점은 무엇인가요?",
     a:[],answerMode:"essay",answerType:"서술형"
   },
   transfer:{
@@ -1054,7 +1048,7 @@ function startNewParticipation(){
   document.getElementById("originLocation").value="";
   document.getElementById("loadingScreen").hidden=true;
   document.getElementById("locationScreen").hidden=true;
-  document.getElementById("modalBg").classList.remove("show","self-random-expanded");
+  document.getElementById("modalBg").classList.remove("show");
   document.getElementById("welcomeScreen").hidden=false;
   localStorage.removeItem("siuMetroPendingParticipant");
   render();
@@ -1195,14 +1189,8 @@ const careerFieldCards=[
   ["도시·주거","더 나은 공간 만들기"],["사람·지역사회","관계와 참여 넓히기"],
   ["새로운 분야","더 탐색해 보기"]
 ];
-const randomSlips=[
-  "문제를 발견하고 해결하는 일","사람을 이해하고 연결하는 일",
-  "정보를 수집하고 분석하는 일","아이디어를 기획하고 표현하는 일",
-  "직접 만들고 실행하는 일","계획을 세우고 관리하는 일",
-  "가르치고 성장하도록 돕는 일","새로운 가능성을 탐색하는 일"
-];
 let selfStep=0;
-let selfExploration={interest:"",keywords:[],field:[],randomDone:null,randomChoice:""};
+let selfExploration={interest:"",keywords:[],field:[]};
 function saveSelfProgress(){
   if(!participantId)return;
   localStorage.setItem(selfProgressKey(),JSON.stringify({step:selfStep,...selfExploration}));
@@ -1210,26 +1198,22 @@ function saveSelfProgress(){
 function resetSelfExploration(){
   let saved=null;
   try{saved=JSON.parse(localStorage.getItem(selfProgressKey())||"null")}catch(error){console.warn("저장된 질문 진행 정보를 읽지 못했습니다.",error)}
-  selfStep=saved?Math.max(0,Math.min(3,Number(saved.step)||0)):0;
+  selfStep=saved?Math.max(0,Math.min(2,Number(saved.step)||0)):0;
   selfExploration=saved?{
     interest:typeof saved.interest==="string"?saved.interest:"",
     keywords:Array.isArray(saved.keywords)?saved.keywords.map(word=>word==="제작과 구현"?"도전과 성취, 돌파":word).slice(0,2):[],
-    field:Array.isArray(saved.field)?saved.field:(typeof saved.field==="string"&&saved.field?[saved.field]:[]),
-    randomDone:typeof saved.randomDone==="boolean"?saved.randomDone:null,
-    randomChoice:typeof saved.randomChoice==="string"?saved.randomChoice:""
-  }:{interest:"",keywords:[],field:[],randomDone:null,randomChoice:""};
+    field:(Array.isArray(saved.field)?saved.field:(typeof saved.field==="string"&&saved.field?[saved.field]:[])).slice(0,2)
+  }:{interest:"",keywords:[],field:[]};
   renderSelfStep();
 }
 function renderSelfStep(){
   const prompts=[
     "기록지 Q2에서 적은 반복해서 나타나는 관심은 무엇인가요?",
     "Q3에서 고른 사진 뒷장에 있는 키워드들을 선택하세요.",
-    "기록지 Q4에서 선택한 분야는 무엇인가요?",
-    "랜덤뽑기를 했나요?"
+    "기록지 Q4에서 선택한 분야는 무엇인가요?"
   ];
-  document.getElementById("selfStepLabel").textContent=`질문 ${selfStep+1} / 4`;
+  document.getElementById("selfStepLabel").textContent=`질문 ${selfStep+1} / 3`;
   document.getElementById("selfStepPrompt").textContent=prompts[selfStep];
-  document.getElementById("modalBg").classList.toggle("self-random-expanded",selfStep===3&&selfExploration.randomDone===true);
   const input=document.getElementById("selfInput");
   if(selfStep===0){
     input.innerHTML='<textarea class="self-textarea" id="selfInterest" placeholder="반복해서 나타나는 관심을 적어 주세요."></textarea>';
@@ -1238,51 +1222,37 @@ function renderSelfStep(){
   }else if(selfStep===1){
     input.innerHTML='<p class="self-note">키워드를 두 개 골라 주세요 ('+selfExploration.keywords.length+'/2).</p><div class="self-options">'+selfKeywords.map((word,i)=>`<button type="button" class="self-option ${selfExploration.keywords.includes(word)?"selected":""}" onclick="toggleSelfChoice('keywords',${i})">${word}</button>`).join("")+'</div>';
   }else if(selfStep===2){
-    input.innerHTML='<p class="self-note">관심 있는 분야를 여러 개 골라도 돼요.</p><div class="self-options self-field-options">'+careerFields.map((word,i)=>`<button type="button" class="self-option ${selfExploration.field.includes(word)?"selected":""}" onclick="toggleSelfChoice(\'field\',${i})"><b class="field-option-label">${careerFieldCards[i][0]}</b><span class="field-option-detail">${careerFieldCards[i][1]}</span></button>`).join("")+'</div>';
-  }else{
-    let html='<div class="self-options self-yes-no"><button type="button" class="self-option '+(selfExploration.randomDone===true?"selected":"")+'" onclick="setRandomDone(true)">했어요</button><button type="button" class="self-option '+(selfExploration.randomDone===false?"selected":"")+'" onclick="setRandomDone(false)">안 했어요</button></div>';
-    if(selfExploration.randomDone===true){
-      html+='<p class="self-note">뽑은 랜덤 쪽지를 선택하세요.</p><div class="self-options">'+randomSlips.map((word,i)=>`<button type="button" class="self-option ${selfExploration.randomChoice===word?"selected":""}" onclick="setRandomSlip(${i})">${word}</button>`).join("")+'</div>';
-    }
-    input.innerHTML=html;
+    input.innerHTML='<p class="self-note">관심 분야를 최대 두 개 골라 주세요 ('+selfExploration.field.length+'/2).</p><div class="self-options self-field-options">'+careerFields.map((word,i)=>`<button type="button" class="self-option ${selfExploration.field.includes(word)?"selected":""}" onclick="toggleSelfChoice(\'field\',${i})"><b class="field-option-label">${careerFieldCards[i][0]}</b><span class="field-option-detail">${careerFieldCards[i][1]}</span></button>`).join("")+'</div>';
   }
   document.getElementById("selfBack").hidden=selfStep===0;
-  document.getElementById("selfNext").hidden=selfStep===3;
-  document.getElementById("complete").hidden=selfStep!==3;
+  document.getElementById("selfNext").hidden=selfStep===2;
+  document.getElementById("complete").hidden=selfStep!==2;
   updateSelfControls();
 }
 function updateSelfControls(){
   let valid=true;
   if(selfStep===0)valid=!!selfExploration.interest.trim();
   if(selfStep===1)valid=selfExploration.keywords.length===2;
-  if(selfStep===2)valid=selfExploration.field.length>0;
+  if(selfStep===2)valid=selfExploration.field.length>0&&selfExploration.field.length<=2;
   document.getElementById("selfNext").disabled=!valid;
-  document.getElementById("complete").disabled=selfExploration.randomDone===null||
-    (selfExploration.randomDone===true&&!selfExploration.randomChoice);
+  document.getElementById("complete").disabled=selfStep!==2||!valid;
 }
 function toggleSelfChoice(field,index){
   const list=selfExploration[field],value=field==="field"?careerFields[index]:selfKeywords[index];
   if(list.includes(value))selfExploration[field]=list.filter(item=>item!==value);
-  else if(field==="keywords"&&list.length>=2)return;
+  else if(list.length>=2)return;
   else selfExploration[field]=list.concat(value);
   saveSelfProgress();renderSelfStep();
 }
-function setRandomDone(value){
-  selfExploration.randomDone=value;
-  if(!value)selfExploration.randomChoice="";
-  saveSelfProgress();renderSelfStep();
-}
-function setRandomSlip(index){selfExploration.randomChoice=randomSlips[index];saveSelfProgress();renderSelfStep()}
 function moveSelfStep(direction){
   if(direction>0&&document.getElementById("selfNext").disabled)return;
-  selfStep=Math.max(0,Math.min(3,selfStep+direction));saveSelfProgress();renderSelfStep();
+  selfStep=Math.max(0,Math.min(2,selfStep+direction));saveSelfProgress();renderSelfStep();
 }
 async function completeSelfExploration(){
   const entries=[
     ["초중고 공통 관심사","기록지 Q2에서 적은 반복해서 나타나는 관심은 무엇인가요?",selfExploration.interest,"서술형"],
     ["듣고 싶은 말","Q3에서 고른 사진 뒷장에 있는 키워드들을 선택하세요.",selfExploration.keywords.join(" / "),"복수 선택"],
-    ["어떤 분야에 새로운 가능성 펼치기","기록지 Q4에서 선택한 분야는 무엇인가요?",selfExploration.field.join(" / "),"복수 선택"],
-    ["랜덤뽑기","랜덤뽑기를 했나요? 했다면 뽑은 쪽지를 선택하세요.",selfExploration.randomDone?selfExploration.randomChoice:"안 했어요",selfExploration.randomDone?"랜덤 쪽지 선택":"선택"]
+    ["어떤 분야에 새로운 가능성 펼치기","기록지 Q4에서 선택한 분야는 무엇인가요?",selfExploration.field.join(" / "),"최대 2개 선택"]
   ];
   for(const [summaryColumn,question,answer,answerType] of entries){
     await submitResponse({stationId:"career",stationTitle:"자기탐색역",summaryColumn,question,answerType,answer});
@@ -1294,17 +1264,32 @@ async function completeSelfExploration(){
 }
 function getTransferQuestion(){
   const answers=latestAnswers();
-  const randomAnswer=String(answers["career:랜덤뽑기"]||"").trim();
   const fieldAnswer=String(answers["career:어떤 분야에 새로운 가능성 펼치기"]||"").trim();
-  const didDraw=!!randomAnswer&&randomAnswer!=="안 했어요"&&randomAnswer!=="했어요";
-  const focus=didDraw?randomAnswer:(fieldAnswer||"Q4에서 선택한 분야");
-  const lastChar=focus.charCodeAt(focus.length-1);
-  const hasBatchim=lastChar>=0xAC00&&lastChar<=0xD7A3&&(lastChar-0xAC00)%28!==0;
-  return `${focus}${hasBatchim?"과":"와"}\n시니어비즈니스를 어떻게 연결 지을 수 있을까요?`;
+  const selected=fieldAnswer.split(" / ").filter(Boolean);
+  const shortNames=selected.map(field=>{
+    const i=careerFields.indexOf(field);
+    return ["문화·콘텐츠","기업·비즈니스","금융·경제","건강·의료","기술·제품","교육·학습","부동산·건설","지역사회","새로운"][i]||"";
+  }).filter(Boolean);
+  const focus=shortNames.length>2?"선택한 여러 분야":shortNames.join(" · ")||"선택한 분야";
+  if(selected.length>2)return "선택한 여러 분야를\n시니어비즈니스와 어떻게 연결할 수 있을까요?";
+  const focusPhrase=focus==="새로운"?"새로운 분야와":focus==="선택한 분야"?"선택한 분야와":`${focus} 분야와`;
+  return `${focusPhrase}\n시니어비즈니스를 어떻게 연결 지을 수 있을까요?`;
+}
+let sequenceNoticeTimer=null;
+function showSequenceNotice(message){
+  const notice=document.getElementById("sequenceNotice");notice.textContent=message;notice.classList.add("show");
+  clearTimeout(sequenceNoticeTimer);sequenceNoticeTimer=setTimeout(()=>notice.classList.remove("show"),2600);
+}
+function canOpenStationInSequence(id){
+  const prerequisites={seniorBusiness:"career",transfer:"seniorBusiness",finance:"transfer",welfare:"transfer",culture:"transfer",sports:"transfer",education:"transfer",realestate:"transfer",nextStation:"transfer"};
+  const required=prerequisites[id];
+  if(!required||done.includes(required))return true;
+  showSequenceNotice(`먼저 ${stations[required].title} 질문에 답해 주세요.`);return false;
 }
 function openStation(id){
+  if(!canOpenStationInSequence(id))return;
   current=id;selected=null;
-  document.getElementById("modalBg").classList.remove("self-random-expanded","essay-station","station-question-spaced");
+  document.getElementById("modalBg").classList.remove("essay-station","station-question-spaced");
   const stationQuestionStep=document.getElementById("stationQuestionStep");
   stationQuestionStep.hidden=id!=="seniorBusiness"&&id!=="transfer";
   const s=stations[id];
@@ -1336,7 +1321,7 @@ function openStation(id){
   document.getElementById("answers").innerHTML=s.a.map((a,i)=>
     `<button class="answer" onclick="selectAnswer(this,${i})">${a}</button>`).join("");
   answerMode=essayOnly?"essay":"choice";document.getElementById("essayAnswer").value="";document.getElementById("essayAnswer").hidden=!essayOnly;
-  document.getElementById("essayAnswer").placeholder=id==="transfer"?"선택한 분야와 시니어비즈니스를 연결할 아이디어를 적어 주세요.":(id==="seniorBusiness"?"시니어비즈니스에서 새롭게 발견한 점을 적어 주세요.":"답변을 자유롭게 적어 주세요.");
+  document.getElementById("essayAnswer").placeholder=id==="transfer"?"선택한 분야와 시니어비즈니스를 연결할 아이디어를 적어 주세요.":(id==="seniorBusiness"?"시니어비즈니스역이나 시니어비즈니스에 대해 새롭게 발견한 점을 적어 주세요.":"답변을 자유롭게 적어 주세요.");
   document.getElementById("answers").hidden=essayOnly;document.getElementById("choiceMode").classList.toggle("active",!essayOnly);document.getElementById("essayMode").classList.toggle("active",essayOnly);
   const b=complete;b.hidden=false;
   b.disabled=done.includes(id)||essayOnly;
@@ -1344,6 +1329,7 @@ function openStation(id){
   document.getElementById("modalBg").classList.add("show");
 }
 function openTransferJourney(){
+  if(!canOpenStationInSequence("transfer"))return;
   if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
   closeModal();
   const screen=document.getElementById("loadingScreen");
@@ -1419,6 +1405,7 @@ function completeStation(){
   closeModal();render();
 }
 function openNextStation(){
+  if(!canOpenStationInSequence("nextStation"))return;
   closeModal();
   if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
   const saved=localStorage.getItem(participantNextStationKey())||"";
@@ -1437,6 +1424,7 @@ function openNextStation(){
 }
 function closeReport(event){if(!event||event.target===document.getElementById("reportBg"))document.getElementById("reportBg").classList.remove("show")}
 function saveNextStationAnswer(){
+  if(!canOpenStationInSequence("nextStation"))return;
   const next=document.getElementById("nextAnswer").value.trim();
   if(!next)return;
   localStorage.setItem(participantNextStationKey(),next);
@@ -1463,8 +1451,6 @@ function reportInsights(next){
   const interest=interestUnknown?(interestAnswer?"아직 찾아가는 중이에요":"아직 기록되지 않았어요"):interestAnswer;
   const keywords=(a["career:듣고 싶은 말"]||"").split(" / ").filter(Boolean);
   const fields=(a["career:어떤 분야에 새로운 가능성 펼치기"]||"").split(" / ").filter(Boolean);
-  const randomAnswer=String(a["career:랜덤뽑기"]||"").trim();
-  const didRandom=!!randomAnswer&&randomAnswer!=="안 했어요"&&randomAnswer!=="했어요";
   const traitReadings={
     "리더십과 조율":"여러 사람의 생각을 모아 함께 갈 방향을 만드는",
     "도전과 성취, 돌파":"어려운 과제에 도전해 성취와 돌파구를 만드는",
@@ -1492,7 +1478,7 @@ function reportInsights(next){
   };
   const keywordDetails=keywordReadings.map(item=>({word:item.word,meaning:keywordMeanings[item.word]||item.meaning}));
   return {
-    department,interest,interestUnknown,keywords,keywordDetails,fields,didRandom,randomPrompt:didRandom?randomAnswer:"",startingPoint,dateText,
+    department,interest,interestUnknown,keywords,keywordDetails,fields,startingPoint,dateText,
     discovery:a.seniorBusiness||"아직 답변이 기록되지 않았어요.",
     connection:a.transfer||"아직 답변이 기록되지 않았어요.",
     next:next||"아직 답변이 기록되지 않았어요."
@@ -1551,7 +1537,7 @@ function reportCanvas(){
     text(k,x+14,metaY+20,11,"#d7c9f4",800);fitted(String(v),x+14,metaY+23,metaW-28,26,17,12,"#fffefa",650);
   });
 
-  const departureY=280,departureH=320,discoveryY=618,discoveryH=160,connectionY=796,connectionH=d.didRandom?220:180,finalY=connectionY+connectionH+18,finalH=130;
+  const departureY=280,departureH=320,discoveryY=618,discoveryH=160,connectionY=796,connectionH=180,finalY=connectionY+connectionH+18,finalH=130;
   card(left,departureY,width,departureH);
   sectionTitle(inside,departureY+53,"01","나의 출발점");
   label("평소 관심을 두고 있는 분야",inside,departureY+101);
@@ -1566,16 +1552,7 @@ function reportCanvas(){
 
   card(left,connectionY,width,connectionH);
   sectionTitle(inside,connectionY+49,"03","나의 관심과 비즈니스의 연결");
-  fitted(d.connection,inside,connectionY+78,insideW,d.didRandom?66:100,21,13,C.ink,560);
-  if(d.didRandom){
-    const sx=inside+8,sy=connectionY+160;
-    ctx.save();ctx.translate(sx,sy);ctx.strokeStyle=C.gold;ctx.lineWidth=3;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(0,8);ctx.moveTo(-8,0);ctx.lineTo(8,0);ctx.moveTo(-5,-5);ctx.lineTo(5,5);ctx.moveTo(-5,5);ctx.lineTo(5,-5);ctx.stroke();ctx.restore();
-    const reflectionLabel="오늘 내가 계속 생각해 볼 것 :",reflectionText=String(d.randomPrompt||"");
-    let reflectionSize=17;ctx.font=`760 ${reflectionSize}px ${font}`;
-    while(reflectionSize>13&&ctx.measureText(reflectionLabel+reflectionText).width>insideW-38){reflectionSize--;ctx.font=`760 ${reflectionSize}px ${font}`}
-    const reflectionY=connectionY+166;ctx.fillStyle=C.purple;ctx.fillText(reflectionLabel,inside+24,reflectionY);
-    const labelWidth=ctx.measureText(reflectionLabel).width;ctx.font=`600 ${reflectionSize}px ${font}`;ctx.fillStyle=C.ink;ctx.fillText(reflectionText,inside+24+labelWidth+6,reflectionY);
-  }
+  fitted(d.connection,inside,connectionY+78,insideW,100,21,13,C.ink,560);
 
   card(left,finalY,width,finalH,"#f0ecf8");
   text("MY NEXT STATION",inside,finalY+43,20,C.purple,850);

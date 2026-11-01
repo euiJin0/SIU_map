@@ -6,7 +6,7 @@
  * Execute as: Me. Access: Anyone.
  */
 const RAW_HEADERS = ['응답시각', '참여자 아이디', '역 이름', '질문', '답변 유형', '답변'];
-const SELF_FIELDS = ['Q2. 초중고 공통 관심사', 'Q3. 듣고 싶은 말', 'Q4. 새로운 가능성', '랜덤뽑기'];
+const SELF_FIELDS = ['Q2. 초중고 공통 관심사', 'Q3. 듣고 싶은 말', 'Q4. 새로운 가능성'];
 const REPORT_FIELDS = ['답변 | 나의 다음 역'];
 const STATION_FIELDS = [
   '답변 | 시니어비즈니스역',
