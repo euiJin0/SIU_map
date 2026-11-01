@@ -285,6 +285,10 @@ button{font:inherit}
 #modalBg.station-question-spaced .modal h2{margin-bottom:14px}
 #modalBg.station-question-spaced .station-question-step{margin:0 0 10px}
 #modalBg.station-question-spaced #question{line-height:1.9}
+.transfer-focus{align-items:center;gap:10px;margin:4px 0 14px;padding:11px 13px;border:1px solid #e7def8;border-radius:14px;background:#f6f2ff}
+.transfer-focus:not([hidden]){display:flex}
+.transfer-focus-label{flex:none;color:#7358ad;font-size:12px;font-weight:800}
+.transfer-focus-value{color:#29243e;font-size:14px;font-weight:800;line-height:1.55;overflow-wrap:anywhere}
 .close{border:0;background:#f1f2f4;border-radius:50%;width:42px;height:42px;font-size:23px}
 .answers{display:grid;gap:10px}
 .answer{display:flex;align-items:center;justify-content:center;min-height:68px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:16px;text-align:center;padding:17px 18px;font-size:15px;font-weight:750;line-height:1.5;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
@@ -821,6 +825,7 @@ body{background:#f2f3f5;overflow-y:hidden}
       <button class="close" onclick="closeModal()">×</button>
     </div>
     <div class="self-step station-question-step" id="stationQuestionStep" hidden>질문 1 / 1</div>
+    <div class="transfer-focus" id="transferFocus" hidden><span class="transfer-focus-label">내가 고른 분야</span><strong class="transfer-focus-value" id="transferFocusValue"></strong></div>
     <p id="question"></p>
     <div class="answer-mode"><button class="mode-btn active" id="choiceMode" onclick="setAnswerMode('choice')">선택 답변</button><button class="mode-btn" id="essayMode" onclick="setAnswerMode('essay')">서술 답변</button></div>
     <div class="answers" id="answers"></div>
@@ -1262,18 +1267,17 @@ async function completeSelfExploration(){
   localStorage.setItem(participantDoneKey(),JSON.stringify(done));
   closeModal();render();
 }
-function getTransferQuestion(){
+function getTransferFieldLabels(){
   const answers=latestAnswers();
   const fieldAnswer=String(answers["career:어떤 분야에 새로운 가능성 펼치기"]||"").trim();
   const selected=fieldAnswer.split(" / ").filter(Boolean);
-  const shortNames=selected.map(field=>{
+  return selected.map(field=>{
     const i=careerFields.indexOf(field);
-    return ["문화·콘텐츠","기업·비즈니스","금융·경제","건강·의료","기술·제품","교육·학습","부동산·건설","지역사회","새로운"][i]||"";
+    return ["문화·콘텐츠","기업·비즈니스","금융·경제","건강·의료","기술·제품","교육·학습","부동산·건설","지역사회","새로운 분야"][i]||field;
   }).filter(Boolean);
-  const focus=shortNames.length>2?"선택한 여러 분야":shortNames.join(" · ")||"선택한 분야";
-  if(selected.length>2)return "선택한 여러 분야를\n시니어비즈니스와 어떻게 연결할 수 있을까요?";
-  const focusPhrase=focus==="새로운"?"새로운 분야와":focus==="선택한 분야"?"선택한 분야와":`${focus} 분야와`;
-  return `${focusPhrase}\n시니어비즈니스를 어떻게 연결 지을 수 있을까요?`;
+}
+function getTransferQuestion(){
+  return "이 분야와\n시니어비즈니스를 어떻게 연결 지을 수 있을까요?";
 }
 let sequenceNoticeTimer=null;
 function showSequenceNotice(message){
@@ -1295,6 +1299,9 @@ function openStation(id){
   const s=stations[id];
   document.getElementById("tag").textContent=s.tag;
   document.getElementById("modalTitle").textContent=s.title;
+  const transferFocus=document.getElementById("transferFocus");
+  transferFocus.hidden=id!=="transfer";
+  document.getElementById("transferFocusValue").textContent=id==="transfer"?(getTransferFieldLabels().join(" · ")||"선택한 분야를 확인할 수 없어요."):"";
   const selfFlow=document.getElementById("selfFlow");
   const complete=document.getElementById("complete");
   if(id==="career"){
