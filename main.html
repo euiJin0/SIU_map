@@ -1352,14 +1352,14 @@ function openTransferJourney(){
     const overlay=document.createElement("section");
     overlay.id="gradeCalculatorOverlay";
     overlay.setAttribute("aria-label","AI 학점 계산기");
-    overlay.style.cssText="position:fixed;inset:0;z-index:1000;display:grid;grid-template-rows:auto minmax(0,1fr);background:#fff;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif";
+    overlay.style.cssText="position:fixed;inset:0;z-index:1000;width:100%;height:100vh;height:100dvh;overflow:hidden;background:#fff;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif";
     const header=document.createElement("header");
-    header.style.cssText="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;border-bottom:1px solid #ebe8f1;background:#fff";
-    const title=document.createElement("b");title.textContent="AI 학점 계산기";title.style.cssText="font-size:14px;flex:1";
-    const back=document.createElement("button");back.type="button";back.textContent="← SIU MAP으로 돌아가기";back.style.cssText="border:0;border-radius:999px;background:#7654e8;color:#fff;padding:10px 14px;font-size:12px;font-weight:800;white-space:nowrap";
+    header.style.cssText="position:absolute;z-index:2;top:env(safe-area-inset-top);left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;pointer-events:none;background:linear-gradient(#ffffffee,#ffffffcc);box-sizing:border-box";
+    const title=document.createElement("b");title.textContent="AI 학점 계산기";title.style.cssText="font-size:13px;flex:1;pointer-events:none";
+    const back=document.createElement("button");back.type="button";back.textContent="← SIU MAP으로 돌아가기";back.style.cssText="border:0;border-radius:999px;background:#7654e8;color:#fff;padding:9px 12px;font-size:12px;font-weight:800;white-space:nowrap;touch-action:manipulation;pointer-events:auto";
     back.addEventListener("click",()=>{overlay.remove();openStation("transfer")});
     header.append(title,back);
-    const frame=document.createElement("iframe");frame.title="AI 학점 계산기";frame.src=GRADE_CALCULATOR_URL;frame.setAttribute("allow","clipboard-read; clipboard-write");frame.referrerPolicy="strict-origin-when-cross-origin";frame.style.cssText="width:100%;height:100%;min-height:0;border:0;background:#fff";
+    const frame=document.createElement("iframe");frame.title="AI 학점 계산기";frame.src=GRADE_CALCULATOR_URL;frame.setAttribute("allow","clipboard-read; clipboard-write");frame.referrerPolicy="strict-origin-when-cross-origin";frame.style.cssText="position:absolute;inset:0;width:100%;height:100%;min-height:0;border:0;background:#fff;display:block";
     overlay.append(header,frame);document.body.appendChild(overlay);
   },5200);
 }
