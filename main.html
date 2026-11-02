@@ -686,7 +686,7 @@ body{background:#f2f3f5;overflow-y:hidden}
       <!-- 걷기 -->
       <div class="walk-block">
         <div class="walk-person">🚶</div>
-        <div class="walk-text"><b>시니어비즈니스역까지 도보 이동</b> <span>(환승통로 이용)</span></div>
+        <div class="walk-text"><b>가능성발견역까지 도보 이동</b> <span>(환승통로 이용)</span></div>
       </div>
 
       <!-- 가능성을 확장행 -->
@@ -694,7 +694,15 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="train-head">
           <span class="line-badge">가</span>
           <div class="train-bar senior">
-            <b>가능성을 확장행 열차</b><span class="train-note">8개 역</span>
+            <b>가능성을 확장행 열차</b><span class="train-note">9개 역</span>
+          </div>
+        </div>
+
+        <div class="station-row" aria-label="가능성발견역">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">가능성발견역</div>
+            <div class="station-desc">새로운 관점과 가능성을 발견하는 곳</div>
           </div>
         </div>
 
@@ -713,7 +721,7 @@ body{background:#f2f3f5;overflow-y:hidden}
             <div class="station-title-line"><div class="station-title">환승센터역</div></div>
             <div class="station-desc">나의 관심 분야와 시니어비즈니스를 연결</div>
           </div>
-          <button class="plus" data-station="transfer" aria-label="AI 학점 계산기 둘러보기" onclick="event.stopPropagation();openTransferJourney()">＋</button>
+          <button class="plus" data-station="transfer" aria-label="AI 학점 로드맵 둘러보기" onclick="event.stopPropagation();openTransferJourney()">＋</button>
         </div>
 
         <div class="station-row clickable" onclick="openStation('finance')">
@@ -1318,7 +1326,7 @@ function openTransferJourney(){
   if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
   closeModal();
   const screen=document.getElementById("loadingScreen");
-  document.getElementById("loadingTitle").textContent="AI 학점 계산기로 이동합니다.";
+  document.getElementById("loadingTitle").textContent="AI 학점 로드맵으로 이동합니다.";
   document.getElementById("loadingMessage").textContent="";
   screen.hidden=false;
   document.querySelectorAll(".train-loading-fill,.loading-train").forEach(element=>{
@@ -1329,14 +1337,14 @@ function openTransferJourney(){
     screen.hidden=true;
     const overlay=document.createElement("section");
     overlay.id="gradeCalculatorOverlay";
-    overlay.setAttribute("aria-label","AI 학점 계산기");
+    overlay.setAttribute("aria-label","AI 학점 로드맵");
     overlay.style.cssText="position:fixed;inset:0;z-index:1000;width:100%;height:100vh;height:100dvh;overflow:hidden;background:#fff;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif";
     const header=document.createElement("header");
     header.style.cssText="position:absolute;z-index:2;top:env(safe-area-inset-top);left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;pointer-events:none;background:linear-gradient(#ffffffee,#ffffffcc);box-sizing:border-box";
-    const title=document.createElement("b");title.textContent="AI 학점 계산기";title.style.cssText="font-size:13px;flex:1;pointer-events:none";
+    const title=document.createElement("b");title.textContent="AI 학점 로드맵";title.style.cssText="font-size:13px;flex:1;pointer-events:none";
     const back=document.createElement("button");back.type="button";back.textContent="← SIU MAP으로 돌아가기";back.style.cssText="border:0;border-radius:999px;background:#7654e8;color:#fff;padding:9px 12px;font-size:12px;font-weight:800;white-space:nowrap;touch-action:manipulation;pointer-events:auto";
     header.append(title,back);
-    const frame=document.createElement("iframe");frame.title="AI 학점 계산기";frame.src=GRADE_CALCULATOR_URL;frame.setAttribute("allow","clipboard-read; clipboard-write");frame.referrerPolicy="strict-origin-when-cross-origin";frame.style.cssText="position:absolute;inset:0;width:100%;height:100%;min-height:0;border:0;background:#fff;display:block;transform-origin:top left";
+    const frame=document.createElement("iframe");frame.title="AI 학점 로드맵";frame.src=GRADE_CALCULATOR_URL;frame.setAttribute("allow","clipboard-read; clipboard-write");frame.referrerPolicy="strict-origin-when-cross-origin";frame.style.cssText="position:absolute;inset:0;width:100%;height:100%;min-height:0;border:0;background:#fff;display:block;transform-origin:top left";
     // 외부 계산기 화면의 첫 질문과 하단 추천 버튼이 작은 휴대폰에서도 함께 보이도록 뷰포트를 넓혀 축소 표시합니다.
     const fitCalculatorFrame=()=>{const scale=window.innerWidth<=600?0.86:1;frame.style.width=`${100/scale}%`;frame.style.height=`${100/scale}%`;frame.style.transform=`scale(${scale})`};
     fitCalculatorFrame();window.addEventListener("resize",fitCalculatorFrame);
@@ -1357,7 +1365,7 @@ function setAnswerMode(mode){
 }
 document.getElementById("essayAnswer").addEventListener("input",()=>{if(answerMode==="essay")document.getElementById("complete").disabled=!document.getElementById("essayAnswer").value.trim()});
 async function submitResponse(response){
-  const record={participantId,stationId:response.stationId,stationTitle:response.stationTitle,summaryColumn:response.summaryColumn||"",question:response.question,answerType:response.answerType,answer:response.answer,submittedAt:new Date().toISOString()};
+  const record={participantId,origin:localStorage.getItem(participantOriginKey())||"",stationId:response.stationId,stationTitle:response.stationTitle,summaryColumn:response.summaryColumn||"",question:response.question,answerType:response.answerType,answer:response.answer,submittedAt:new Date().toISOString()};
   const saved=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]");saved.push(record);localStorage.setItem(participantAnswersKey(),JSON.stringify(saved));
   const queue=JSON.parse(localStorage.getItem(RESPONSE_QUEUE_KEY)||"[]");queue.push(record);localStorage.setItem(RESPONSE_QUEUE_KEY,JSON.stringify(queue));
   await flushResponseQueue();

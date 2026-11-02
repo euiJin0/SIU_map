@@ -5,7 +5,8 @@
  * Keep only one copy of this script in the project, save, then deploy a new version.
  * Execute as: Me. Access: Anyone.
  */
-const RAW_HEADERS = ['응답시각', '참여자 아이디', '역 이름', '질문', '답변 유형', '답변'];
+const LOCATION_HEADER = '현재 나의 위치';
+const RAW_HEADERS = ['응답시각', '참여자 아이디', LOCATION_HEADER, '역 이름', '질문', '답변 유형', '답변'];
 const SELF_FIELDS = ['Q2. 초중고 공통 관심사', 'Q3. 듣고 싶은 말', 'Q4. 새로운 가능성'];
 const REPORT_FIELDS = ['답변 | 나의 다음 역'];
 const STATION_FIELDS = [
@@ -13,7 +14,7 @@ const STATION_FIELDS = [
   '답변 | 환승센터역'
 ];
 // 참여자별 보기의 열 순서: 기본 응답 → 시니어비즈니스역 → 환승센터역 → 나의 다음 역.
-const SUMMARY_HEADERS = ['응답시각', '참여자 아이디'].concat(SELF_FIELDS, STATION_FIELDS, REPORT_FIELDS);
+const SUMMARY_HEADERS = ['응답시각', '참여자 아이디', LOCATION_HEADER].concat(SELF_FIELDS, STATION_FIELDS, REPORT_FIELDS);
 const SHEET_DATE_FORMAT = 'yyyy-mm-dd hh:mm';
 
 function doPost(e) {
@@ -26,7 +27,7 @@ function doPost(e) {
 
   const summary = ensureSummarySchema(spreadsheet);
   const rawSheet = spreadsheet.getSheetByName('응답') || spreadsheet.insertSheet('응답');
-  getOrCreateParticipant(summary, participantId, submittedAt);
+  getOrCreateParticipant(summary, participantId, submittedAt, response.origin || '');
   migrateRawSheet(rawSheet, summary);
   backfillNextStationAnswers(rawSheet, summary);
 
@@ -34,6 +35,7 @@ function doPost(e) {
   rawSheet.appendRow([
     toSheetDate(submittedAt),
     participantId,
+    asPlainText(response.origin || ''),
     response.stationTitle || '',
     response.question || '',
     response.answerType || '',
@@ -68,9 +70,10 @@ function ensureSummarySchema(spreadsheet) {
   const idIndex = oldHeaders.indexOf('참여자 아이디') >= 0 ? oldHeaders.indexOf('참여자 아이디') : oldHeaders.indexOf('참여자 ID');
   const keyIndex = oldHeaders.indexOf('기기 키');
   const responseTimeIndex = oldHeaders.indexOf('응답시각') >= 0 ? oldHeaders.indexOf('응답시각') : oldHeaders.indexOf('응답 시각');
+  const originIndex = oldHeaders.findIndex(function (header) { return [LOCATION_HEADER, '현재 위치', '나의 현재 위치', '현재 본인의 학부/과', '본인의 학부/과'].indexOf(header) >= 0; });
   const recentIndex = oldHeaders.indexOf('최근 응답');
   const firstIndex = oldHeaders.indexOf('첫 응답');
-  const excludedHeaders = ['참여자 ID', '참여자 아이디', '응답시각', '응답 시각', '최근 응답', '첫 응답', '기기 키'];
+  const excludedHeaders = ['참여자 ID', '참여자 아이디', '응답시각', '응답 시각', '최근 응답', '첫 응답', '기기 키', LOCATION_HEADER, '현재 위치', '나의 현재 위치', '현재 본인의 학부/과', '본인의 학부/과'];
   const oldAnswerColumns = [];
   oldHeaders.forEach(function (header, index) {
     if (excludedHeaders.indexOf(header) === -1) oldAnswerColumns.push({ header: header, index: index, mappedHeader: '' });
@@ -91,9 +94,10 @@ function ensureSummarySchema(spreadsheet) {
     const row = new Array(headers.length).fill('');
     row[0] = toSheetDate(time);
     row[1] = oldId;
+    row[2] = originIndex >= 0 ? asPlainText(oldRow[originIndex] || '') : '';
     SELF_FIELDS.forEach(function (field) {
       const oldColumn = oldHeaders.indexOf(field);
-      if (oldColumn >= 0) row[2 + SELF_FIELDS.indexOf(field)] = oldRow[oldColumn];
+      if (oldColumn >= 0) row[3 + SELF_FIELDS.indexOf(field)] = oldRow[oldColumn];
     });
     oldAnswerColumns.forEach(function (column) {
       const newColumn = headers.indexOf(column.mappedHeader);
@@ -211,10 +215,12 @@ function migrateRawSheet(sheet, summary) {
       return '';
     };
     const oldId = String(pick(['참여자 아이디', '참여자 ID']) || '').trim();
-    if (oldId && oldId !== 'ID 없음') getOrCreateParticipant(summary, oldId, pick(['응답시각', '응답 시각']));
+    const origin = pick([LOCATION_HEADER, '현재 위치', '나의 현재 위치', '현재 본인의 학부/과', '본인의 학부/과']);
+    if (oldId && oldId !== 'ID 없음') getOrCreateParticipant(summary, oldId, pick(['응답시각', '응답 시각']), origin);
     rows.push([
       toSheetDate(pick(['응답시각', '응답 시각'])),
       oldId,
+      asPlainText(origin || ''),
       pick(['역 이름']),
       pick(['질문']),
       pick(['답변 유형']),
@@ -227,17 +233,21 @@ function migrateRawSheet(sheet, summary) {
   formatRawTimes(sheet);
 }
 
-function getOrCreateParticipant(sheet, participantId, submittedAt) {
+function getOrCreateParticipant(sheet, participantId, submittedAt, origin) {
   const lastRow = sheet.getLastRow();
   if (lastRow >= 2) {
     const participantColumn = SUMMARY_HEADERS.indexOf('참여자 아이디') + 1;
     const ids = sheet.getRange(2, participantColumn, lastRow - 1, 1).getDisplayValues();
     for (let i = 0; i < ids.length; i++) {
-      if (ids[i][0] === participantId) return i + 2;
+      if (ids[i][0] === participantId) {
+        if (origin) sheet.getRange(i + 2, SUMMARY_HEADERS.indexOf(LOCATION_HEADER) + 1).setValue(asPlainText(origin));
+        return i + 2;
+      }
     }
   }
   const row = new Array(Math.max(sheet.getLastColumn(), SUMMARY_HEADERS.length)).fill('');
   row[SUMMARY_HEADERS.indexOf('참여자 아이디')] = participantId;
+  row[SUMMARY_HEADERS.indexOf(LOCATION_HEADER)] = asPlainText(origin || '');
   row[SUMMARY_HEADERS.indexOf('응답시각')] = toSheetDate(submittedAt);
   const rowNumber = sheet.getLastRow() + 1;
   sheet.getRange(rowNumber, 1, 1, row.length).setValues([row]);
