@@ -512,41 +512,26 @@ body{background:#f2f3f5;overflow-y:hidden}
 @keyframes loading-train{to{left:calc(100% - 112px)}}
 @keyframes steam-puff{0%{opacity:0;transform:translate(0,5px) scale(.55)}28%{opacity:.72}100%{opacity:0;transform:translate(-7px,-16px) scale(1.6)}}
 .intro-screen[hidden],.loading-screen[hidden],[hidden]{display:none!important}
-/* 도슨트 오디오 도크는 질문 창과 별도로 고정되어 재생 중에도 접근 가능합니다. */
-.audio-dock{position:fixed;z-index:110;left:50%;right:auto;bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%);width:calc(100vw - 20px);max-width:410px;min-width:0;display:none;align-items:center;gap:10px;padding:9px 11px;border:1px solid #e5e1f1;border-radius:15px;background:#fff;box-shadow:0 5px 24px #0002}
-.audio-dock.show{display:flex}
-.dock-play{width:36px;height:36px;flex:none;border:0;border-radius:50%;background:#7654e8;color:#fff;font-size:15px}
-.dock-copy{min-width:0;flex:1}.dock-copy b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dock-copy span{display:block;color:#777;font-size:9px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dock-open{border:0;border-radius:9px;background:#f2effa;padding:8px;font-size:10px;font-weight:800;color:#5432a7}
-.dock-dismiss{width:30px;height:30px;flex:none;border:0;border-radius:50%;background:#f2f2f5;color:#666;font-size:19px;line-height:1}
-.docent-modal{width:min(100%,430px);max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);overflow-y:auto;overscroll-behavior:contain;padding:12px 16px calc(72px + env(safe-area-inset-bottom))}
-.track-list{display:grid;gap:8px;margin:10px 0;max-height:42dvh;overflow-y:auto;overscroll-behavior:contain}
-.track{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid #e2e1e7;border-radius:12px;text-align:left;background:#fff}
-.track.active{border-color:#7654e8;background:#f7f4ff}
-.track-play{width:32px;height:32px;flex:none;border-radius:50%;display:grid;place-items:center;background:#f0edf7;color:#6544bc}
-.track-copy{min-width:0}.track-copy b{display:block;font-size:11px}.track-copy span{display:block;color:#777;font-size:9px;margin-top:3px;line-height:1.4}
-.docent-audio{width:100%;height:42px;margin:5px 0 9px}
-.docent-help{font-size:10px!important}
-.docent-footnote{flex:none;margin:4px 0 0;padding:10px 12px;border-radius:12px;background:#f5f2fc;color:#68539e;font-size:11px;line-height:1.45}
+.docent-modal{width:min(100%,430px);max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);overflow:hidden;overscroll-behavior:contain;padding:16px}
+.docent-coming{display:flex;flex:1;min-height:260px;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-top:12px;padding:28px 20px;border:1px solid #e8e2f4;border-radius:20px;background:radial-gradient(circle at 50% 25%,#f1eaff 0,transparent 38%),linear-gradient(145deg,#fbfaff,#f5f1fc);text-align:center}
+.docent-coming-icon{display:grid;width:70px;height:70px;place-items:center;border-radius:24px;background:#fff;color:#6845bb;font-size:34px;box-shadow:0 8px 24px #4d348015}
+.docent-coming-label{color:#7354bd;font-size:11px;font-weight:900;letter-spacing:.16em}
+.docent-coming h3{margin:0;color:#30234d;font-size:20px;line-height:1.4}
+.docent-coming p{max-width:270px;margin:0;color:#777183;font-size:13px;line-height:1.65}
+.docent-coming-badge{margin-top:2px;padding:7px 13px;border-radius:999px;background:#ebe4f8;color:#6649a9;font-size:11px;font-weight:800}
 @media(max-width:600px){
   .plus.done img{width:54px;height:54px}
   #docentBg .docent-modal{height:min(72dvh,620px);min-height:58dvh;max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);width:min(100%,430px);display:flex;flex-direction:column;overflow:hidden;padding:calc(14px + env(safe-area-inset-top)) 16px calc(12px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0}
   #docentBg .modal-handle{margin-bottom:10px;flex:none}
-  #docentBg .modal-top,#docentBg .docent-help{flex:none}
+  #docentBg .modal-top{flex:none}
   #docentBg .modal h2{font-size:23px;margin:4px 0 6px}
-  #docentBg .docent-help{font-size:13px!important;line-height:1.45;margin:0 0 8px}
-  #docentBg .track-list{flex:1;min-height:0;max-height:none;align-content:start;grid-auto-rows:max-content;margin:6px 0 10px;gap:8px;overflow-y:auto;overscroll-behavior:contain}
-  #docentBg .track{padding:9px;gap:9px}
-  #docentBg .track-play{width:30px;height:30px}
-  #docentBg .docent-audio{flex:none;height:46px;margin:0}
-  #docentBg .docent-footnote{margin-top:8px}
+  #docentBg .docent-coming{min-height:0;margin-top:8px;padding:22px 16px}
 }
 @media(max-height:650px){
   #docentBg .docent-modal{height:min(72dvh,620px);min-height:58dvh;padding-top:calc(8px + env(safe-area-inset-top))}
   #docentBg .modal-handle{margin-bottom:7px}
-  #docentBg .docent-help{margin-bottom:5px}
-  #docentBg .track-list{margin:4px 0 7px}
-  #docentBg .track{padding:8px}
+  #docentBg .docent-coming{gap:9px;padding:16px 14px}
+  #docentBg .docent-coming-icon{width:58px;height:58px;font-size:29px;border-radius:20px}
 }
 .phone.map-focus .map-wrap{flex-basis:70%}
 .phone.route-focus .map-wrap{flex-basis:12%;min-height:104px}
@@ -843,17 +828,19 @@ body{background:#f2f3f5;overflow-y:hidden}
   </div>
 </div>
 
-<!-- 도슨트 선택 창. 오디오를 재생할 때만 하단 미니 플레이어가 나타납니다. -->
+<!-- 도슨트 안내 창은 오디오 콘텐츠 준비 중 표시만 보여줍니다. -->
 <div class="modal-bg" id="docentBg" onclick="closeDocent(event)">
   <div class="modal docent-modal" onclick="event.stopPropagation()">
-    <div class="modal-handle"></div><div class="modal-top"><div><div class="tag">SIU AUDIO GUIDE</div><h2>도슨트 듣기</h2></div><button class="close" onclick="closeDocent()">×</button></div>
-    <p class="docent-help">듣고 싶은 내용을 고르세요. 재생 중에도 역을 눌러 질문하고 답할 수 있어요.</p>
-    <div class="track-list" id="trackList"></div>
-    <audio class="docent-audio" id="docentAudio" controls preload="metadata"></audio>
-    <p class="docent-footnote">재생 중에도 전시 여정을 자유롭게 둘러볼 수 있어요.</p>
+    <div class="modal-handle"></div><div class="modal-top"><div><div class="tag">SIU AUDIO GUIDE</div><h2>도슨트</h2></div><button class="close" onclick="closeDocent()">×</button></div>
+    <div class="docent-coming" role="status">
+      <div class="docent-coming-icon" aria-hidden="true">🎧</div>
+      <div class="docent-coming-label">COMING SOON</div>
+      <h3>도슨트가 곧 찾아옵니다</h3>
+      <p>전시 이야기를 편하게 들을 수 있도록 준비하고 있어요.</p>
+      <span class="docent-coming-badge">준비 중</span>
+    </div>
   </div>
 </div>
-<div class="audio-dock" id="audioDock"><button class="dock-play" id="dockPlay" onclick="toggleAudio()">▶</button><div class="dock-copy"><b id="dockTitle">도슨트</b><span id="dockStatus">재생 중</span></div><button class="dock-open" onclick="openDocent()">목록</button><button class="dock-dismiss" onclick="dismissAudioDock()" aria-label="도슨트 바 닫기">×</button></div>
 
 <section class="intro-screen" id="welcomeScreen">
   <div class="intro-card">
@@ -1005,14 +992,6 @@ const NEXT_STATION_KEY_PREFIX="siuMetroNextStation:";
 const ORIGIN_KEY_PREFIX="siuMetroOrigin:";
 const GRADE_CALCULATOR_URL="https://siu-study-roadmap.agnesmarketing.chatgpt.site/";
 const SHEET_FOCUS_KEY="siuMetroSheetFocus";
-// 도슨트 음원과 제목/설명은 아래 목록에서 교체하거나 항목을 추가하세요.
-const docentTracks=[
-  {id:"welcome",title:"전시 여정 안내",description:"나의 역에서 나의 다음 역까지, SIU MAP 여정을 소개합니다.",src:"docent-sample.wav"},
-  {id:"senior",title:"시니어비즈니스란?",description:"시니어를 새로운 소비자이자 다양한 취향을 지닌 한 사람으로 바라봅니다.",src:"docent-senior.wav"},
-  {id:"test-docent",title:"테스트도슨트파일",description:"첨부된 테스트용 도슨트 음성입니다.",src:"test-docent.m4a"}
-];
-let activeTrack=0;
-
 function participantDoneKey(){return DONE_KEY_PREFIX+participantId.trim()}
 function selfProgressKey(){return SELF_STATE_KEY_PREFIX+participantId.trim()}
 function participantAnswersKey(){return ANSWERS_KEY_PREFIX+participantId.trim()}
@@ -1029,7 +1008,6 @@ function setParticipant(name,origin=""){
   document.getElementById("firstStationMeta").textContent=firstStationName;
   const departmentTag=document.getElementById("firstStationDepartment");
   departmentTag.textContent=savedOrigin?`나의 현재 위치 : ${savedOrigin}`:"";departmentTag.hidden=!savedOrigin;
-  docentTracks[0].description=`${firstStationName}에서 나의 다음 역까지, SIU MAP 여정을 소개합니다.`;
   const savedStamps=JSON.parse(localStorage.getItem(participantDoneKey())||"[]");
   done=[...new Set(savedStamps.filter(id=>Object.prototype.hasOwnProperty.call(stations,id)))];
   localStorage.setItem(participantDoneKey(),JSON.stringify(done));
@@ -1598,17 +1576,8 @@ restoreParticipant();
 render();
 window.addEventListener("resize",()=>{requestAnimationFrame(alignTrainRails);requestAnimationFrame(alignRouteRail)},{passive:true});
 
-const docentAudio=document.getElementById("docentAudio");
-function renderTracks(){document.getElementById("trackList").innerHTML=docentTracks.map((t,i)=>`<button class="track ${i===activeTrack?"active":""}" onclick="selectTrack(${i})"><span class="track-play">${i===activeTrack&&!docentAudio.paused?"Ⅱ":"▶"}</span><span class="track-copy"><b>${t.title}</b><span>${t.description}</span></span></button>`).join("")}
-function openDocent(){document.getElementById("docentBg").classList.add("show");renderTracks()}
+function openDocent(){document.getElementById("docentBg").classList.add("show")}
 function closeDocent(e){if(!e||e.target===document.getElementById("docentBg"))document.getElementById("docentBg").classList.remove("show")}
-function selectTrack(index){activeTrack=index;const track=docentTracks[index];docentAudio.src=track.src;document.getElementById("dockTitle").textContent=track.title;document.getElementById("dockStatus").textContent="재생 중";document.getElementById("audioDock").classList.add("show");docentAudio.play().catch(()=>{document.getElementById("dockStatus").textContent="재생 버튼을 눌러 시작하세요"});renderTracks()}
-function dismissAudioDock(){docentAudio.pause();document.getElementById("audioDock").classList.remove("show")}
-function toggleAudio(){if(!docentAudio.src){selectTrack(activeTrack);return}if(docentAudio.paused)docentAudio.play();else docentAudio.pause()}
-docentAudio.addEventListener("play",()=>{document.getElementById("dockPlay").textContent="Ⅱ";document.getElementById("dockStatus").textContent="재생 중 · 질문을 열어도 계속 재생돼요";renderTracks()});
-docentAudio.addEventListener("pause",()=>{document.getElementById("dockPlay").textContent="▶";document.getElementById("dockStatus").textContent="일시정지";renderTracks()});
-docentAudio.addEventListener("ended",()=>{document.getElementById("dockStatus").textContent="재생 완료";document.getElementById("dockPlay").textContent="▶";renderTracks()});
-renderTracks();
 flushResponseQueue();
 
 /* ===== 지도와 길찾기 패널 전환 =====
