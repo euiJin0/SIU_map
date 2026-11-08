@@ -1269,7 +1269,6 @@ function canOpenStationInSequence(id){
   showSequenceNotice(`먼저 ${stations[required].title} 질문에 답해 주세요.`);return false;
 }
 function openTransferQuiz(index){
-  if(!canOpenStationInSequence("transfer"))return;
   if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
   loadTransferQuizProgress();
   transferQuestionIndex=Math.max(0,Math.min(transferQuiz.length-1,Number(index)||0));
