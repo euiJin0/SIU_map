@@ -11,13 +11,7 @@ const SELF_FIELDS = ['Q2. 초중고 공통 관심사', 'Q3. 듣고 싶은 말', 
 const REPORT_FIELDS = ['답변 | 나의 다음 역'];
 const STATION_FIELDS = [
   '답변 | 시니어비즈니스역',
-  '답변 | 환승센터역',
-  '답변 | 금융 X 시비즈역',
-  '답변 | 사회복지 X 시비즈역',
-  '답변 | 문화콘텐츠 X 시비즈역',
-  '답변 | 체육 X 시비즈역',
-  '답변 | 교육 X 시비즈역',
-  '답변 | 부동산건설 X 시비즈역'
+  '답변 | 환승센터역'
 ];
 // 참여자별 보기의 열 순서: 기본 응답 → 시니어비즈니스역 → 환승센터역 → 나의 다음 역.
 const SUMMARY_HEADERS = ['응답시각', '참여자 아이디', LOCATION_HEADER].concat(SELF_FIELDS, STATION_FIELDS, REPORT_FIELDS);
@@ -35,6 +29,7 @@ function doPost(e) {
   const rawSheet = spreadsheet.getSheetByName('응답') || spreadsheet.insertSheet('응답');
   getOrCreateParticipant(summary, participantId, submittedAt, response.origin || '');
   migrateRawSheet(rawSheet, summary);
+  removeLegacySectorAnswers(rawSheet);
   backfillNextStationAnswers(rawSheet, summary);
 
   const rowNumber = rawSheet.getLastRow() + 1;
@@ -239,6 +234,26 @@ function migrateRawSheet(sheet, summary) {
   formatRawTimes(sheet);
 }
 
+function removeLegacySectorAnswers(sheet) {
+  if (sheet.getLastRow() < 2) return;
+  const values = sheet.getDataRange().getValues();
+  const headers = values[0].map(String);
+  const stationIndex = headers.indexOf('역 이름');
+  if (stationIndex < 0) return;
+  const removedTitles = new Set([
+    '금융 X 시비즈역', '사회복지 X 시비즈역', '문화콘텐츠 X 시비즈역',
+    '체육 X 시비즈역', '교육 X 시비즈역', '부동산건설 X 시비즈역'
+  ]);
+  const rows = values.slice(1).filter(function (row) {
+    return !removedTitles.has(String(row[stationIndex] || '').trim());
+  });
+  if (rows.length === values.length - 1) return;
+  const oldRowCount = values.length - 1;
+  const columnCount = values[0].length;
+  sheet.getRange(2, 1, oldRowCount, columnCount).clearContent();
+  if (rows.length) sheet.getRange(2, 1, rows.length, columnCount).setValues(rows);
+}
+
 function getOrCreateParticipant(sheet, participantId, submittedAt, origin) {
   const lastRow = sheet.getLastRow();
   if (lastRow >= 2) {
@@ -363,6 +378,7 @@ function doGet() {
   const summary = ensureSummarySchema(spreadsheet);
   const rawSheet = spreadsheet.getSheetByName('응답') || spreadsheet.insertSheet('응답');
   migrateRawSheet(rawSheet, summary);
+  removeLegacySectorAnswers(rawSheet);
   backfillNextStationAnswers(rawSheet, summary);
   return ContentService.createTextOutput('SIU METRO response collector is ready. Participant sheet columns are up to date.');
 }
