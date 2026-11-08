@@ -402,9 +402,8 @@ body{background:#f2f3f5;overflow-y:hidden}
 .train-icon{display:none}
 .station-row{width:100%;min-width:0;max-width:100%;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:start;min-height:62px;padding:14px 0}
 .station-row .plus{justify-self:start;transform:translateX(-18px)}
-.station-row.quiz-topic-row{grid-template-columns:34px minmax(0,1fr) 44px!important;align-items:center;gap:6px;min-height:46px;padding:5px 0}
+.station-row.quiz-topic-row{grid-template-columns:34px minmax(0,1fr)!important;align-items:center;gap:6px;min-height:46px;padding:5px 0}
 .station-row.quiz-topic-row .station-title{font-size:13px;line-height:18px}
-.station-row.quiz-topic-row .quiz-topic-plus{display:grid!important;place-items:center;justify-self:center!important;position:relative;z-index:8;width:36px;height:36px;min-width:36px;min-height:36px;margin:0;padding:0;transform:none!important;border:1px solid #c5b9ec;border-radius:10px;background:#fff;color:var(--purple);font-size:20px;line-height:1;opacity:1;visibility:visible}
 .destination-route .plus{justify-self:start;transform:translateX(-18px)}
 .station-dot,.station-dot.transfer{justify-self:center;margin-top:1px}
 .station-title{font-size:15px;line-height:20px}
@@ -734,27 +733,21 @@ body{background:#f2f3f5;overflow-y:hidden}
       </div>
       <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(0)">
         <div class="station-dot"></div><div><div class="station-title">금융 X 시비즈역</div></div>
-        <button class="plus quiz-topic-plus" aria-label="금융 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(0)">＋</button>
       </div>
       <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(1)">
         <div class="station-dot"></div><div><div class="station-title">사회복지 X 시비즈역</div></div>
-        <button class="plus quiz-topic-plus" aria-label="사회복지 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(1)">＋</button>
       </div>
       <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(2)">
         <div class="station-dot"></div><div><div class="station-title">문화콘텐츠 X 시비즈역</div></div>
-        <button class="plus quiz-topic-plus" aria-label="문화콘텐츠 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(2)">＋</button>
       </div>
       <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(3)">
         <div class="station-dot"></div><div><div class="station-title">체육 X 시비즈역</div></div>
-        <button class="plus quiz-topic-plus" aria-label="체육 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(3)">＋</button>
       </div>
       <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(4)">
         <div class="station-dot"></div><div><div class="station-title">교육 X 시비즈역</div></div>
-        <button class="plus quiz-topic-plus" aria-label="교육 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(4)">＋</button>
       </div>
       <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(5)">
         <div class="station-dot"></div><div><div class="station-title">부동산건설 X 시비즈역</div></div>
-        <button class="plus quiz-topic-plus" aria-label="부동산건설 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(5)">＋</button>
       </div>
 
       <!-- 도착 -->
