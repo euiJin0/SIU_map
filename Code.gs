@@ -11,7 +11,13 @@ const SELF_FIELDS = ['Q2. 초중고 공통 관심사', 'Q3. 듣고 싶은 말', 
 const REPORT_FIELDS = ['답변 | 나의 다음 역'];
 const STATION_FIELDS = [
   '답변 | 시니어비즈니스역',
-  '답변 | 환승센터역'
+  '답변 | 환승센터역',
+  '답변 | 금융 X 시비즈역',
+  '답변 | 사회복지 X 시비즈역',
+  '답변 | 문화콘텐츠 X 시비즈역',
+  '답변 | 체육 X 시비즈역',
+  '답변 | 교육 X 시비즈역',
+  '답변 | 부동산건설 X 시비즈역'
 ];
 // 참여자별 보기의 열 순서: 기본 응답 → 시니어비즈니스역 → 환승센터역 → 나의 다음 역.
 const SUMMARY_HEADERS = ['응답시각', '참여자 아이디', LOCATION_HEADER].concat(SELF_FIELDS, STATION_FIELDS, REPORT_FIELDS);

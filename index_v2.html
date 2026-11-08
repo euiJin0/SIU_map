@@ -1,0 +1,1613 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SIU MAP · 전시 길찾기</title>
+<style>
+:root{
+  --blue:#2f6fed;
+  --green:#79b82f;
+  --purple:#7654e8;
+  --yellow:#ffc928;
+  --red:#ef3d3d;
+  --gray:#9da1a8;
+  --line:#e2e4e8;
+  --text:#111317;
+  --muted:#73777f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#eef0f3;color:var(--text);font-family:"Pretendard","Noto Sans KR",Arial,sans-serif}
+button{font:inherit}
+.phone{width:100%;max-width:430px;min-height:100vh;margin:auto;background:#fff;overflow:hidden}
+
+/* ===== 상단 SIU MAP ===== */
+.top{
+  position:sticky;top:0;z-index:30;height:56px;background:#fff;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 17px;border-bottom:1px solid #eceef1
+}
+.logo{font-size:18px;font-weight:950;letter-spacing:-.06em}
+.logo em{font-style:normal;color:var(--purple)}
+.stamps{font-size:9px;font-weight:900;color:#555}
+.top-actions{display:flex;align-items:center;gap:9px}
+.new-participant{border:1px solid #e6e1f0;border-radius:999px;background:#fff;color:#6142b0;padding:7px 10px;font-size:10px;font-weight:900;white-space:nowrap}
+.docent-open{border:0;border-radius:999px;background:#f1ecff;color:#5c35b5;padding:8px 10px;font-size:10px;font-weight:900}
+.stamp-num{
+  display:inline-grid;place-items:center;width:27px;height:27px;margin-left:5px;
+  border-radius:50%;background:#111;color:#fff;font-size:11px
+}
+
+/* ===== 전체 노선도 ===== */
+.map-wrap{
+  position:relative;
+  height:330px;
+  background:#f4f5f7;
+  padding:0;
+  border-bottom:1px solid #ddd;
+  overflow:hidden;
+  transition:height .38s ease, opacity .25s ease;
+}
+
+.map-wrap.map-hidden{
+  height:0;
+  opacity:0;
+  border-bottom:0;
+}
+
+.map{
+  position:relative;width:100%;height:330px;overflow:hidden;
+  background:#f2f4f1;
+}
+.map img{width:100%;height:100%;object-fit:cover;display:block}
+.map-fallback{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:#92969d;font-size:12px;background:
+  linear-gradient(120deg,#f7f8f6,#eef2ef 45%,#f7f7f4)
+}
+.map-fallback.hidden{display:none}
+.map-top-title{
+  position:absolute;left:14px;top:13px;z-index:3;
+  background:#fff;border-radius:10px;padding:8px 10px;
+  box-shadow:0 2px 12px #0001;font-size:10px;font-weight:950
+}
+.map-top-title b{color:var(--purple)}
+.map-float{
+  position:absolute;right:12px;top:13px;z-index:3;width:38px;height:38px;
+  border:0;border-radius:50%;background:#fff;box-shadow:0 2px 10px #0002;font-size:18px
+}
+.map-float.docent-map-open{right:14px;top:14px;width:48px;height:48px;font-size:25px;border:2px solid #eee8ff;color:#6544bc}
+
+/* ===== 길찾기 결과 헤더 ===== */
+.result{
+  background:#fff;border-radius:27px 27px 0 0;margin-top:-22px;position:relative;z-index:8;
+  box-shadow:0 -5px 18px #0000000d;padding:12px 18px 0
+}
+.handle{width:46px;height:4px;border-radius:99px;background:#999;margin:0 auto 16px}
+.result-head{display:flex;align-items:center;justify-content:space-between}
+.duration{font-size:28px;font-weight:950;letter-spacing:-.07em}
+.close-map{width:39px;height:39px;border:0;border-radius:50%;background:#f5f5f6;font-size:27px;line-height:1}
+.meta{font-size:13px;color:#777;margin:8px 0 14px}
+.meta b{color:#333}
+.route-summary{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.65fr) minmax(0,.55fr) minmax(0,2.2fr);align-items:center;gap:3px;overflow:hidden;padding-bottom:15px;min-width:0;max-width:100%}
+.segment{height:31px;border-radius:7px;display:flex;align-items:center;justify-content:center;gap:5px;color:#fff;font-size:11px;font-weight:900;white-space:nowrap}
+.segment.walk{background:#e8e9ed;color:#555;width:auto;min-width:0;overflow:hidden}
+.segment.senior{background:var(--purple);width:auto;min-width:0;overflow:hidden}
+.segment.career{background:#2f6fed;width:auto;min-width:0;overflow:hidden}
+.transit-dot{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:6px;background:#fff;color:inherit}
+
+/* ===== 본문 길찾기 ===== */
+.route-card{padding:0 18px 30px}
+.route-label{
+  margin:2px 0 4px 42px;font-size:10px;color:#9b9fa6;font-weight:800
+}
+.route-list{position:relative}
+.route-list:before{
+  content:"";position:absolute;left:17px;top:14px;bottom:auto;height:var(--route-rail-height,calc(100% - 29px));width:5px;
+  border-radius:99px;background:#ddd
+}
+.route-item{
+  position:relative;display:grid;grid-template-columns:38px 1fr auto;gap:10px;
+  min-height:88px;padding:13px 0;border-bottom:1px solid #f0f1f3
+}
+.route-item:last-child{border-bottom:0}
+.route-item.start-route{border-bottom:0;min-height:0;padding-bottom:12px}
+.route-item.destination-route{border-bottom:0;padding-bottom:0}
+.marker{
+  width:24px;height:24px;border-radius:50%;position:relative;z-index:2;
+  display:grid;place-items:center;background:#fff;border:3px solid #a8abb1;
+  color:#777;font-size:9px;font-weight:950;margin-left:5px
+}
+.marker.start{width:26px;height:26px;border:0;background:var(--blue);color:#fff;border-radius:50%;margin:0}
+.marker.start span,.marker.arrive span{font-size:7px}
+.marker.arrive{width:26px;height:26px;border:0;background:var(--red);color:#fff;border-radius:50%;margin:0}
+.route-name{font-size:17px;font-weight:950;letter-spacing:-.05em;line-height:1.25}
+.route-sub{font-size:11px;color:#777;margin-top:6px;line-height:1.5}
+.route-btn{
+  align-self:start;border:1px solid #dddfe3;background:#fff;border-radius:9px;
+  padding:7px 10px;font-size:10px;color:#333
+}
+.route-item.clickable{cursor:pointer}
+.route-item.clickable:active{background:#fafafa}
+
+/* ===== 열차 구간 ===== */
+.train-block{
+  position:relative;
+  padding:0 0 0 38px;
+  overflow:visible;
+}
+
+/* 열차 노선 막대 */
+/* ===== 열차 노선 막대 ===== */
+.train-block:before{
+  content:"";
+  position:absolute;
+
+  /* 역 동그라미의 중심과 동일한 위치 */
+  left:20px;
+
+  top:0;
+  bottom:0;
+
+  width:6px;
+  margin-left:-3px;
+
+  border-radius:99px;
+  background:var(--purple);
+
+  z-index:1;
+
+  /* 어떤 애니메이션/변형에도 영향을 받지 않도록 고정 */
+  transform:none;
+}
+
+.train-head{
+  position:relative;z-index:3;margin:0 0 2px -38px;padding:0 0 8px 38px;
+  display:flex;align-items:center;gap:8px
+}
+.career-line .train-head{padding-top:6px}
+.train-bar{
+  min-height:40px;border-radius:8px;color:#fff;display:flex;align-items:center;
+  padding:0 12px;gap:8px;font-size:12px;font-weight:950;box-shadow:0 2px 5px #0001
+}
+.train-bar.career{background:#565d68}
+.train-bar.senior{background:var(--purple)}
+.train-icon{
+  width:20px;height:14px;border:2px solid #fff;border-radius:4px;position:relative;flex:none
+}
+.train-icon:before{content:"";position:absolute;left:3px;top:3px;width:10px;height:4px;background:#fff;border-radius:1px}
+.train-icon:after{content:"";position:absolute;left:2px;bottom:-5px;width:4px;height:4px;border-radius:50%;background:#fff;box-shadow:10px 0 #fff}
+.train-note{margin-left:auto;font-size:9px;opacity:.9}
+
+/* 열차역 */
+.station-row{
+  position:relative;
+  display:grid;
+  grid-template-columns:30px 1fr auto;
+  gap:9px;
+  align-items:center;
+  min-height:73px;
+}
+
+/* ===== 역 동그라미 ===== */
+/* 노선 막대와 같은 x축에 정확히 겹치도록 배치 */
+/* ===== 역 동그라미 ===== */
+.station-dot{
+  width:20px;
+  height:20px;
+
+  border-radius:50%;
+  background:#fff;
+  border:4px solid var(--purple);
+
+  position:relative;
+  z-index:5;
+
+  /* 첫 번째 칸의 중앙 */
+  justify-self:center;
+
+  margin:0;
+}
+
+.station-dot.transfer{
+  width:24px;
+  height:24px;
+
+  border:4px solid var(--yellow);
+
+  justify-self:center;
+  margin:0;
+}
+
+.station-dot.done{
+  background:var(--purple);
+}
+
+.station-title{font-size:15px;font-weight:950;letter-spacing:-.04em}
+.station-desc{font-size:10px;color:#8d9198;margin-top:3px}
+.plus{
+  width:30px;height:30px;border:1px solid #dfe1e5;background:#fff;border-radius:9px;
+  font-size:17px;color:#666
+}
+.plus.done{background:#111;color:#fff;border-color:#111}
+
+/* ===== 도보 구간 ===== */
+.walk-block{
+  position:relative;min-height:64px;margin:0;padding-left:38px;display:flex;align-items:center
+}
+.walk-block:before{
+  content:"";position:absolute;left:17px;top:0;bottom:0;border-left:3px dotted #c8cbd0
+}
+.walk-person{
+  position:absolute;left:5px;top:19px;z-index:4;width:27px;height:27px;border-radius:50%;
+  background:#8e939b;color:#fff;display:grid;place-items:center;font-size:14px;
+  box-shadow:0 1px 3px #0002
+}
+
+.walk-text b{font-size:12px}.walk-text span{display:inline;color:inherit;font-size:12px;margin-left:4px;margin-top:0}
+
+/* ===== 환승/활동 안내 ===== */
+.station-title-line,.route-name-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.route-origin-tag{display:inline-flex;align-items:center;max-width:100%;min-height:20px;padding:2px 8px;border:1px solid #e5e5ea;border-radius:99px;background:#f4f4f6;color:#72747d;font-size:9px;font-weight:750;line-height:1.2;white-space:normal;overflow-wrap:anywhere}
+.destination-card{margin-top:-9px}
+.activity-chip{
+  display:flex;align-items:center;gap:8px;margin:2px 0 8px;padding:10px 12px;
+  border:1px solid #e1e3e7;border-radius:10px;background:#fff
+}
+.activity-chip .ico{width:26px;height:26px;border-radius:8px;background:#f0f0f3;display:grid;place-items:center;font-size:13px}
+.activity-chip b{font-size:10px}.activity-chip span{font-size:9px;color:#888}
+
+/* ===== 스탬프 ===== */
+.stamp-title{font-size:17px;font-weight:950;padding:18px 18px 10px}
+.stamp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:0 12px 40px}
+.stamp{
+  min-height:100px;height:100px;aspect-ratio:auto;padding:5px 4px;border:1px dashed #d5d8dd;border-radius:13px;background:#fafafa;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;color:#b1b5bd
+}
+.stamp.on{border-style:solid;background:#fff;color:#111}
+.s-circle{width:31px;height:31px;border:2px solid currentColor;border-radius:50%;display:grid;place-items:center;font-size:13px}
+.stamp small{font-size:7px;font-weight:900;text-align:center}
+
+/* ===== 질문 바텀시트 ===== */
+.modal-bg{position:fixed;inset:0;z-index:100;background:#10111580;display:none;align-items:flex-end}
+.modal-bg.show{display:flex}
+.modal{
+  width:100%;max-width:430px;margin:auto;background:#fff;border-radius:25px 25px 0 0;
+  padding:12px 17px calc(86px + env(safe-area-inset-bottom));max-height:82vh;overflow:auto
+}
+.modal-handle{width:42px;height:4px;border-radius:99px;background:#aaa;margin:0 auto 15px}
+.modal-top{display:flex;justify-content:space-between}
+.tag{font-size:10px;font-weight:950;color:var(--purple);letter-spacing:.12em}
+.modal h2{font-size:25px;margin:7px 0 10px;letter-spacing:-.05em}
+.modal p{font-size:14px;line-height:1.65;color:#6f737b;margin:0 0 16px}
+#question{font-weight:850;color:#25242b;white-space:pre-line}
+#modalBg.station-question-spaced .modal h2{margin-bottom:14px}
+#modalBg.station-question-spaced .station-question-step{margin:0 0 10px}
+#modalBg.station-question-spaced #question{line-height:1.9}
+.transfer-focus{align-items:center;gap:10px;margin:4px 0 14px;padding:11px 13px;border:1px solid #e7def8;border-radius:14px;background:#f6f2ff}
+.transfer-focus:not([hidden]){display:flex}
+.transfer-focus-label{flex:none;color:#7358ad;font-size:12px;font-weight:800}
+.transfer-focus-value{color:#29243e;font-size:14px;font-weight:800;line-height:1.55;overflow-wrap:anywhere}
+.close{border:0;background:#f1f2f4;border-radius:50%;width:42px;height:42px;font-size:23px}
+.answers{display:grid;gap:10px}
+.answer{display:flex;align-items:center;justify-content:center;min-height:68px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:16px;text-align:center;padding:17px 18px;font-size:15px;font-weight:750;line-height:1.5;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
+.answer:active{transform:scale(.985)}
+.answer.selected{background:linear-gradient(145deg,#7654e8,#6540d2);color:#fff;border-color:#6540d2;box-shadow:0 5px 14px #7654e83d}
+.complete{width:100%;min-height:58px;border:0;background:#111;color:#fff;border-radius:15px;padding:15px;margin-top:12px;font-size:14px;font-weight:900}
+.complete:disabled{background:#ddd;color:#aaa}
+.next-station-trigger{cursor:pointer}
+.next-station-trigger .route-sub{color:#6142b0}
+.report-bg{position:fixed;inset:0;z-index:180;background:#101115b8;display:none;align-items:center;justify-content:center;padding:12px}
+.report-bg.show{display:flex}
+.report-panel{position:relative;width:min(100%,500px);max-height:94dvh;overflow:auto;background:#f8f9fb;border-radius:22px;padding:14px;box-shadow:0 18px 60px #0004}
+.report-bg.report-image-mode{padding:0;background:#fbfbfc}
+.report-image-mode .report-panel{width:100vw;height:100dvh;max-height:100dvh;padding:0;border-radius:0;box-shadow:none;overflow:hidden;background:#fbfbfc}
+.report-image-mode .report-toolbar{display:none}
+.report-image-mode #reportView{position:relative;width:100%;height:100%;min-height:0}
+.report-image-close{display:none}
+.report-image-mode .report-image-close{position:absolute;z-index:2;top:calc(10px + env(safe-area-inset-top));right:12px;display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:50%;background:#25233acc;color:#fff;font-size:26px;line-height:1;box-shadow:0 2px 8px #0002}
+.report-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.report-toolbar strong{font-size:13px}.report-toolbar button{border:0;background:#eceef3;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800}
+.report-paper{background:#fff;border:1px solid #e1e3e8;border-radius:14px;padding:10px;color:#191b20;font-family:"Pretendard","Noto Sans KR",Arial,sans-serif}
+.report-image-preview{display:block;width:100%;height:auto;border-radius:9px}
+.report-image-preview{max-height:65dvh;object-fit:contain}
+#reportView .report-paper{padding:4px}
+#reportView .report-image-preview{max-height:calc(88dvh - 72px)}
+.report-image-mode #reportView .report-paper{position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;padding:8px 0 calc(88px + env(safe-area-inset-bottom));border:0;border-radius:0;display:grid;place-items:center;overflow:hidden;background:#fbfbfc}
+.report-image-mode #reportView .report-image-preview{width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;border-radius:0}
+.report-image-save{display:none}
+.report-image-mode .report-image-save{position:absolute;z-index:3;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:10px;width:min(84vw,360px);min-height:54px;padding:0 24px;border:0;border-radius:999px;background:linear-gradient(135deg,#7654cf,#5f3caf);color:#fff;font:800 15px "Pretendard","Noto Sans KR",Arial,sans-serif;box-shadow:0 8px 24px #38206d40;touch-action:manipulation}
+.report-image-save:active{transform:translateX(-50%) scale(.98)}
+.sequence-notice{position:fixed;z-index:500;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,12px);width:max-content;max-width:calc(100vw - 40px);padding:13px 18px;border-radius:14px;background:#29243e;color:#fff;font-size:13px;font-weight:750;line-height:1.5;text-align:center;box-shadow:0 8px 26px #1d153533;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+.sequence-notice.show{opacity:1;transform:translate(-50%,0)}
+.report-head{padding:14px 13px;background:#f1f3f9;border-radius:10px;margin-bottom:9px}
+.report-eyebrow{font-size:8px;color:#7965c6;letter-spacing:.08em;font-weight:800}
+.report-head h2{font-size:21px;margin:4px 0 3px;letter-spacing:-.05em}
+.report-head p{font-size:10px;line-height:1.55;color:#626775;margin:0}
+.report-section{padding:12px 1px;border-bottom:1px solid #e9eaee}
+.report-section:last-child{border-bottom:0}.report-section-title{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.report-number{width:23px;height:23px;border:1px solid #4881ff;border-radius:50%;color:#3474f2;display:grid;place-items:center;font-size:9px;font-weight:800;flex:none}
+.report-number.purple{border-color:#825bff;color:#7045f2}.report-number.orange{border-color:#f29500;color:#df7b00}
+.report-section-title b{font-size:12px}.report-section-title small{display:block;color:#92959d;font-size:7px;margin-top:2px}
+.report-copy{font-size:10px;line-height:1.65;color:#353841;margin:5px 0}
+.report-copy.lead{font-size:12px;color:#1c1e24}
+.report-box{border:1px solid #d9cdfd;border-radius:9px;padding:9px;margin-top:6px}
+.report-label{font-size:8px;font-weight:900;margin:6px 0 3px}.report-tags{display:flex;gap:4px;flex-wrap:wrap}
+.report-weave{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:9px 0 2px;color:#7054bc;font-size:8px;font-weight:800}
+.report-weave span{background:#f1edff;border-radius:99px;padding:4px 7px}.report-weave i{font-style:normal;color:#aaa}
+.report-trail{display:grid;gap:6px;margin-top:8px}.report-trail-row{display:grid;grid-template-columns:15px 1fr;gap:6px;align-items:start;font-size:9px;line-height:1.45;color:#343740}.report-trail-row:before{content:"";width:7px;height:7px;border:2px solid #8a70df;border-radius:50%;margin:2px auto 0}.report-trail-row b{font-size:9px}.report-trail-row span{display:block;color:#777b84}
+.report-tag{font-size:8px;border-radius:99px;background:#eef4ff;color:#4d7fda;padding:3px 6px}
+.report-tag.purple{background:#f1edff;color:#7154c2}.report-tag.gray{background:#f0f0f0;color:#666}
+.report-next{background:#f1f3f9;border-radius:10px;padding:11px;margin-top:10px}
+.report-next b{font-size:12px;display:block;margin:3px 0}.report-next p{font-size:9px;line-height:1.55;color:#626775;margin:0}
+.report-actions{display:flex;gap:8px;margin-top:10px}.report-actions button{flex:1;border:0;border-radius:11px;padding:12px 8px;font-size:11px;font-weight:900;background:#7654e8;color:white}.report-actions .secondary{background:#fff;color:#5134a1;border:1px solid #ddd4f4}
+.report-route-card{width:100%;display:grid;grid-template-columns:46px minmax(0,1fr) 38px;gap:12px;align-items:center;margin:0 0 14px;padding:12px;text-align:left;border:1px solid #e4e1ec;border-radius:17px;background:#fff;color:#282536;box-shadow:0 4px 14px #29223a0a;transition:background .18s ease,border-color .18s ease,transform .18s ease}
+.report-route-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:#f1edfc;color:#7654c8}
+.report-route-icon svg{width:25px;height:25px}
+.report-route-copy{min-width:0;display:grid;gap:4px}
+.report-route-copy strong{font-size:16px;line-height:1.25;font-weight:900}
+.report-route-copy small{font-size:10px;line-height:1.4;color:#858792}
+.report-route-arrow{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#eceef1;color:#a1a4aa;font-size:23px;line-height:1;font-weight:700}
+.report-route-card:disabled{cursor:not-allowed;background:#f5f5f7;color:#9b9da4;box-shadow:none}
+.report-route-card:disabled .report-route-icon{background:#ebecf0;color:#a9abb2}
+.report-route-card:disabled .report-route-copy small{color:#a3a5ac}
+.report-route-card:not(:disabled){border-color:#d9cef5;background:#fff;cursor:pointer}
+.report-route-card:not(:disabled) .report-route-arrow{background:#7654c8;color:#fff;box-shadow:0 3px 10px #7654c833}
+.report-route-card:not(:disabled):active{transform:scale(.99)}
+
+.next-answer{width:100%;min-height:100px;resize:vertical;border:1px solid #ddd4f4;border-radius:12px;padding:13px;font:inherit;font-size:15px;line-height:1.5;margin:8px 0}
+
+
+/* 작은 화면 보정 */
+@media(max-width:360px){
+  .map{height:280px}.duration{font-size:25px}.route-name{font-size:15px}
+  .train-bar{font-size:11px}.station-title{font-size:14px}
+}
+
+/* ===== 모바일 지도/길찾기 슬라이드 ===== */
+html,body{width:100%;max-width:100%;height:100%;overflow-x:hidden;overscroll-behavior-x:none;overscroll-behavior-y:none}
+body{background:#f2f3f5;overflow-y:hidden}
+.phone{position:relative;width:100%;max-width:430px;min-width:0;height:100dvh;min-height:0;margin:0 auto;display:flex;flex-direction:column;overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-y;box-shadow:0 0 28px #00000012}
+.top{flex:0 0 calc(56px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);height:calc(56px + env(safe-area-inset-top))}
+.map-wrap{flex:0 0 34%;height:auto;min-height:135px;transition:flex-basis .32s cubic-bezier(.2,.75,.25,1)}
+.map{height:100%;min-height:0}
+.map img{object-fit:cover;object-position:center 48%;background:#fff}
+.map-fallback:not(.hidden){background:linear-gradient(135deg,#e7eef0,#f5f6f2 50%,#e2ece7)}
+.result{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;margin-top:-18px;border-radius:22px 22px 0 0;padding:10px 16px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px #00000012;transition:flex-basis .32s cubic-bezier(.2,.75,.25,1)}
+.handle{position:relative;flex:0 0 24px;width:100%;height:24px;margin:0 auto 4px;background:transparent;touch-action:none;cursor:grab}
+.handle:after{content:"";position:absolute;left:calc(50% - 21px);top:8px;width:42px;height:4px;border-radius:99px;background:#999}
+.focus-controls{display:none}
+.result-head{flex:0 0 auto}
+.duration{font-size:23px;letter-spacing:-.04em}
+.close-map{width:34px;height:34px;font-size:23px}
+.meta{font-size:11px;margin:5px 0 10px}
+.route-summary{flex:0 0 auto;padding-bottom:11px}
+.segment{height:29px;font-size:10px}
+.route-card{flex:1 1 auto;min-width:0;max-width:100%;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior-x:none;overscroll-behavior-y:contain;touch-action:pan-y;padding:0 2px 22px 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.route-card::-webkit-scrollbar{display:none}
+.route-label{margin:2px 0 4px 46px}
+.route-list:before{left:17px;top:14px;bottom:auto;height:var(--route-rail-height,calc(100% - 29px));width:4px;background:repeating-linear-gradient(to bottom,#c9cdd3 0 2px,transparent 2px 7px);border-radius:0}
+.route-item{width:100%;min-width:0;max-width:100%;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:start;padding:14px 0}
+.marker{justify-self:center;margin:0}
+.train-block{min-width:0;max-width:100%;padding-left:0}
+.train-block:before{left:16px;width:6px;margin-left:0;top:var(--rail-start,0px);bottom:auto;height:var(--rail-length,100%);background:var(--line-color,var(--purple));border-radius:99px}
+.train-head{display:grid;grid-template-columns:38px minmax(0,1fr);min-width:0;max-width:100%;align-items:center;gap:8px;margin:0;padding:9px 0 8px}
+.career-line .train-head{padding-top:6px}
+.train-bar{width:100%;min-width:0;max-width:100%;min-height:40px;padding:0 12px;gap:8px;border:0;border-radius:8px;background:var(--line-color,var(--purple));color:#fff;box-shadow:0 2px 5px #0002;font-size:12px;white-space:nowrap;overflow:hidden}
+.train-bar.career{--line-color:#2f6fed;background:#2f6fed}
+.train-bar.senior{--line-color:#7654e8;background:#7654e8}
+.career-line{--line-color:#2f6fed}.senior-line{--line-color:#7654e8}
+.career-line .station-dot{border-color:#2f6fed}.senior-line .station-dot{border-color:#7654e8}.station-dot.transfer{border-color:var(--yellow)}
+.train-bar b{font-weight:950;color:#fff}
+.line-badge{position:relative;z-index:4;justify-self:center;width:25px;height:25px;display:grid;place-items:center;border:2px solid var(--line-color);border-radius:7px;background:#fff;color:var(--line-color);font-size:12px;font-weight:950}
+.line-sep{color:#ffffffad}
+.train-note{margin-left:auto;color:#ffffffd9;font-size:9px;opacity:1}
+.train-icon{display:none}
+.station-row{width:100%;min-width:0;max-width:100%;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:start;min-height:62px;padding:14px 0}
+.station-row .plus{justify-self:start;transform:translateX(-18px)}
+.destination-route .plus{justify-self:start;transform:translateX(-18px)}
+.station-dot,.station-dot.transfer{justify-self:center;margin-top:1px}
+.station-title{font-size:15px;line-height:20px}
+.station-desc{margin-top:3px}
+.walk-block{padding-left:46px;min-height:58px}
+.walk-block:before{left:17.5px;top:0;bottom:0;width:3px;background:repeating-linear-gradient(to bottom,#c9cdd3 0 2px,transparent 2px 7px);border:0}
+.walk-person{left:19px;top:50%;transform:translate(-50%,-50%);width:auto;height:auto;border-radius:0;background:transparent;box-shadow:none;font-size:17px;line-height:1;animation:none}
+.stamp-title{padding:12px 2px 8px}
+.stamp-grid{padding:0 0 20px}
+.plus{border-color:#c5b9ec;color:var(--purple)}
+.plus.done{position:relative;width:30px;height:30px;min-width:30px;min-height:30px;padding:0;border:0;background:transparent;box-shadow:none;overflow:visible;display:grid;place-items:center}
+.plus.done img{position:absolute;left:50%;top:50%;display:block;width:46px;height:46px;max-width:none;object-fit:contain;transform:translate(-50%,-50%)}
+.s-circle img{display:block;width:100%;height:100%;object-fit:contain}
+.stamp.on .s-circle{width:70px;height:70px;border:0}
+.stamp .s-circle{width:70px;height:70px;border:0}
+.stamp .s-circle img{width:100%;height:100%;object-fit:contain}
+.answer-mode{display:flex;gap:7px;margin:4px 0 9px}
+.mode-btn{border:1px solid #ddd;border-radius:999px;background:#fff;padding:10px 15px;font-size:13px}
+.mode-btn.active{background:#111;border-color:#111;color:#fff}
+.essay-answer{width:90%;max-width:520px;min-height:110px;margin:0 auto;resize:vertical;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;line-height:1.5}
+.essay-answer:focus{outline:2px solid #7654e855;border-color:#7654e8}
+.self-flow{padding:10px 0}
+.self-step{font-size:12px;font-weight:900;color:var(--purple);background:#f3efff;border-radius:999px;padding:8px 12px;width:max-content}
+.self-flow #selfStepPrompt{font-size:18px;font-weight:850;color:#222;margin:16px 0}
+.self-textarea{width:100%;max-width:520px;min-height:110px;margin:0 auto;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;resize:vertical}
+.self-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.self-option{display:flex;align-items:center;justify-content:center;min-height:60px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:15px;padding:12px;font-size:13px;font-weight:700;text-align:center;line-height:1.45;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
+.self-option:active{transform:scale(.98)}
+.self-option.selected{border-color:#7654e8;background:#f1ebff;color:#5537a3;font-weight:850;box-shadow:0 4px 12px #7654e826}
+.self-field-options .self-option{display:flex;flex-direction:column;gap:4px}
+.field-option-label{font-size:13px;font-weight:900;line-height:1.2}
+.field-option-detail{font-size:10px;font-weight:600;color:#777;line-height:1.25}
+.self-option.selected .field-option-detail{color:#654bb0}
+.self-note{font-size:13px;color:#777;margin:0 0 11px}
+.self-nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.self-nav button{flex:1}
+.self-flow+.complete{margin-top:8px}
+.intro-screen,.loading-screen{position:fixed;inset:0;z-index:250;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#f3efff,#fff 55%,#f4f5f8)}
+.intro-card,.loading-content{width:min(100%,390px);text-align:center}
+.intro-card,.location-card{padding:30px 22px;background:#fff;border:1px solid #eeeaf7;border-radius:25px;box-shadow:0 16px 45px #34206418}
+.location-card{width:min(100%,390px);text-align:left}
+.location-progress{font-size:10px;font-weight:900;letter-spacing:.1em;color:#7654e8;margin:2px 0 13px}
+.location-title{font-size:21px;line-height:1.35;letter-spacing:-.05em;margin:0 0 7px}
+.location-help{font-size:12px;color:#777;line-height:1.5;margin:0 0 18px}
+.route-fields{margin:0 0 18px}
+.route-search-card{position:relative;display:flex;flex-direction:column;padding:3px 9px;border:1px solid #e4e4ea;border-radius:14px;background:#fff;box-shadow:0 3px 12px #2420330b}
+.route-form-row{position:relative;z-index:1;display:grid;grid-template-columns:24px minmax(0,1fr) 32px;align-items:center;gap:8px;min-height:61px;padding:6px 4px;background:#fff}
+.route-form-row.from{border-radius:11px 11px 0 0}
+.route-form-row.to{border-radius:0 0 11px 11px}
+.route-point{justify-self:center;width:10px;height:10px;border:3px solid #50b887;border-radius:50%;background:#fff}
+.route-point.to{border-color:#d86570}
+.route-form-copy{display:block;min-width:0}
+.route-field-label{display:block;font-size:10px;font-weight:850;color:#8b8c94;margin-bottom:3px}
+.route-form-row input{width:100%;height:25px;border:0;outline:0;background:transparent;padding:0;font:inherit;font-size:16px;font-weight:750;color:#25242a}
+.route-form-row input::placeholder{font-size:14px;font-weight:500;color:#a7a7af;opacity:1}
+.route-destination{display:block;font-size:16px;font-weight:800;color:#333;line-height:25px}
+.route-clear{width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:#7e8088;font-size:23px;font-weight:400;line-height:1}
+.route-clear:active{background:#f1eff5}
+.route-form-divider{height:1px;margin-left:34px;background:#ececf0}
+.route-form-line{position:absolute;left:24px;top:34px;bottom:34px;z-index:2;border-left:1px dashed #c9c8d0;pointer-events:none}
+.transport-modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 13px}
+.transport-mode{min-width:0;min-height:51px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:1px solid transparent;border-radius:12px;color:#70727a;font-size:9px;font-weight:750;white-space:nowrap}
+.transport-mode .mode-icon{font-size:17px;line-height:1}
+.transport-mode.active{background:#e8f2ff;border-color:#d3e6ff;color:#1976d2}
+.route-preview{padding:13px 12px 11px;border:1px solid #e7e7ec;border-radius:13px;background:#fff;margin-bottom:17px}
+.route-preview-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.route-preview-head strong{font-size:11px;color:#333}
+.route-preview-head span{font-size:9px;color:#80818a}
+.route-preview-line{display:grid;grid-template-columns:30px minmax(0,1fr) 22px minmax(0,1fr) 22px minmax(0,1fr) 30px;align-items:center;gap:0}
+.preview-endpoint{justify-self:center;width:9px;height:9px;flex:none;border:2px solid #50b887;border-radius:50%;background:#fff}
+.preview-endpoint.finish{border-color:#d86570}
+.preview-line{height:3px;min-width:8px;flex:1;border-radius:9px;background:#d7d8dd}
+.preview-line.discovery{background:#3278e7}
+.preview-line.expansion{background:#7654e8}
+.preview-badge{justify-self:center;width:22px;height:22px;flex:none;display:grid;place-items:center;border-radius:7px;background:#3278e7;color:#fff;font-size:10px;font-weight:900}
+.preview-badge.expansion{background:#7654e8}
+.route-preview-labels{display:grid;grid-template-columns:30px minmax(0,1fr) 22px minmax(0,1fr) 22px minmax(0,1fr) 30px;align-items:start;gap:0;margin-top:6px;text-align:center;color:#7b7c85;font-size:8px;line-height:1.2}
+.route-preview-labels span{width:max-content;max-width:84px;justify-self:center;text-align:center;white-space:nowrap}
+.route-preview-labels span:nth-child(1){grid-column:1}
+.route-preview-labels span:nth-child(2){grid-column:3}
+.route-preview-labels span:nth-child(3){grid-column:5}
+.route-preview-labels span:nth-child(4){grid-column:7}
+.location-actions{display:flex;gap:8px}
+.location-back{height:48px;padding:0 18px;border:1px solid #e1dced;border-radius:12px;background:#fff;color:#594e72;font-size:13px;font-weight:800}
+.location-actions .intro-submit{flex:1;margin:0}
+.intro-logo{font-size:17px;font-weight:950;letter-spacing:-.06em}
+.intro-logo em{font-style:normal;color:var(--purple)}
+.intro-card p{font-size:14px;font-weight:800;line-height:1.7;margin:18px 0 24px}
+.intro-card label{display:block;text-align:left;font-size:11px;font-weight:900;margin-bottom:7px}
+.intro-card input{width:100%;height:48px;border:1px solid #d9d7e2;border-radius:12px;padding:0 13px;font:inherit;font-size:16px}
+.intro-card input:focus{outline:2px solid #7654e855;border-color:#7654e8}
+.intro-submit{width:100%;height:48px;margin-top:12px;border:0;border-radius:12px;background:#7654e8;color:#fff;font-size:13px;font-weight:900}
+.loading-content h1{font-size:21px;line-height:1.45;margin:20px 0 7px;letter-spacing:-.05em}
+.loading-content p{font-size:12px;color:#777;margin:0 0 65px}
+.train-loading-track{height:12px;position:relative;margin:0 12px;border-radius:99px;background:#e4e1ed;box-shadow:inset 0 1px 3px #00000013}
+.train-loading-fill{position:absolute;inset:0 auto 0 0;width:0;border-radius:inherit;background:linear-gradient(90deg,#9a7af0,#7654e8);animation:loading-fill 5.2s cubic-bezier(.18,.72,.28,1) forwards}
+.loading-train{position:absolute;z-index:2;left:0;bottom:2px;width:112px;height:70px;transform:translateX(-2%);animation:loading-train 5.2s cubic-bezier(.18,.72,.28,1) forwards}
+.loading-train svg{position:absolute;left:0;bottom:0;width:112px;height:70px;overflow:visible;filter:drop-shadow(0 3px 2px #2222)}
+.steam{position:absolute;z-index:2;left:9px;top:2px;width:7px;height:7px;border-radius:50%;background:#aaa3b8;opacity:0;filter:blur(.5px);animation:steam-puff 1.15s ease-out infinite}
+.steam-two{left:17px;top:-1px;animation-delay:.4s}
+.steam-three{left:25px;top:3px;animation-delay:.8s}
+.loading-screen:not([hidden]){display:grid}
+@keyframes loading-fill{to{width:100%}}
+@keyframes loading-train{to{left:calc(100% - 112px)}}
+@keyframes steam-puff{0%{opacity:0;transform:translate(0,5px) scale(.55)}28%{opacity:.72}100%{opacity:0;transform:translate(-7px,-16px) scale(1.6)}}
+.intro-screen[hidden],.loading-screen[hidden],[hidden]{display:none!important}
+.docent-modal{width:min(100%,430px);max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);overflow:hidden;overscroll-behavior:contain;padding:16px}
+.docent-coming{display:flex;flex:1;min-height:260px;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-top:12px;padding:28px 20px;border:1px solid #e8e2f4;border-radius:20px;background:radial-gradient(circle at 50% 25%,#f1eaff 0,transparent 38%),linear-gradient(145deg,#fbfaff,#f5f1fc);text-align:center}
+.docent-coming-icon{display:grid;width:70px;height:70px;place-items:center;border-radius:24px;background:#fff;color:#6845bb;font-size:34px;box-shadow:0 8px 24px #4d348015}
+.docent-coming-label{color:#7354bd;font-size:11px;font-weight:900;letter-spacing:.16em}
+.docent-coming h3{margin:0;color:#30234d;font-size:20px;line-height:1.4}
+.docent-coming p{max-width:270px;margin:0;color:#777183;font-size:13px;line-height:1.65}
+.docent-coming-badge{margin-top:2px;padding:7px 13px;border-radius:999px;background:#ebe4f8;color:#6649a9;font-size:11px;font-weight:800}
+@media(max-width:600px){
+  .plus.done img{width:54px;height:54px}
+  #docentBg .docent-modal{height:min(72dvh,620px);min-height:58dvh;max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);width:min(100%,430px);display:flex;flex-direction:column;overflow:hidden;padding:calc(14px + env(safe-area-inset-top)) 16px calc(12px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0}
+  #docentBg .modal-handle{margin-bottom:10px;flex:none}
+  #docentBg .modal-top{flex:none}
+  #docentBg .modal h2{font-size:23px;margin:4px 0 6px}
+  #docentBg .docent-coming{min-height:0;margin-top:8px;padding:22px 16px}
+}
+@media(max-height:650px){
+  #docentBg .docent-modal{height:min(72dvh,620px);min-height:58dvh;padding-top:calc(8px + env(safe-area-inset-top))}
+  #docentBg .modal-handle{margin-bottom:7px}
+  #docentBg .docent-coming{gap:9px;padding:16px 14px}
+  #docentBg .docent-coming-icon{width:58px;height:58px;font-size:29px;border-radius:20px}
+}
+.phone.map-focus .map-wrap{flex-basis:70%}
+.phone.route-focus .map-wrap{flex-basis:12%;min-height:104px}
+.phone.map-focus .result{flex-basis:30%;min-height:175px}
+.phone.route-focus .result{flex-basis:88%}
+/* 휴대폰 화면에서 지도와 경로가 한눈에 들어오도록 여백과 비율을 조정합니다. */
+@media(max-width:600px){
+  .duration{font-size:21px}
+  .result{padding-left:13px;padding-right:13px}
+  .route-item{padding-top:11px;padding-bottom:11px}
+  .route-item.start-route{padding-bottom:16px}
+  .intro-card input,.essay-answer,.self-textarea{font-size:16px}
+  .modal-bg{align-items:flex-end;overscroll-behavior:none}
+  #modalBg .modal{height:86dvh;max-height:86dvh;align-self:flex-end;margin:0 auto;border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;overscroll-behavior:none;touch-action:none;padding:13px 17px calc(12px + env(safe-area-inset-bottom))}
+  #modalBg .modal-handle{width:46px;height:4px;margin-bottom:10px;flex:none}
+  #modalBg .tag{font-size:10px}
+  #modalBg .modal h2{font-size:22px;margin:4px 0 6px}
+  #modalBg .modal p{font-size:14px;line-height:1.45;margin-bottom:8px}
+  #modalBg .close{width:40px;height:40px;font-size:23px;flex:none}
+  #modalBg .answer-mode{gap:8px;margin:4px 0 8px;flex:none}
+  #modalBg .mode-btn{min-height:40px;padding:8px 13px;font-size:13px}
+  #modalBg .answers{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr);align-content:stretch;gap:8px;overflow:hidden}
+  #modalBg .answer{min-height:0;padding:9px 12px;font-size:14px;line-height:1.35}
+  #modalBg .essay-answer{flex:none;width:90%;height:30dvh;max-height:250px;min-height:130px;padding:13px;font-size:15px;resize:none}
+  #modalBg.essay-station .essay-answer{width:100%}
+  #modalBg .complete{flex:none;min-height:50px;padding:12px;font-size:14px;margin:9px 0 0}
+  #modalBg.essay-station #complete{margin-top:auto}
+  #modalBg .self-flow{flex:1;min-height:0;display:flex;flex-direction:column;padding:4px 0}
+  #modalBg .self-step{font-size:12px;padding:7px 11px;flex:none}
+  #modalBg .self-flow #selfStepPrompt{font-size:17px;line-height:1.35;margin:8px 0;flex:none}
+  #modalBg .self-textarea{flex:none;width:100%;height:26dvh;max-height:220px;min-height:120px;padding:13px;font-size:15px;resize:none}
+  #modalBg .essay-answer,#modalBg .self-textarea,.report-panel textarea{font-size:16px!important}
+  #modalBg .self-note{font-size:11px;margin:0 0 6px;flex:none}
+  #modalBg .self-input{flex:1;min-height:0;display:flex;flex-direction:column}
+  #modalBg .self-options{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr);align-content:stretch;gap:7px}
+  #modalBg .self-option{height:100%;min-height:0;padding:8px;font-size:12px;line-height:1.3}
+  #modalBg .self-field-options .self-option{padding:6px 7px;font-size:11px;line-height:1.2}
+  #modalBg .self-field-options .field-option-label{font-size:12px}
+  #modalBg .self-field-options .field-option-detail{font-size:9px}
+  #modalBg .self-nav{gap:8px;margin-top:8px;flex:none}
+  #modalBg .self-nav .mode-btn{min-height:42px;font-size:13px}
+}
+@media(max-width:600px) and (max-height:700px){
+  #modalBg .modal{height:89dvh;max-height:89dvh;padding:9px 13px calc(8px + env(safe-area-inset-bottom))}
+  #modalBg .modal-handle{margin-bottom:7px}
+  #modalBg .modal h2{font-size:23px;margin:5px 0 7px}
+  #modalBg .modal p{font-size:14px;margin-bottom:12px}
+  #modalBg .answer-mode{margin:4px 0 9px}
+  #modalBg .mode-btn{min-height:42px;padding:8px 12px;font-size:12px}
+  #modalBg .answers{gap:8px}
+  #modalBg .answer{min-height:0;padding:8px;font-size:12px}
+  #modalBg .essay-answer{height:28dvh;max-height:205px;min-height:120px;padding:10px}
+  #modalBg.essay-station .essay-answer{width:100%}
+  #modalBg .self-flow{padding:3px 0}
+  #modalBg .self-step{font-size:12px;padding:7px 11px}
+  #modalBg .self-flow #selfStepPrompt{font-size:16px;margin:10px 0}
+  #modalBg .self-textarea{height:24dvh;max-height:175px;min-height:110px;padding:12px}
+  #modalBg .self-note{font-size:11px;margin-bottom:7px}
+  #modalBg .self-options{gap:6px}
+  #modalBg .self-options .self-option{min-height:0;padding:7px;font-size:11px}
+  #modalBg .self-nav{margin-top:5px;gap:7px}
+  #modalBg .self-nav .mode-btn{min-height:38px;font-size:12px}
+  #modalBg .complete{min-height:44px;padding:9px;font-size:12px;margin-top:6px}
+  #modalBg.essay-station #complete{margin-top:auto}
+}
+@media(max-width:360px){
+  .map-wrap{min-height:130px}.phone.map-focus .map-wrap{flex-basis:64%}
+  .phone.map-focus .result{flex-basis:36%;min-height:185px}
+  .meta{font-size:10px}.train-note{display:none}.train-bar{padding-left:12px;gap:5px}
+  .audio-dock{gap:7px;padding:8px 9px}.dock-play{width:34px;height:34px}.dock-open{padding:7px;font-size:9px}
+}
+/* 랜덤 쪽지 8개가 모두 보이도록 마지막 단계에서만 선택 버튼 간격을 알맞게 조정합니다. */
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+
+<body>
+<div class="phone">
+
+<header class="top">
+  <div class="logo">SIU <em>MAP</em></div>
+  <div class="top-actions"><button class="new-participant" id="newParticipantBtn" onclick="startNewParticipation()" hidden>다시 하기</button><div class="stamps">STAMPS <span class="stamp-num" id="stampNum">0</span></div></div>
+</header>
+
+<!-- ===== GitHub 저장소의 전체 SIU MAP 노선도 ===== -->
+<section class="map-wrap">
+  <div class="map">
+    <img id="metroMap" src="SIU_Route_Map.png" alt="SIU MAP 전시 길찾기 노선도"
+         onload="document.getElementById('mapFallback').classList.add('hidden')"
+         onerror="this.style.display='none';document.getElementById('mapFallback').classList.remove('hidden')">
+    <div id="mapFallback" class="map-fallback hidden">
+    </div>
+    <div class="map-top-title">전체 노선도 · <b>SIU MAP</b></div>
+    <button class="map-float docent-map-open" onclick="openDocent()" aria-label="도슨트 듣기">🎧</button>
+  </div>
+</section>
+
+<!-- ===== 카카오맵 느낌의 길찾기 결과 상단 ===== -->
+<section class="result">
+  <div class="handle" id="sheetHandle" aria-label="위아래로 밀어 화면 전환"></div>
+  <div class="result-head">
+    <div class="duration">전시 여정</div>
+  </div>
+  <div class="meta"><b id="firstStationMeta">나의 역</b> → <b>나의 다음 역</b> · 환승 1회 · 전시 이동 경로</div>
+
+  <div class="route-summary">
+    <div class="segment walk">🚶</div>
+    <div class="segment career">나를발견행</div>
+    <div class="segment walk">🚶</div>
+    <div class="segment senior">가능성을 확장행</div>
+  </div>
+
+  <div class="route-card">
+
+    <div class="route-label">전시 출발점</div>
+    <div class="route-list">
+
+      <!-- 출발 -->
+      <div class="route-item start-route">
+        <div class="marker start"><span>출발</span></div>
+        <div>
+          <div class="route-name-line"><div class="route-name" id="firstStationTitle">나의 역</div><span class="route-origin-tag" id="firstStationDepartment" hidden></span></div>
+          <div class="route-sub">나의 현재 위치에서 전시 여정을 시작합니다.</div>
+        </div>
+      </div>
+
+      <!-- 출발역에서 나를발견행 열차까지 걷는 구간 -->
+      <div class="walk-block origin-walk">
+        <div class="walk-person">🚶</div>
+        <div class="walk-text"><b>나를발견행 열차까지 도보 이동</b></div>
+      </div>
+
+      <!-- 진로 탐색행 -->
+      <div class="train-block career-line">
+        <div class="train-head">
+          <span class="line-badge">나</span>
+          <div class="train-bar career">
+            <b>나를발견행 열차</b><span class="train-note">1개 역</span>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('career')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">자기탐색역</div>
+            <div class="station-desc">반복해서 나타나는 나의 관심 알아보기</div>
+          </div>
+          <button class="plus" data-station="career" aria-label="스탬프" onclick="event.stopPropagation();openStation('career')">＋</button>
+        </div>
+      </div>
+
+      <!-- 걷기 -->
+      <div class="walk-block">
+        <div class="walk-person">🚶</div>
+        <div class="walk-text"><b>가능성발견역까지 도보 이동</b> <span>(환승통로 이용)</span></div>
+      </div>
+
+      <!-- 가능성을 확장행 -->
+      <div class="train-block senior-line">
+        <div class="train-head">
+          <span class="line-badge">가</span>
+          <div class="train-bar senior">
+            <b>가능성을 확장행 열차</b><span class="train-note">9개 역</span>
+          </div>
+        </div>
+
+        <div class="station-row" aria-label="가능성발견역">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">가능성발견역</div>
+            <div class="station-desc">씨유레터로 새로운 관점과 가능성을 발견하다</div>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('seniorBusiness')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title-line"><div class="station-title">시니어비즈니스역</div></div>
+            <div class="station-desc">초고령사회, 새로운 기회와 가능성이 열리다.</div>
+          </div>
+          <button class="plus" data-station="seniorBusiness" aria-label="스탬프" onclick="event.stopPropagation();openStation('seniorBusiness')">＋</button>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('transfer')">
+          <div class="station-dot transfer"></div>
+          <div>
+            <div class="station-title-line"><div class="station-title">환승센터역</div></div>
+            <div class="station-desc">나의 관심 분야와 시니어비즈니스를 연결</div>
+          </div>
+          <button class="plus" data-station="transfer" aria-label="AI 학점 로드맵 둘러보기" onclick="event.stopPropagation();openTransferJourney()">＋</button>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('finance')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">금융 X 시비즈역</div>
+            <div class="station-desc">고객을 이해하는 힘, 금융시장의 경쟁력이 되다</div>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('welfare')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">사회복지 X 시비즈역</div>
+            <div class="station-desc">복지 전문성에 비즈니스 감각을 더하다</div>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('culture')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">문화콘텐츠 X 시비즈역</div>
+            <div class="station-desc">시니어, 콘텐츠 시장의 새로운 주인공</div>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('sports')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">체육 X 시비즈역</div>
+            <div class="station-desc">스포츠, 여가 시장의 흐름을 바꾸는 액티브 시니어</div>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('education')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">교육 X 시비즈역</div>
+            <div class="station-desc">평생학습 시대, 교육 시장의 진짜 타겟이 뒤바뀌다</div>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('realestate')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">부동산건설 X 시비즈역</div>
+            <div class="station-desc">시니어 주거, 공간을 넘어 삶을 설계하다</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 도착 -->
+      <div class="route-item destination-route next-station-trigger" onclick="openNextStation()">
+        <div class="marker arrive"><span>도착</span></div>
+        <div>
+          <div class="route-name-line"><div class="route-name">나의 다음 역</div></div>
+          <div class="route-sub">전시에서 찾은 나의 관심을 다음 경험으로 이어갑니다.</div>
+        </div>
+        <button class="plus next-station-plus" data-station="nextStation" type="button" aria-label="나의 다음 역 한 줄 쓰기" onclick="event.stopPropagation();openNextStation()">＋</button>
+      </div>
+    </div>
+    <button class="report-route-card" id="reportRouteButton" type="button" aria-label="나의 여정 리포트 만들러 가기" title="나의 다음 역 스탬프를 받으면 활성화됩니다" disabled onclick="createJourneyReport()">
+      <span class="report-route-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4.5v6.2c0 1.6 1.3 2.8 2.8 2.8h5.4c1.6 0 2.8 1.3 2.8 2.8v3.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="5" cy="4.5" r="2" fill="currentColor"/><circle cx="16" cy="19.5" r="2" fill="currentColor"/><circle cx="13" cy="13.5" r="1.5" fill="currentColor"/></svg></span>
+      <span class="report-route-copy"><strong>나의 여정 리포트 만들러 가기</strong><small>나의 관심과 다음 가능성을 한 장에 담아요</small></span>
+      <span class="report-route-arrow" aria-hidden="true">›</span>
+    </button>
+    <div class="stamp-title">내 스탬프</div>
+    <div class="stamp-grid" id="stampGrid"></div>
+  </div>
+</section>
+
+</div>
+
+<!-- 여정 리포트 -->
+<div class="report-bg" id="reportBg" onclick="closeReport(event)">
+  <div class="report-panel" onclick="event.stopPropagation()">
+    <div class="report-toolbar"><strong id="reportToolbarTitle">나의 여정 리포트</strong><button onclick="closeReport()">닫기</button></div>
+    <div id="nextStationForm"><div class="report-paper"><div class="report-eyebrow">MY NEXT STATION</div><h2 style="font-size:20px;margin:5px 0">내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?</h2><p class="report-copy">체험 공간의 STEP 1-2-3을 실로 엮은 후, 떠오르는 가능성을 한 줄로 적어주세요.</p><textarea class="next-answer" id="nextAnswer" maxlength="180" placeholder="예: 시니어의 취향을 담은 문화 콘텐츠를 직접 기획해 보고 싶다."></textarea><div style="font-size:9px;color:#888">한 줄을 저장하면 나의 다음 역 스탬프를 받을 수 있어요.</div></div><button class="complete" id="saveNextStationBtn" disabled onclick="saveNextStationAnswer()">답변하고 스탬프 받기</button></div>
+    <div id="reportView" hidden><button class="report-image-close" type="button" aria-label="결과 이미지 닫기" onclick="closeReport()">×</button><div class="report-paper" id="reportPaper"></div><button class="report-image-save" type="button" onclick="saveReportImage()"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 16v4h14v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>이미지로 저장</span></button></div>
+  </div>
+</div>
+
+<div class="sequence-notice" id="sequenceNotice" role="status" aria-live="polite"></div>
+
+<!-- ===== 질문 바텀시트 ===== -->
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-top">
+      <div>
+        <div class="tag" id="tag"></div>
+        <h2 id="modalTitle"></h2>
+      </div>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
+    <div class="self-step station-question-step" id="stationQuestionStep" hidden>질문 1 / 1</div>
+    <div class="transfer-focus" id="transferFocus" hidden><span class="transfer-focus-label">내가 고른 분야</span><strong class="transfer-focus-value" id="transferFocusValue"></strong></div>
+    <p id="question"></p>
+    <div class="answer-mode"><button class="mode-btn active" id="choiceMode" onclick="setAnswerMode('choice')">선택 답변</button><button class="mode-btn" id="essayMode" onclick="setAnswerMode('essay')">서술 답변</button></div>
+    <div class="answers" id="answers"></div>
+    <textarea class="essay-answer" id="essayAnswer" placeholder="답변을 자유롭게 적어 주세요." hidden></textarea>
+    <div class="self-flow" id="selfFlow" hidden>
+      <div class="self-step" id="selfStepLabel"></div>
+      <p id="selfStepPrompt"></p>
+      <div class="self-input" id="selfInput"></div>
+      <div class="self-nav">
+        <button class="mode-btn" id="selfBack" onclick="moveSelfStep(-1)" hidden>이전</button>
+        <button class="mode-btn active" id="selfNext" onclick="moveSelfStep(1)">다음</button>
+      </div>
+    </div>
+    <button class="complete" id="complete" disabled onclick="completeStation()">답변하고 스탬프 받기</button>
+  </div>
+</div>
+
+<!-- 도슨트 안내 창은 오디오 콘텐츠 준비 중 표시만 보여줍니다. -->
+<div class="modal-bg" id="docentBg" onclick="closeDocent(event)">
+  <div class="modal docent-modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div><div class="modal-top"><div><div class="tag">SIU AUDIO GUIDE</div><h2>도슨트</h2></div><button class="close" onclick="closeDocent()">×</button></div>
+    <div class="docent-coming" role="status">
+      <div class="docent-coming-icon" aria-hidden="true">🎧</div>
+      <div class="docent-coming-label">COMING SOON</div>
+      <h3>도슨트가 곧 찾아옵니다</h3>
+      <p>전시 이야기를 편하게 들을 수 있도록 준비하고 있어요.</p>
+      <span class="docent-coming-badge">준비 중</span>
+    </div>
+  </div>
+</div>
+
+<section class="intro-screen" id="welcomeScreen">
+  <div class="intro-card">
+    <div class="intro-logo">SIU <em>MAP</em></div>
+    <p>길찾기 여정을 시작하기 전에<br>이름이나 닉네임을 적어주세요.</p>
+    <label for="participantName">이름 또는 닉네임</label>
+    <input id="participantName" maxlength="30" autocomplete="name" placeholder="예: 강씨융" onkeydown="if(event.key==='Enter')startJourney()">
+    <button class="intro-submit" onclick="startJourney()">다음</button>
+  </div>
+</section>
+<section class="intro-screen" id="locationScreen" hidden>
+  <div class="location-card">
+    <div class="intro-logo">SIU <em>MAP</em></div>
+    <h1 class="location-title">지금 어디에서 출발하나요?</h1>
+    <p class="location-help">출발지를 정하고 나만의 전시 여정을 시작해요.</p>
+    <div class="route-fields">
+      <div class="route-search-card">
+        <div class="route-form-line" aria-hidden="true"></div>
+        <div class="route-form-row from">
+          <span class="route-point" aria-hidden="true"></span>
+          <label class="route-form-copy" for="originLocation"><span class="route-field-label">출발</span><input id="originLocation" maxlength="60" autocomplete="organization" placeholder="현재 본인의 학부/과" onkeydown="if(event.key==='Enter')beginJourney()"></label>
+          <button class="route-clear" type="button" onclick="clearOriginLocation()" aria-label="출발지 지우기">×</button>
+        </div>
+        <div class="route-form-divider" aria-hidden="true"></div>
+        <div class="route-form-row to" aria-label="도착지: 나의 다음 역">
+          <span class="route-point to" aria-hidden="true"></span>
+          <span class="route-form-copy"><span class="route-field-label">도착</span><span class="route-destination">나의 다음 역</span></span>
+          <span aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+    <div class="transport-modes" aria-label="경로 이동 방식">
+      <div class="transport-mode active"><span class="mode-icon">🚇</span><span>대중교통</span></div>
+      <div class="transport-mode"><span class="mode-icon">🚗</span><span>자동차</span></div>
+      <div class="transport-mode"><span class="mode-icon">🚶</span><span>도보</span></div>
+      <div class="transport-mode"><span class="mode-icon">🚲</span><span>자전거</span></div>
+    </div>
+    <div class="route-preview">
+      <div class="route-preview-head"><strong>추천 전시 경로</strong><span>열차 · 도보 환승</span></div>
+      <div class="route-preview-line" aria-hidden="true">
+        <span class="preview-endpoint"></span><span class="preview-line"></span>
+        <span class="preview-badge">나</span><span class="preview-line discovery"></span>
+        <span class="preview-badge expansion">가</span><span class="preview-line expansion"></span>
+        <span class="preview-endpoint finish"></span>
+      </div>
+      <div class="route-preview-labels"><span>출발</span><span>나를발견행</span><span>가능성을 확장행</span><span>도착</span></div>
+    </div>
+    <div class="location-actions"><button class="location-back" onclick="backToName()">이전</button><button class="intro-submit" onclick="beginJourney()">길 찾기 시작</button></div>
+  </div>
+</section>
+<section class="loading-screen" id="loadingScreen" hidden>
+  <div class="loading-content">
+    <div class="intro-logo">SIU <em>MAP</em></div>
+    <h1 id="loadingTitle">나의 길 찾기 여정이 시작됩니다.</h1>
+    <p id="loadingMessage">잠시만 기다려 주세요</p>
+    <div class="train-loading-track">
+      <div class="train-loading-fill"></div>
+      <div class="loading-train" aria-hidden="true">
+        <span class="steam steam-one"></span><span class="steam steam-two"></span><span class="steam steam-three"></span>
+        <svg viewBox="0 0 160 100" role="img" aria-label="연기가 나는 귀여운 지하철">
+          <!-- 첨부한 옆모습 열차처럼 둥근 차체, 넓은 창, 낮은 바퀴를 살린 작은 지하철 그림입니다. -->
+          <path d="M5 20Q5 11 15 11h91q16 0 27 12l20 22q8 9 8 20 0 17-17 20H5z" fill="#eee8ff"/>
+          <path d="M5 70h156v7q-3 8-15 8H5z" fill="#7654e8"/>
+          <!-- 객실 창과 앞쪽 운전실 창 -->
+          <rect x="14" y="23" width="72" height="25" rx="8" fill="#514b61"/>
+          <path d="M22 24v23m25-23v23m25-23v23" stroke="#777087" stroke-width="2" opacity=".8"/>
+          <path d="M101 22h7q7 0 12 6l20 20h-39z" fill="#514b61"/>
+          <!-- 문과 귀여운 앞 불빛 -->
+          <path d="M94 51v18" stroke="#c7b8f4" stroke-width="2"/>
+          <path d="M5 57h84q4 0 4 4t-4 4H5z" fill="#aa95ef"/>
+          <rect x="103" y="56" width="14" height="8" rx="4" fill="#aa95ef"/>
+          <rect x="130" y="55" width="16" height="10" rx="5" fill="#9578e9"/>
+          <!-- 두툼한 바퀴와 이어진 선로 -->
+          <circle cx="22" cy="84" r="8" fill="#656071"/><circle cx="52" cy="84" r="8" fill="#656071"/>
+          <circle cx="111" cy="84" r="8" fill="#656071"/><circle cx="137" cy="84" r="8" fill="#656071"/>
+          <path d="M5 94h150" stroke="#7654e8" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+/* 질문과 선택지는 아래 stations에서 수정하세요. a는 객관식 선택지이며, 서술형 모드를 함께 제공합니다.
+   Google Sheets 연결 주소는 GOOGLE_SHEETS_WEB_APP_URL에 Apps Script 웹 앱 URL을 넣으면 됩니다. */
+// 질문 문구와 선택지를 수정할 때는 이 stations 객체의 각 역 q(질문), a(선택지)를 바꾸세요.
+const stations={
+  career:{
+    title:"자기탐색역",tag:"MY DISCOVERY LINE",
+    q:"나를 알아가는 네 단계 질문에 답해 주세요.",
+    a:[]
+  },
+  seniorBusiness:{
+    title:"시니어비즈니스역",tag:"SENIOR BUSINESS",
+    q:"시니어비즈니스역이나 시니어비즈니스에 대해서 새롭게 발견한 점은 무엇인가요?",
+    a:[],answerMode:"essay",answerType:"서술형"
+  },
+  transfer:{
+    title:"환승센터역",tag:"TRANSFER STATION",
+    q:"내가 관심 있는 분야와 시니어비즈니스를 연결한다면 어디에서 만날 수 있을까요?",
+    a:[],answerMode:"essay",answerType:"서술형"
+  },
+  finance:{
+    title:"금융 X 시비즈역",tag:"FINANCE & SENIOR BUSINESS",
+    q:"고객을 이해하는 힘을 금융시장의 경쟁력으로 어떻게 이어갈 수 있을까요?",
+    a:["시니어의 금융 생활을 돕는 서비스","이해하기 쉬운 금융 정보와 교육","생활에 맞춘 금융 상품","안심하고 이용할 수 있는 금융 경험"]
+  },
+  welfare:{
+    title:"사회복지 X 시비즈역",tag:"SENIOR BUSINESS LINE",
+    q:"사회복지와 비즈니스가 만날 수 있는 지점은 무엇일까요?",
+    a:["일상 속 불편을 해결하는 서비스","지역사회와 연결하는 서비스","누구나 이용하기 쉬운 서비스","삶의 선택과 경험을 넓혀주는 서비스"]
+  },
+  culture:{
+    title:"문화콘텐츠 X 시비즈역",tag:"SENIOR BUSINESS LINE",
+    q:"시니어에게 새로운 문화콘텐츠 경험을 만든다면 어떤 모습일까요?",
+    a:["취향을 발견하는 콘텐츠","함께 참여하는 문화 프로그램","이야기를 기록하고 공유하는 콘텐츠","세대가 함께 즐기는 콘텐츠"]
+  },
+  sports:{
+    title:"체육 X 시비즈역",tag:"SPORTS & WELLNESS",
+    q:"시니어가 즐겁고 건강하게 운동할 수 있도록 무엇을 만들 수 있을까요?",
+    a:["함께 즐기는 생활 체육","건강 상태에 맞춘 운동 프로그램","쉽게 참여할 수 있는 지역 활동","운동을 돕는 새로운 서비스"]
+  },
+  education:{
+    title:"교육 X 시비즈역",tag:"LIFELONG LEARNING",
+    q:"앞으로 새롭게 배우거나 다른 사람과 나누고 싶은 것은 무엇인가요?",
+    a:["디지털 기기와 기술","취미와 문화 활동","일과 진로에 필요한 지식","경험과 지혜를 나누는 수업"]
+  },
+  realestate:{
+    title:"부동산건설 X 시비즈역",tag:"HOUSING & SPACE",
+    q:"다양한 세대가 편안하게 살아갈 공간에는 무엇이 필요할까요?",
+    a:["이동하기 편한 무장애 설계","안전하고 관리하기 쉬운 주거","이웃과 교류할 수 있는 공용 공간","생활에 맞춘 주거 서비스"]
+  },
+  nextStation:{title:"나의 다음 역",tag:"MY NEXT STATION",q:"내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?",a:[]}
+};
+
+let participantId="";
+let done=[];
+let current=null,currentQuestion="",selected=null,answerMode="choice";
+let flushingResponses=false;
+
+// 응답을 보낼 Google Apps Script 웹 앱 URL을 여기에 입력하세요. 빈 문자열이면 브라우저에만 저장합니다.
+const GOOGLE_SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbwfX028GwCP-nTWf9n2v68Bjoa5N7qNHa_JM-typ6lLbXpoOAEUufX442fcInOgPbwB/exec";
+const RESPONSE_QUEUE_KEY="siuMetroResponses";
+const DONE_KEY_PREFIX="siuMetroMobile:";
+const PARTICIPANT_KEY="siuMetroActiveParticipant";
+const SELF_STATE_KEY_PREFIX="siuMetroSelfProgress:";
+const ANSWERS_KEY_PREFIX="siuMetroAnswers:";
+const NEXT_STATION_KEY_PREFIX="siuMetroNextStation:";
+const ORIGIN_KEY_PREFIX="siuMetroOrigin:";
+const GRADE_CALCULATOR_URL="https://siu-study-roadmap.agnesmarketing.chatgpt.site/";
+const SHEET_FOCUS_KEY="siuMetroSheetFocus";
+function participantDoneKey(){return DONE_KEY_PREFIX+participantId.trim()}
+function selfProgressKey(){return SELF_STATE_KEY_PREFIX+participantId.trim()}
+function participantAnswersKey(){return ANSWERS_KEY_PREFIX+participantId.trim()}
+function participantNextStationKey(){return NEXT_STATION_KEY_PREFIX+participantId.trim()}
+function participantOriginKey(name=participantId){return ORIGIN_KEY_PREFIX+name.trim()}
+function setParticipant(name,origin=""){
+  participantId=name;
+  localStorage.setItem(PARTICIPANT_KEY,name);
+  document.getElementById("newParticipantBtn").hidden=false;
+  const savedOrigin=origin.trim()||localStorage.getItem(participantOriginKey(name))||"";
+  if(savedOrigin)localStorage.setItem(participantOriginKey(name),savedOrigin);
+  const firstStationName=`${name}의 역`;
+  document.getElementById("firstStationTitle").textContent=firstStationName;
+  document.getElementById("firstStationMeta").textContent=firstStationName;
+  const departmentTag=document.getElementById("firstStationDepartment");
+  departmentTag.textContent=savedOrigin?`나의 현재 위치 : ${savedOrigin}`:"";departmentTag.hidden=!savedOrigin;
+  const savedStamps=JSON.parse(localStorage.getItem(participantDoneKey())||"[]");
+  done=[...new Set(savedStamps.filter(id=>Object.prototype.hasOwnProperty.call(stations,id)))];
+  localStorage.setItem(participantDoneKey(),JSON.stringify(done));
+}
+function restoreParticipant(){
+  const pendingName=localStorage.getItem("siuMetroPendingParticipant")||"";
+  if(pendingName)document.getElementById("participantName").value=pendingName;
+  const name=localStorage.getItem(PARTICIPANT_KEY);
+  if(!name)return;
+  const input=document.getElementById("participantName");
+  input.value=name;
+  setParticipant(name);
+  document.getElementById("welcomeScreen").hidden=true;
+}
+function startNewParticipation(){
+  // 기존 참여자의 완료 기록은 이름별로 보존하고, 현재 참여자만 비워 새 이름을 받습니다.
+  localStorage.removeItem(PARTICIPANT_KEY);
+  participantId="";done=[];current=null;selected=null;
+  document.getElementById("newParticipantBtn").hidden=true;
+  document.getElementById("participantName").value="";
+  document.getElementById("originLocation").value="";
+  document.getElementById("loadingScreen").hidden=true;
+  document.getElementById("locationScreen").hidden=true;
+  document.getElementById("modalBg").classList.remove("show");
+  document.getElementById("welcomeScreen").hidden=false;
+  localStorage.removeItem("siuMetroPendingParticipant");
+  render();
+  window.setTimeout(()=>document.getElementById("participantName").focus(),50);
+}
+function startJourney(){
+  const input=document.getElementById("participantName");
+  const name=input.value.trim();
+  if(!name){input.focus();input.setCustomValidity("이름이나 닉네임을 입력해 주세요.");input.reportValidity();return}
+  input.setCustomValidity("");
+  localStorage.setItem("siuMetroPendingParticipant",name);
+  document.getElementById("originLocation").value=localStorage.getItem(participantOriginKey(name))||"";
+  document.getElementById("welcomeScreen").hidden=true;
+  document.getElementById("locationScreen").hidden=false;
+  window.setTimeout(()=>document.getElementById("originLocation").focus(),50);
+}
+function backToName(){
+  document.getElementById("locationScreen").hidden=true;
+  document.getElementById("welcomeScreen").hidden=false;
+  window.setTimeout(()=>document.getElementById("participantName").focus(),50);
+}
+function clearOriginLocation(){
+  const input=document.getElementById("originLocation");
+  input.value="";input.setCustomValidity("");input.focus();
+}
+function beginJourney(){
+  const originInput=document.getElementById("originLocation"),origin=originInput.value.trim();
+  const name=localStorage.getItem("siuMetroPendingParticipant")||document.getElementById("participantName").value.trim();
+  if(!name){document.getElementById("locationScreen").hidden=true;document.getElementById("welcomeScreen").hidden=false;return}
+  if(!origin){originInput.focus();originInput.setCustomValidity("출발하는 학부 또는 학과를 적어 주세요.");originInput.reportValidity();return}
+  originInput.setCustomValidity("");
+  localStorage.removeItem("siuMetroPendingParticipant");
+  setParticipant(name,origin);
+  render();
+  document.getElementById("locationScreen").hidden=true;
+  document.getElementById("loadingScreen").hidden=false;
+  playTrainSound();
+  window.setTimeout(()=>{
+    document.getElementById("loadingScreen").hidden=true;
+    flushResponseQueue();
+  },5200);
+}
+document.getElementById("participantName").addEventListener("input",event=>event.currentTarget.setCustomValidity(""));
+document.getElementById("originLocation").addEventListener("input",event=>event.currentTarget.setCustomValidity(""));
+
+function playTrainSound(){
+  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContextClass)return;
+  try{
+    const context=new AudioContextClass();
+    const master=context.createGain();master.gain.value=.045;master.connect(context.destination);
+    const filter=context.createBiquadFilter();filter.type="lowpass";filter.frequency.value=340;filter.connect(master);
+    const hum=context.createOscillator();hum.type="sawtooth";hum.frequency.setValueAtTime(66,context.currentTime);hum.frequency.exponentialRampToValueAtTime(92,context.currentTime+4.8);hum.connect(filter);hum.start();
+    // 출발 알림음 두 음 뒤에 낮은 전동차 주행음을 섞어 짧은 지하철 출발 효과를 냅니다.
+    [660,880].forEach((frequency,index)=>{
+      const chime=context.createOscillator(),envelope=context.createGain(),start=context.currentTime+index*.16;
+      chime.type="sine";chime.frequency.value=frequency;envelope.gain.setValueAtTime(.0001,start);
+      envelope.gain.exponentialRampToValueAtTime(.08,start+.025);envelope.gain.exponentialRampToValueAtTime(.0001,start+.23);
+      chime.connect(envelope);envelope.connect(context.destination);chime.start(start);chime.stop(start+.25);
+    });
+    const clackTimer=window.setInterval(()=>{
+      const clack=context.createOscillator(),gain=context.createGain();
+      clack.type="triangle";clack.frequency.setValueAtTime(240,context.currentTime);clack.frequency.exponentialRampToValueAtTime(95,context.currentTime+.08);
+      gain.gain.setValueAtTime(.08,context.currentTime);gain.gain.exponentialRampToValueAtTime(.001,context.currentTime+.09);
+      clack.connect(gain);gain.connect(master);clack.start();clack.stop(context.currentTime+.1);
+    },390);
+    context.resume();
+    window.setTimeout(()=>{window.clearInterval(clackTimer);master.gain.setTargetAtTime(.001,context.currentTime,.08);hum.stop(context.currentTime+.35);window.setTimeout(()=>context.close(),500)},4900);
+  }catch(error){console.debug("기차 효과음을 재생할 수 없습니다.",error)}
+}
+
+function render(){
+  document.getElementById("stampNum").textContent=done.length;
+  document.querySelectorAll(".plus[data-station]").forEach(btn=>{
+    const id=btn.dataset.station;
+    const stamped=done.includes(id);
+    btn.classList.toggle("done",stamped);
+    btn.innerHTML=stamped?'<img src="stamp-display.png" alt="스탬프 완료">':"＋";
+  });
+
+  const reportButton=document.getElementById("reportRouteButton");
+  const hasNextLine=!!(localStorage.getItem(participantNextStationKey())||"").trim();
+  reportButton.disabled=!done.includes("nextStation")||!hasNextLine;
+  reportButton.title=reportButton.disabled?"나의 다음 역 한 줄을 저장해 스탬프를 받으면 활성화됩니다":"나의 관심 지도를 확인합니다";
+  const hiddenStampStations=new Set(["finance","culture","welfare","sports","realestate","education"]);
+  document.getElementById("stampGrid").innerHTML=Object.entries(stations).filter(([id])=>!hiddenStampStations.has(id)).map(([id,s])=>`
+    <div class="stamp ${done.includes(id)?"on":""}">
+      <div class="s-circle">${done.includes(id)?'<img src="stamp-display.png" alt="획득한 스탬프">':"＋"}</div>
+      <small>${s.title}</small>
+    </div>`).join("");
+  requestAnimationFrame(alignTrainRails);
+  requestAnimationFrame(alignRouteRail);
+}
+
+function alignRouteRail(){
+  const routeList=document.querySelector(".route-list");
+  const destination=routeList&&routeList.querySelector(".destination-route .marker.arrive");
+  if(!routeList||!destination)return;
+  const listTop=routeList.getBoundingClientRect().top;
+  const marker=destination.getBoundingClientRect();
+  const markerCenter=marker.top+marker.height/2-listTop;
+  routeList.style.setProperty("--route-rail-height",`${Math.max(0,markerCenter-14)}px`);
+}
+
+function alignTrainRails(){
+  document.querySelectorAll(".train-block").forEach(block=>{
+    const dots=block.querySelectorAll(".station-dot");
+    if(!dots.length)return;
+    const blockTop=block.getBoundingClientRect().top;
+    const badge=block.querySelector(".line-badge");
+    const first=badge?badge.getBoundingClientRect():dots[0].getBoundingClientRect();
+    const last=dots[dots.length-1].getBoundingClientRect();
+    const start=first.top+first.height/2-blockTop;
+    const end=last.top+last.height/2-blockTop;
+    block.style.setProperty("--rail-start",`${start}px`);
+    block.style.setProperty("--rail-length",`${Math.max(0,end-start)}px`);
+  });
+}
+const selfKeywords=[
+  "리더십과 조율","도전과 성취, 돌파","정리와 분석, 논리","교육과 소통, 이해와 성장",
+  "통찰과 소비자 이해","사회적 기여, 가치 실현","협업과 시너지","창의성과 표현, 인정"
+];
+const careerFields=[
+  "문화와 콘텐츠를 통해 새로운 경험을 만드는 분야",
+  "기업과 비즈니스를 통해 새로운 가치를 만드는 분야",
+  "금융과 경제를 통해 더 나은 생활을 지원하는 분야",
+  "건강과 의료를 통해 삶의 질을 높이는 분야",
+  "기술과 제품을 통해 일상의 불편을 해결하는 분야",
+  "교육과 학습을 통해 새로운 배움의 기회를 만드는 분야",
+  "도시와 주거환경을 통해 더 나은 생활공간을 만드는 분야",
+  "사람과 지역사회를 연결해 관계와 참여를 넓히는 분야",
+  "아직 잘 모르겠지만 새로운 분야를 탐색해 보고 싶다"
+];
+const careerFieldCards=[
+  ["문화·콘텐츠","새로운 경험 만들기"],["기업·비즈니스","새로운 가치 만들기"],
+  ["금융·경제","더 나은 생활 돕기"],["건강·의료","삶의 질 높이기"],
+  ["기술·제품","일상 불편 해결하기"],["교육·학습","배움의 기회 열기"],
+  ["도시·주거","더 나은 공간 만들기"],["사람·지역사회","관계와 참여 넓히기"],
+  ["새로운 분야","더 탐색해 보기"]
+];
+let selfStep=0;
+let selfExploration={interest:"",keywords:[],field:[]};
+function saveSelfProgress(){
+  if(!participantId)return;
+  localStorage.setItem(selfProgressKey(),JSON.stringify({step:selfStep,...selfExploration}));
+}
+function resetSelfExploration(){
+  let saved=null;
+  try{saved=JSON.parse(localStorage.getItem(selfProgressKey())||"null")}catch(error){console.warn("저장된 질문 진행 정보를 읽지 못했습니다.",error)}
+  selfStep=saved?Math.max(0,Math.min(2,Number(saved.step)||0)):0;
+  selfExploration=saved?{
+    interest:typeof saved.interest==="string"?saved.interest:"",
+    keywords:Array.isArray(saved.keywords)?saved.keywords.map(word=>word==="제작과 구현"?"도전과 성취, 돌파":word).slice(0,2):[],
+    field:(Array.isArray(saved.field)?saved.field:(typeof saved.field==="string"&&saved.field?[saved.field]:[])).slice(0,2)
+  }:{interest:"",keywords:[],field:[]};
+  renderSelfStep();
+}
+function renderSelfStep(){
+  const prompts=[
+    "기록지 Q2에서 적은 반복해서 나타나는 관심은 무엇인가요?",
+    "Q3에서 고른 사진 뒷장에 있는 키워드들을 선택하세요.",
+    "기록지 Q4에서 선택한 분야는 무엇인가요?"
+  ];
+  document.getElementById("selfStepLabel").textContent=`질문 ${selfStep+1} / 3`;
+  document.getElementById("selfStepPrompt").textContent=prompts[selfStep];
+  const input=document.getElementById("selfInput");
+  if(selfStep===0){
+    input.innerHTML='<textarea class="self-textarea" id="selfInterest" placeholder="반복해서 나타나는 관심을 적어 주세요."></textarea>';
+    const field=document.getElementById("selfInterest");field.value=selfExploration.interest;
+    field.addEventListener("input",()=>{selfExploration.interest=field.value;saveSelfProgress();updateSelfControls()});
+  }else if(selfStep===1){
+    input.innerHTML='<p class="self-note">키워드를 두 개 골라 주세요 ('+selfExploration.keywords.length+'/2).</p><div class="self-options">'+selfKeywords.map((word,i)=>`<button type="button" class="self-option ${selfExploration.keywords.includes(word)?"selected":""}" onclick="toggleSelfChoice('keywords',${i})">${word}</button>`).join("")+'</div>';
+  }else if(selfStep===2){
+    input.innerHTML='<p class="self-note">관심 분야를 최대 두 개 골라 주세요 ('+selfExploration.field.length+'/2).</p><div class="self-options self-field-options">'+careerFields.map((word,i)=>`<button type="button" class="self-option ${selfExploration.field.includes(word)?"selected":""}" onclick="toggleSelfChoice(\'field\',${i})"><b class="field-option-label">${careerFieldCards[i][0]}</b><span class="field-option-detail">${careerFieldCards[i][1]}</span></button>`).join("")+'</div>';
+  }
+  document.getElementById("selfBack").hidden=selfStep===0;
+  document.getElementById("selfNext").hidden=selfStep===2;
+  document.getElementById("complete").hidden=selfStep!==2;
+  updateSelfControls();
+}
+function updateSelfControls(){
+  let valid=true;
+  if(selfStep===0)valid=!!selfExploration.interest.trim();
+  if(selfStep===1)valid=selfExploration.keywords.length===2;
+  if(selfStep===2)valid=selfExploration.field.length>0&&selfExploration.field.length<=2;
+  document.getElementById("selfNext").disabled=!valid;
+  document.getElementById("complete").disabled=selfStep!==2||!valid;
+}
+function toggleSelfChoice(field,index){
+  const list=selfExploration[field],value=field==="field"?careerFields[index]:selfKeywords[index];
+  if(list.includes(value))selfExploration[field]=list.filter(item=>item!==value);
+  else if(list.length>=2)return;
+  else selfExploration[field]=list.concat(value);
+  saveSelfProgress();renderSelfStep();
+}
+function moveSelfStep(direction){
+  if(direction>0&&document.getElementById("selfNext").disabled)return;
+  selfStep=Math.max(0,Math.min(2,selfStep+direction));saveSelfProgress();renderSelfStep();
+}
+async function completeSelfExploration(){
+  const entries=[
+    ["초중고 공통 관심사","기록지 Q2에서 적은 반복해서 나타나는 관심은 무엇인가요?",selfExploration.interest,"서술형"],
+    ["듣고 싶은 말","Q3에서 고른 사진 뒷장에 있는 키워드들을 선택하세요.",selfExploration.keywords.join(" / "),"복수 선택"],
+    ["어떤 분야에 새로운 가능성 펼치기","기록지 Q4에서 선택한 분야는 무엇인가요?",selfExploration.field.join(" / "),"최대 2개 선택"]
+  ];
+  for(const [summaryColumn,question,answer,answerType] of entries){
+    await submitResponse({stationId:"career",stationTitle:"자기탐색역",summaryColumn,question,answerType,answer});
+  }
+  localStorage.removeItem(selfProgressKey());
+  if(!done.includes("career"))done.push("career");
+  localStorage.setItem(participantDoneKey(),JSON.stringify(done));
+  closeModal();render();
+}
+function getTransferFieldLabels(){
+  const answers=latestAnswers();
+  const fieldAnswer=String(answers["career:어떤 분야에 새로운 가능성 펼치기"]||"").trim();
+  const selected=fieldAnswer.split(" / ").filter(Boolean);
+  return selected.map(field=>{
+    const i=careerFields.indexOf(field);
+    return ["문화·콘텐츠","기업·비즈니스","금융·경제","건강·의료","기술·제품","교육·학습","부동산·건설","지역사회","새로운 분야"][i]||field;
+  }).filter(Boolean);
+}
+function getTransferQuestion(){
+  return "이 분야와\n시니어비즈니스를 어떻게 연결 지을 수 있을까요?";
+}
+let sequenceNoticeTimer=null;
+function showSequenceNotice(message){
+  const notice=document.getElementById("sequenceNotice");notice.textContent=message;notice.classList.add("show");
+  clearTimeout(sequenceNoticeTimer);sequenceNoticeTimer=setTimeout(()=>notice.classList.remove("show"),2600);
+}
+function canOpenStationInSequence(id){
+  const prerequisites={seniorBusiness:"career",transfer:"seniorBusiness",finance:"transfer",welfare:"transfer",culture:"transfer",sports:"transfer",education:"transfer",realestate:"transfer",nextStation:"transfer"};
+  const required=prerequisites[id];
+  if(!required||done.includes(required))return true;
+  showSequenceNotice(`먼저 ${stations[required].title} 질문에 답해 주세요.`);return false;
+}
+function openStation(id){
+  if(!canOpenStationInSequence(id))return;
+  current=id;selected=null;
+  document.getElementById("modalBg").classList.remove("essay-station","station-question-spaced");
+  const stationQuestionStep=document.getElementById("stationQuestionStep");
+  stationQuestionStep.hidden=id!=="seniorBusiness"&&id!=="transfer";
+  const s=stations[id];
+  document.getElementById("tag").textContent=s.tag;
+  document.getElementById("modalTitle").textContent=s.title;
+  const transferFocus=document.getElementById("transferFocus");
+  transferFocus.hidden=id!=="transfer";
+  document.getElementById("transferFocusValue").textContent=id==="transfer"?(getTransferFieldLabels().join(" · ")||"선택한 분야를 확인할 수 없어요."):"";
+  const selfFlow=document.getElementById("selfFlow");
+  const complete=document.getElementById("complete");
+  if(id==="career"){
+    document.getElementById("question").hidden=true;
+    document.querySelector(".answer-mode").hidden=true;
+    document.getElementById("answers").hidden=true;
+    document.getElementById("essayAnswer").hidden=true;
+    selfFlow.hidden=false;
+    complete.textContent="답변 저장하고 스탬프 받기";
+    complete.hidden=true;
+    resetSelfExploration();
+    document.getElementById("modalBg").classList.add("show");
+    return;
+  }
+  selfFlow.hidden=true;
+  complete.hidden=false;
+  document.getElementById("question").hidden=false;
+  const essayOnly=s.answerMode==="essay";
+  document.getElementById("modalBg").classList.toggle("essay-station",essayOnly);
+  document.getElementById("modalBg").classList.toggle("station-question-spaced",id==="seniorBusiness"||id==="transfer");
+  document.querySelector(".answer-mode").hidden=essayOnly;
+  currentQuestion=id==="transfer"?getTransferQuestion():s.q;
+  document.getElementById("question").textContent=currentQuestion;
+  document.getElementById("answers").innerHTML=s.a.map((a,i)=>
+    `<button class="answer" onclick="selectAnswer(this,${i})">${a}</button>`).join("");
+  answerMode=essayOnly?"essay":"choice";document.getElementById("essayAnswer").value="";document.getElementById("essayAnswer").hidden=!essayOnly;
+  document.getElementById("essayAnswer").placeholder=id==="transfer"?"선택한 분야와 시니어비즈니스를 연결할 아이디어를 적어 주세요.":(id==="seniorBusiness"?"시니어비즈니스역이나 시니어비즈니스에 대해 새롭게 발견한 점을 적어 주세요.":"답변을 자유롭게 적어 주세요.");
+  document.getElementById("answers").hidden=essayOnly;document.getElementById("choiceMode").classList.toggle("active",!essayOnly);document.getElementById("essayMode").classList.toggle("active",essayOnly);
+  const b=complete;b.hidden=false;
+  b.disabled=done.includes(id)||essayOnly;
+  b.textContent=done.includes(id)?"이미 획득한 스탬프":"답변하고 스탬프 받기";
+  document.getElementById("modalBg").classList.add("show");
+}
+function openTransferJourney(){
+  if(!canOpenStationInSequence("transfer"))return;
+  if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
+  closeModal();
+  const screen=document.getElementById("loadingScreen");
+  document.getElementById("loadingTitle").textContent="AI 학점 로드맵으로 이동합니다.";
+  document.getElementById("loadingMessage").textContent="";
+  screen.hidden=false;
+  document.querySelectorAll(".train-loading-fill,.loading-train").forEach(element=>{
+    element.style.animation="none";void element.offsetWidth;element.style.animation="";
+  });
+  playTrainSound();
+  window.setTimeout(()=>{
+    screen.hidden=true;
+    const overlay=document.createElement("section");
+    overlay.id="gradeCalculatorOverlay";
+    overlay.setAttribute("aria-label","AI 학점 로드맵");
+    overlay.style.cssText="position:fixed;inset:0;z-index:1000;width:100%;height:100vh;height:100dvh;overflow:hidden;background:#fff;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif";
+    const header=document.createElement("header");
+    header.style.cssText="position:absolute;z-index:2;top:env(safe-area-inset-top);left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;pointer-events:none;background:linear-gradient(#ffffffee,#ffffffcc);box-sizing:border-box";
+    const title=document.createElement("b");title.textContent="AI 학점 로드맵";title.style.cssText="font-size:13px;flex:1;pointer-events:none";
+    const back=document.createElement("button");back.type="button";back.textContent="← SIU MAP으로 돌아가기";back.style.cssText="border:0;border-radius:999px;background:#7654e8;color:#fff;padding:9px 12px;font-size:12px;font-weight:800;white-space:nowrap;touch-action:manipulation;pointer-events:auto";
+    header.append(title,back);
+    const frame=document.createElement("iframe");frame.title="AI 학점 로드맵";frame.src=GRADE_CALCULATOR_URL;frame.setAttribute("allow","clipboard-read; clipboard-write");frame.referrerPolicy="strict-origin-when-cross-origin";frame.style.cssText="position:absolute;inset:0;width:100%;height:100%;min-height:0;border:0;background:#fff;display:block;transform-origin:top left";
+    // 외부 계산기 화면의 첫 질문과 하단 추천 버튼이 작은 휴대폰에서도 함께 보이도록 뷰포트를 넓혀 축소 표시합니다.
+    const fitCalculatorFrame=()=>{const scale=window.innerWidth<=600?0.86:1;frame.style.width=`${100/scale}%`;frame.style.height=`${100/scale}%`;frame.style.transform=`scale(${scale})`};
+    fitCalculatorFrame();window.addEventListener("resize",fitCalculatorFrame);
+    back.addEventListener("click",()=>{window.removeEventListener("resize",fitCalculatorFrame);overlay.remove();openStation("transfer")});
+    overlay.append(header,frame);document.body.appendChild(overlay);
+  },5200);
+}
+function selectAnswer(el,i){
+  selected=i;
+  document.querySelectorAll(".answer").forEach(x=>x.classList.remove("selected"));
+  el.classList.add("selected");
+  document.getElementById("complete").disabled=false;
+}
+function setAnswerMode(mode){
+  answerMode=mode;document.getElementById("answers").hidden=mode!=="choice";document.getElementById("essayAnswer").hidden=mode!=="essay";
+  document.getElementById("choiceMode").classList.toggle("active",mode==="choice");document.getElementById("essayMode").classList.toggle("active",mode==="essay");
+  document.getElementById("complete").disabled=mode==="choice"?selected===null:!document.getElementById("essayAnswer").value.trim();
+}
+document.getElementById("essayAnswer").addEventListener("input",()=>{if(answerMode==="essay")document.getElementById("complete").disabled=!document.getElementById("essayAnswer").value.trim()});
+async function submitResponse(response){
+  const record={participantId,origin:localStorage.getItem(participantOriginKey())||"",stationId:response.stationId,stationTitle:response.stationTitle,summaryColumn:response.summaryColumn||"",question:response.question,answerType:response.answerType,answer:response.answer,submittedAt:new Date().toISOString()};
+  const saved=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]");saved.push(record);localStorage.setItem(participantAnswersKey(),JSON.stringify(saved));
+  const queue=JSON.parse(localStorage.getItem(RESPONSE_QUEUE_KEY)||"[]");queue.push(record);localStorage.setItem(RESPONSE_QUEUE_KEY,JSON.stringify(queue));
+  await flushResponseQueue();
+}
+async function postResponseRecord(record){
+  const body=new URLSearchParams({payload:JSON.stringify(record)});
+  // sendBeacon은 파일로 연 페이지에서도 단순 폼 요청을 비동기로 전송합니다. 지원되지 않으면 fetch로 보냅니다.
+  if(navigator.sendBeacon&&navigator.sendBeacon(GOOGLE_SHEETS_WEB_APP_URL,body))return;
+  const result=await fetch(GOOGLE_SHEETS_WEB_APP_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body});
+  if(result.type!=="opaque"&&!result.ok)throw new Error(`HTTP ${result.status}`);
+}
+async function flushResponseQueue(){
+  if(!GOOGLE_SHEETS_WEB_APP_URL||flushingResponses)return;
+  flushingResponses=true;
+  try{
+    const queue=JSON.parse(localStorage.getItem(RESPONSE_QUEUE_KEY)||"[]");
+    while(queue.length){
+      const record=queue[0];
+      // Apps Script doPost에서 e.parameter.payload를 읽도록 URL 인코딩 폼으로 전송합니다.
+      await postResponseRecord(record);
+      queue.shift();localStorage.setItem(RESPONSE_QUEUE_KEY,JSON.stringify(queue));
+    }
+  }catch(error){console.error("시트 전송 실패. 응답을 이 기기에 보관해 다시 시도합니다.",error)}
+  finally{flushingResponses=false}
+}
+function completeStation(){
+  if(current==="career"){completeSelfExploration();return}
+  const essay=document.getElementById("essayAnswer").value.trim();
+  if(!current||(answerMode==="choice"&&selected===null)||(answerMode==="essay"&&!essay))return;
+  const s=stations[current];submitResponse({stationId:current,stationTitle:s.title,question:currentQuestion||s.q,answerType:s.answerType||answerMode,answer:answerMode==="choice"?s.a[selected]:essay});
+  if(!done.includes(current))done.push(current);
+  localStorage.setItem(participantDoneKey(),JSON.stringify(done));
+  closeModal();render();
+}
+function openNextStation(){
+  if(!canOpenStationInSequence("nextStation"))return;
+  closeModal();
+  if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
+  const saved=localStorage.getItem(participantNextStationKey())||"";
+  document.getElementById("nextAnswer").value=saved;
+  document.getElementById("nextAnswer").oninput=event=>{
+    localStorage.setItem(participantNextStationKey(),event.target.value);
+    document.getElementById("saveNextStationBtn").disabled=!event.target.value.trim();
+    document.getElementById("reportRouteButton").disabled=!done.includes("nextStation")||!event.target.value.trim();
+  };
+  document.getElementById("saveNextStationBtn").disabled=!saved.trim();
+  document.getElementById("saveNextStationBtn").textContent=done.includes("nextStation")?"한 줄 저장하기":"답변하고 스탬프 받기";
+  document.getElementById("nextStationForm").hidden=false;document.getElementById("reportView").hidden=true;
+  document.getElementById("reportToolbarTitle").textContent="나의 다음 역";
+  document.getElementById("reportBg").classList.remove("report-image-mode");
+  document.getElementById("reportBg").classList.add("show");
+}
+function closeReport(event){if(!event||event.target===document.getElementById("reportBg"))document.getElementById("reportBg").classList.remove("show")}
+function saveNextStationAnswer(){
+  if(!canOpenStationInSequence("nextStation"))return;
+  const next=document.getElementById("nextAnswer").value.trim();
+  if(!next)return;
+  localStorage.setItem(participantNextStationKey(),next);
+  const answerRecords=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]");
+  if(!answerRecords.some(record=>record.stationId==="nextStation"&&record.answer===next)){
+    submitResponse({stationId:"nextStation",stationTitle:"나의 다음 역",summaryColumn:"나의 다음 역 한 줄",question:"내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?",answerType:"서술형",answer:next});
+  }
+  if(!done.includes("nextStation"))done.push("nextStation");
+  localStorage.setItem(participantDoneKey(),JSON.stringify(done));
+  document.getElementById("reportBg").classList.remove("show");
+  render();
+}
+function latestAnswers(){
+  const records=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]"),result={};
+  records.forEach(record=>{const key=record.stationId==="career"?`career:${record.summaryColumn}`:record.stationId;result[key]=record.answer});return result;
+}
+function reportInsights(next){
+  const a=latestAnswers();
+  const department=localStorage.getItem(participantOriginKey())||"";
+  const explorationDate=new Date();
+  const dateText=`${explorationDate.getFullYear()}.${String(explorationDate.getMonth()+1).padStart(2,"0")}.${String(explorationDate.getDate()).padStart(2,"0")}`;
+  const interestAnswer=String(a["career:초중고 공통 관심사"]||"").trim();
+  const interestUnknown=!interestAnswer||/^(아직\s*)?(잘\s*)?모르겠(?:어요|습니다|다|음|는데요)?[.!?\s]*$/i.test(interestAnswer);
+  const interest=interestUnknown?(interestAnswer?"아직 찾아가는 중이에요":"아직 기록되지 않았어요"):interestAnswer;
+  const keywords=(a["career:듣고 싶은 말"]||"").split(" / ").filter(Boolean);
+  const fields=(a["career:어떤 분야에 새로운 가능성 펼치기"]||"").split(" / ").filter(Boolean);
+  const traitReadings={
+    "리더십과 조율":"여러 사람의 생각을 모아 함께 갈 방향을 만드는",
+    "도전과 성취, 돌파":"어려운 과제에 도전해 성취와 돌파구를 만드는",
+    "제작과 구현":"떠올린 생각을 구체적인 결과로 옮기는",
+    "정리와 분석, 논리":"정보를 정리해 문제의 실마리를 찾는",
+    "교육과 소통, 이해와 성장":"사람의 이야기를 듣고 성장을 돕는",
+    "통찰과 소비자 이해":"사람의 필요와 경험을 세심하게 읽는",
+    "사회적 기여, 가치 실현":"사회에 필요한 변화를 실제로 만드는",
+    "협업과 시너지":"서로 다른 강점을 연결해 더 큰 결과를 만드는",
+    "창의성과 표현, 인정":"새로운 관점을 자신만의 방식으로 표현하는"
+  };
+  const keywordReadings=keywords.slice(0,2).map(word=>({word,meaning:traitReadings[word]})).filter(item=>item.meaning);
+  const shortInterest=interestUnknown?"관심을 찾아가며":`‘${Array.from(interest).slice(0,22).join("")}${Array.from(interest).length>22?"…":""}’에 관심을 두고`;
+  const startingPoint=`${department?`${department}에서 `:"나의 관심에서 출발해 "}${shortInterest}${keywords.length?`, ‘${keywords.join("’, ‘")}’에서 보이는 나의 가치를 알아가고 있어요.`:", 내가 중요하게 여기는 가치와 강점을 발견해 가고 있어요."}`;
+  const keywordMeanings={
+    "리더십과 조율":"여러 의견을 모아 함께 갈 방향을 찾는 힘",
+    "도전과 성취, 돌파":"어려움에 도전해 성취와 돌파구를 만드는 힘",
+    "제작과 구현":"아이디어를 구체적인 결과로 만드는 힘",
+    "정리와 분석, 논리":"정보를 정리해 문제를 풀어가는 힘",
+    "교육과 소통, 이해와 성장":"사람을 이해하고 성장을 돕는 힘",
+    "통찰과 소비자 이해":"사람의 필요와 경험을 읽는 힘",
+    "사회적 기여, 가치 실현":"사회에 필요한 변화를 만드는 힘",
+    "협업과 시너지":"서로의 강점을 연결하는 힘",
+    "창의성과 표현, 인정":"새로운 관점을 자신만의 방식으로 표현하는 힘"
+  };
+  const keywordDetails=keywordReadings.map(item=>({word:item.word,meaning:keywordMeanings[item.word]||item.meaning}));
+  return {
+    department,interest,interestUnknown,keywords,keywordDetails,fields,startingPoint,dateText,
+    discovery:a.seniorBusiness||"아직 답변이 기록되지 않았어요.",
+    connection:a.transfer||"아직 답변이 기록되지 않았어요.",
+    next:next||"아직 답변이 기록되지 않았어요."
+  };
+}
+function areasLabel(id){return ({finance:"금융",welfare:"사회복지",culture:"문화콘텐츠",sports:"체육",education:"교육",realestate:"부동산·주거"})[id]||id}
+function htmlEscape(value){return String(value||"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char])}
+function reportTag(text,color=""){return `<span class="report-tag ${color}">${htmlEscape(text)}</span>`}
+async function createJourneyReport(){
+  const next=localStorage.getItem(participantNextStationKey())||"";
+  if(!done.includes("nextStation")||!next.trim())return;
+  const canvas=reportCanvas();
+  document.getElementById("reportPaper").innerHTML=`<img class="report-image-preview" src="${canvas.toDataURL("image/png")}" alt="${htmlEscape(participantId||"나")}의 관심 지도">`;
+  document.getElementById("nextStationForm").hidden=true;document.getElementById("reportView").hidden=false;
+  document.getElementById("reportToolbarTitle").textContent=`${participantId}의 관심 지도`;
+  document.getElementById("reportBg").classList.add("show","report-image-mode");
+}
+function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=4){
+  let line="",lines=0;for(const char of Array.from(String(text||""))){const candidate=line+char;if(ctx.measureText(candidate).width>maxWidth&&line){ctx.fillText(line,x,y);y+=lineHeight;lines++;line=char;if(lines>=maxLines)return y} else line=candidate}if(line){ctx.fillText(line,x,y);y+=lineHeight}return y;
+}
+function reportCanvas(){
+  const d=reportInsights(localStorage.getItem(participantNextStationKey())||"");
+  const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d");
+  const W=900,H=1200;
+  canvas.width=W;canvas.height=H;
+  const font='"Pretendard", "Noto Sans KR", Arial, sans-serif';
+  const C={paper:"#f4f2ed",white:"#fffefa",ink:"#252236",muted:"#625e70",purple:"#6846bd",lavender:"#f0eafd",line:"#e7e1f1",mint:"#b9f0dc",gold:"#f1c66d"};
+  const rounded=(x,y,w,h,r,fill,stroke)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke()}};
+  const text=(s,x,y,size,color=C.ink,weight=500,align="left")=>{ctx.font=`${weight} ${size}px ${font}`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(String(s||""),x,y);ctx.textAlign="left"};
+  const fitted=(value,x,top,width,height,size=22,minSize=13,color=C.ink,weight=550)=>{
+    const source=String(value||""),wrapAt=fontSize=>{ctx.font=`${weight} ${fontSize}px ${font}`;const out=[];let row="";for(const ch of Array.from(source)){if(ch==="\n"){out.push(row);row="";continue}const next=row+ch;if(row&&ctx.measureText(next).width>width){out.push(row);row=ch}else row=next}if(row||!out.length)out.push(row);return out};
+    let chosen=minSize,rows=wrapAt(minSize),leading=Math.ceil(minSize*1.42);
+    for(let n=size;n>=minSize;n--){const test=wrapAt(n),step=Math.ceil(n*1.42);if(test.length*step<=height){chosen=n;rows=test;leading=step;break}}
+    const maxRows=Math.max(1,Math.floor(height/leading));if(rows.length>maxRows){rows=rows.slice(0,maxRows);ctx.font=`${weight} ${chosen}px ${font}`;let last=rows[maxRows-1];while(last&&ctx.measureText(last+"…").width>width)last=last.slice(0,-1);rows[maxRows-1]=last+"…"}
+    ctx.font=`${weight} ${chosen}px ${font}`;ctx.fillStyle=color;rows.forEach((row,i)=>ctx.fillText(row,x,top+chosen+i*leading));return rows.length;
+  };
+  const card=(x,y,w,h,fill=C.white)=>{ctx.save();ctx.shadowColor="#32244f12";ctx.shadowBlur=18;ctx.shadowOffsetY=5;rounded(x,y,w,h,24,fill);ctx.restore();rounded(x,y,w,h,24,fill,C.line)};
+  const badge=(x,y,label)=>{rounded(x,y,48,38,13,C.lavender);text(label,x+24,y+26,17,C.purple,850,"center")};
+  const sectionTitle=(x,y,n,title)=>{badge(x,y-25,n);text(title,x+65,y+2,26,C.ink,760)};
+  const label=(s,x,y)=>text(s,x,y,18,C.purple,760);
+  const left=48,width=804,inside=82,insideW=736;
+  ctx.fillStyle="#f8f7f4";ctx.fillRect(0,0,W,H);ctx.strokeStyle="#e8e4ec";ctx.lineWidth=2;ctx.strokeRect(14,14,W-28,H-28);
+
+  const heroY=38,heroH=220;
+  const gradient=ctx.createLinearGradient(left,heroY,left+width,heroY+heroH);gradient.addColorStop(0,"#272238");gradient.addColorStop(.58,"#44315f");gradient.addColorStop(1,"#6846bd");
+  ctx.save();ctx.shadowColor="#34234b30";ctx.shadowBlur=25;ctx.shadowOffsetY=10;rounded(left,heroY,width,heroH,30,gradient);ctx.restore();
+  // A compact three-stop route mark anchors the report to the SIU MAP identity.
+  text("SIU MAP",inside,heroY+39,16,"#d8cbff",850);
+  ctx.strokeStyle="#d8cbff88";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(680,heroY+32);ctx.lineTo(788,heroY+32);ctx.stroke();
+  [680,734,788].forEach((x,i)=>{ctx.beginPath();ctx.arc(x,heroY+32,i===1?5:4,0,Math.PI*2);ctx.fillStyle=i===1?C.mint:"#d8cbff";ctx.fill()});
+  text("나의 관심 지도",inside,heroY+99,40,"#fffefa",780);
+  text("관심에서 시작해 가능성으로 이어진 나의 여정",inside,heroY+128,17,"#e5ddf4",500);
+  const metaY=heroY+151,metaGap=12,metaW=(width-56-metaGap*2)/3,metaX=inside;
+  [["NAME",participantId||"나"],["MAJOR",d.department||"미입력"],["DATE",d.dateText]].forEach(([k,v],i)=>{
+    const x=metaX+i*(metaW+metaGap);rounded(x,metaY,metaW,54,14,"#ffffff16","#ffffff30");
+    text(k,x+14,metaY+20,11,"#d7c9f4",800);fitted(String(v),x+14,metaY+23,metaW-28,26,17,12,"#fffefa",650);
+  });
+
+  const departureY=280,departureH=320,discoveryY=618,discoveryH=160,connectionY=796,connectionH=180,finalY=connectionY+connectionH+18,finalH=130;
+  card(left,departureY,width,departureH);
+  sectionTitle(inside,departureY+53,"01","나의 출발점");
+  label("평소 관심을 두고 있는 분야",inside,departureY+101);
+  const interests=`${d.interest}\n${d.fields.length?d.fields.join("  ·  "):"아직 선택한 분야가 없어요."}`;
+  fitted(interests,inside,departureY+111,insideW,93,21,13,C.ink,560);
+  label("내가 중요하게 생각하는 가치",inside,departureY+225);
+  const valueLines=d.keywordDetails.length?d.keywordDetails.map(item=>`${item.word}  ·  ${item.meaning}`).join("\n"):"나의 가치와 강점을 더 찾아가는 중이에요.";
+  fitted(valueLines,inside,departureY+235,insideW,58,19,13,C.ink,560);
+  card(left,discoveryY,width,discoveryH);
+  sectionTitle(inside,discoveryY+49,"02","전시에서 발견한 것");
+  fitted(d.discovery,inside,discoveryY+78,insideW,65,21,13,C.ink,560);
+
+  card(left,connectionY,width,connectionH);
+  sectionTitle(inside,connectionY+49,"03","나의 관심과 비즈니스의 연결");
+  fitted(d.connection,inside,connectionY+78,insideW,100,21,13,C.ink,560);
+
+  card(left,finalY,width,finalH,"#f0ecf8");
+  text("MY NEXT STATION",inside,finalY+43,20,C.purple,850);
+  fitted(d.next,inside,finalY+58,insideW,54,25,15,C.ink,650);
+  text("SIU MAP  ·  MY JOURNEY REPORT",inside,H-17,12,C.muted,700);
+  return canvas;
+}
+async function saveReportImage(){
+  try{
+    const canvas=reportCanvas();
+    const jpeg=await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("JPG 변환에 실패했습니다.")),"image/jpeg",.94));
+    const filename=`${(participantId||"나").replace(/[\\/:*?"<>|]/g,"_")}-의-관심-지도.jpg`;
+    if(typeof File==="function"&&navigator.share&&navigator.canShare){
+      const file=new File([jpeg],filename,{type:"image/jpeg",lastModified:Date.now()});
+      if(navigator.canShare({files:[file]})){
+        try{await navigator.share({files:[file],title:"SIU MAP 나의 관심 지도"});return}
+        catch(error){if(error&&error.name==="AbortError")return;console.warn("공유 저장을 지원하지 않아 다운로드로 전환합니다.",error)}
+      }
+    }
+    const url=URL.createObjectURL(jpeg),link=document.createElement("a");
+    link.href=url;link.download=filename;link.hidden=true;document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }catch(error){
+    console.error("JPG 저장 실패",error);
+    alert("이미지를 JPG로 만들지 못했어요. 다시 시도해 주세요.");
+  }
+}
+function closeModal(e){
+  if(!e||e.target===document.getElementById("modalBg"))
+    document.getElementById("modalBg").classList.remove("show","essay-station");
+}
+restoreParticipant();
+render();
+window.addEventListener("resize",()=>{requestAnimationFrame(alignTrainRails);requestAnimationFrame(alignRouteRail)},{passive:true});
+
+function openDocent(){document.getElementById("docentBg").classList.add("show")}
+function closeDocent(e){if(!e||e.target===document.getElementById("docentBg"))document.getElementById("docentBg").classList.remove("show")}
+flushResponseQueue();
+
+/* ===== 지도와 길찾기 패널 전환 =====
+   손가락으로 패널 손잡이를 밀어 화면 비중을 바꿉니다.
+   페이지 스크롤에는 반응하지 않습니다.
+*/
+const phone = document.querySelector(".phone");
+function setFocus(mode){
+  phone.classList.toggle("map-focus", mode === "map");
+  phone.classList.toggle("route-focus", mode === "route");
+  localStorage.setItem(SHEET_FOCUS_KEY,mode);
+}
+const sheetHandle = document.getElementById("sheetHandle");
+let touchStartY = 0;
+sheetHandle.addEventListener("touchstart", e => { touchStartY = e.touches[0].clientY; }, {passive:true});
+sheetHandle.addEventListener("touchend", e => {
+  const delta = e.changedTouches[0].clientY - touchStartY;
+  if (delta < -30) setFocus("route");
+  if (delta > 30) setFocus("map");
+}, {passive:true});
+const savedSheetFocus=localStorage.getItem(SHEET_FOCUS_KEY);
+if(savedSheetFocus==="map"||savedSheetFocus==="route")setFocus(savedSheetFocus);
+</script>
+</body>
+</html>
