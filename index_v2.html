@@ -406,6 +406,8 @@ body{background:#f2f3f5;overflow-y:hidden}
 .station-dot,.station-dot.transfer{justify-self:center;margin-top:1px}
 .station-title{font-size:15px;line-height:20px}
 .station-desc{margin-top:3px}
+.transfer-topic-list{display:grid;gap:3px;margin:0 0 10px 46px}
+.transfer-topic-name{padding:5px 9px;border-radius:8px;background:#f5f2fb;color:#51466b;font-size:11px;font-weight:750;line-height:1.35}
 .walk-block{padding-left:46px;min-height:58px}
 .walk-block:before{left:17.5px;top:0;bottom:0;width:3px;background:repeating-linear-gradient(to bottom,#c9cdd3 0 2px,transparent 2px 7px);border:0}
 .walk-person{left:19px;top:50%;transform:translate(-50%,-50%);width:auto;height:auto;border-radius:0;background:transparent;box-shadow:none;font-size:17px;line-height:1;animation:none}
@@ -729,6 +731,14 @@ body{background:#f2f3f5;overflow-y:hidden}
           </div>
           <button class="plus" data-station="transfer" aria-label="환승센터역 퀴즈 시작" onclick="event.stopPropagation();openStation('transfer')">＋</button>
       </div>
+      <div class="transfer-topic-list" aria-label="환승센터역 퀴즈 분야">
+        <div class="transfer-topic-name">금융 X 시비즈역</div>
+        <div class="transfer-topic-name">사회복지 X 시비즈역</div>
+        <div class="transfer-topic-name">문화콘텐츠 X 시비즈역</div>
+        <div class="transfer-topic-name">체육 X 시비즈역</div>
+        <div class="transfer-topic-name">교육 X 시비즈역</div>
+        <div class="transfer-topic-name">부동산건설 X 시비즈역</div>
+      </div>
 
       <!-- 도착 -->
       <div class="route-item destination-route next-station-trigger" onclick="openNextStation()">
@@ -915,12 +925,12 @@ const stations={
 };
 
 const transferQuiz=[
-  {title:"금융 X 시비즈역",question:"금융사기 피해를 의심했을 때 계좌에서 돈이 더 빠져나가지 않도록 금융회사에 요청하는 조치는 무엇인가요?",answers:["지급정지","계좌지급정지","지급정지신청"]},
-  {title:"사회복지 X 시비즈역",question:"장기요양보험 대상자의 가정을 방문해 신체활동과 일상생활을 돕는 전문 인력은 누구인가요?",answers:["요양보호사"]},
-  {title:"문화콘텐츠 X 시비즈역",question:"영상, 음악, 글처럼 사람에게 정보나 이야기를 전달하는 창작물을 통틀어 무엇이라고 하나요?",answers:["콘텐츠","문화콘텐츠"]},
-  {title:"체육 X 시비즈역",question:"본격적인 운동 전에 근육과 관절을 천천히 풀어 부상을 예방하는 활동은 무엇인가요?",answers:["준비운동","워밍업","웜업"]},
-  {title:"교육 X 시비즈역",question:"학교를 졸업한 뒤에도 삶 전체에 걸쳐 계속 배우는 교육을 무엇이라고 하나요?",answers:["평생교육","평생학습"]},
-  {title:"부동산건설 X 시비즈역",question:"문턱을 없애고 손잡이와 경사로를 두어 누구나 이동하기 편하게 만드는 설계 원칙은 무엇인가요?",answers:["무장애설계","배리어프리","유니버설디자인","장애물없는생활환경"]}
+  {title:"금융 X 시비즈역",question:"금융사기 피해를 의심했을 때 계좌에서 돈이 더 빠져나가지 않도록 금융회사에 요청하는 조치는 무엇인가요?",answers:["ㅇ"]},
+  {title:"사회복지 X 시비즈역",question:"장기요양보험 대상자의 가정을 방문해 신체활동과 일상생활을 돕는 전문 인력은 누구인가요?",answers:["ㅇ"]},
+  {title:"문화콘텐츠 X 시비즈역",question:"영상, 음악, 글처럼 사람에게 정보나 이야기를 전달하는 창작물을 통틀어 무엇이라고 하나요?",answers:["ㅇ"]},
+  {title:"체육 X 시비즈역",question:"본격적인 운동 전에 근육과 관절을 천천히 풀어 부상을 예방하는 활동은 무엇인가요?",answers:["ㅇ"]},
+  {title:"교육 X 시비즈역",question:"학교를 졸업한 뒤에도 삶 전체에 걸쳐 계속 배우는 교육을 무엇이라고 하나요?",answers:["ㅇ"]},
+  {title:"부동산건설 X 시비즈역",question:"문턱을 없애고 손잡이와 경사로를 두어 누구나 이동하기 편하게 만드는 설계 원칙은 무엇인가요?",answers:["ㅇ"]}
 ];
 
 let participantId="";
