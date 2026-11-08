@@ -406,8 +406,6 @@ body{background:#f2f3f5;overflow-y:hidden}
 .station-dot,.station-dot.transfer{justify-self:center;margin-top:1px}
 .station-title{font-size:15px;line-height:20px}
 .station-desc{margin-top:3px}
-.transfer-topic-list{display:grid;gap:3px;margin:0 0 10px 46px}
-.transfer-topic-name{padding:5px 9px;border-radius:8px;background:#f5f2fb;color:#51466b;font-size:11px;font-weight:750;line-height:1.35}
 .walk-block{padding-left:46px;min-height:58px}
 .walk-block:before{left:17.5px;top:0;bottom:0;width:3px;background:repeating-linear-gradient(to bottom,#c9cdd3 0 2px,transparent 2px 7px);border:0}
 .walk-person{left:19px;top:50%;transform:translate(-50%,-50%);width:auto;height:auto;border-radius:0;background:transparent;box-shadow:none;font-size:17px;line-height:1;animation:none}
@@ -731,13 +729,29 @@ body{background:#f2f3f5;overflow-y:hidden}
           </div>
           <button class="plus" data-station="transfer" aria-label="환승센터역 퀴즈 시작" onclick="event.stopPropagation();openStation('transfer')">＋</button>
       </div>
-      <div class="transfer-topic-list" aria-label="환승센터역 퀴즈 분야">
-        <div class="transfer-topic-name">금융 X 시비즈역</div>
-        <div class="transfer-topic-name">사회복지 X 시비즈역</div>
-        <div class="transfer-topic-name">문화콘텐츠 X 시비즈역</div>
-        <div class="transfer-topic-name">체육 X 시비즈역</div>
-        <div class="transfer-topic-name">교육 X 시비즈역</div>
-        <div class="transfer-topic-name">부동산건설 X 시비즈역</div>
+      <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(0)">
+        <div class="station-dot"></div><div><div class="station-title">금융 X 시비즈역</div></div>
+        <button class="plus quiz-topic-plus" aria-label="금융 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(0)">＋</button>
+      </div>
+      <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(1)">
+        <div class="station-dot"></div><div><div class="station-title">사회복지 X 시비즈역</div></div>
+        <button class="plus quiz-topic-plus" aria-label="사회복지 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(1)">＋</button>
+      </div>
+      <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(2)">
+        <div class="station-dot"></div><div><div class="station-title">문화콘텐츠 X 시비즈역</div></div>
+        <button class="plus quiz-topic-plus" aria-label="문화콘텐츠 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(2)">＋</button>
+      </div>
+      <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(3)">
+        <div class="station-dot"></div><div><div class="station-title">체육 X 시비즈역</div></div>
+        <button class="plus quiz-topic-plus" aria-label="체육 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(3)">＋</button>
+      </div>
+      <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(4)">
+        <div class="station-dot"></div><div><div class="station-title">교육 X 시비즈역</div></div>
+        <button class="plus quiz-topic-plus" aria-label="교육 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(4)">＋</button>
+      </div>
+      <div class="station-row clickable quiz-topic-row" onclick="openTransferQuiz(5)">
+        <div class="station-dot"></div><div><div class="station-title">부동산건설 X 시비즈역</div></div>
+        <button class="plus quiz-topic-plus" aria-label="부동산건설 X 시비즈역 질문 보기" onclick="event.stopPropagation();openTransferQuiz(5)">＋</button>
       </div>
 
       <!-- 도착 -->
@@ -1202,20 +1216,36 @@ async function completeSelfExploration(){
   localStorage.setItem(participantDoneKey(),JSON.stringify(done));
   closeModal();render();
 }
-function transferQuizKey(){return `siuTransferQuizProgress:${participantId.trim()}`}
+function transferQuizKey(){return `siuTransferQuizProgressV3:${participantId.trim()}`}
 function normalizeQuizAnswer(value){return String(value||"").toLocaleLowerCase().replace(/[\s\p{P}\p{S}]/gu,"")}
+function loadTransferQuizProgress(){
+  try{transferQuizAnswers=JSON.parse(localStorage.getItem(transferQuizKey())||"[]")}catch(error){transferQuizAnswers=[]}
+  if(!Array.isArray(transferQuizAnswers))transferQuizAnswers=[];
+  transferQuizAnswers=transferQuizAnswers.slice(0,transferQuiz.length);
+  return transferQuizAnswers;
+}
+function firstUnansweredTransferQuestion(){return transferQuizAnswers.findIndex(answer=>!String(answer||"").trim())}
 function renderTransferQuizQuestion(){
   const item=transferQuiz[transferQuestionIndex];
   document.getElementById("tag").textContent=`TRANSFER QUIZ · ${transferQuestionIndex+1} / ${transferQuiz.length}`;
   document.getElementById("modalTitle").textContent=item.title;
   document.getElementById("stationQuestionStep").textContent=`퀴즈 ${transferQuestionIndex+1} / ${transferQuiz.length}`;
   document.getElementById("question").textContent=item.question;
-  const answer=document.getElementById("essayAnswer");answer.value="";answer.placeholder="정답을 입력해 주세요.";
+  const answer=document.getElementById("essayAnswer"),alreadyAnswered=!!String(transferQuizAnswers[transferQuestionIndex]||"").trim();
+  answer.value=transferQuizAnswers[transferQuestionIndex]||"";answer.placeholder="정답을 입력해 주세요.";answer.readOnly=alreadyAnswered||done.includes("transfer");
   const feedback=document.getElementById("quizFeedback");feedback.hidden=true;feedback.textContent="";feedback.classList.remove("correct");
-  const next=document.getElementById("transferQuizNext");next.textContent=transferQuestionIndex===transferQuiz.length-1?"정답 확인하고 스탬프 받기":"정답 확인하고 다음";next.disabled=true;
+  const next=document.getElementById("transferQuizNext");
+  next.textContent=done.includes("transfer")?"닫기":(alreadyAnswered?"다음 미완료 질문":(transferQuestionIndex===transferQuiz.length-1?"정답 확인하고 스탬프 받기":"정답 확인하고 다음"));
+  next.disabled=!alreadyAnswered&&!done.includes("transfer");
   document.getElementById("complete").hidden=true;
 }
 function moveTransferQuestion(){
+  if(done.includes("transfer")){closeModal();return}
+  if(String(transferQuizAnswers[transferQuestionIndex]||"").trim()){
+    const nextAnswered=Array.from({length:transferQuiz.length},(_,offset)=>(transferQuestionIndex+offset+1)%transferQuiz.length).find(index=>!String(transferQuizAnswers[index]||"").trim());
+    if(nextAnswered===undefined)return;
+    transferQuestionIndex=nextAnswered;renderTransferQuizQuestion();return;
+  }
   const entered=document.getElementById("essayAnswer").value.trim();if(!entered)return;
   const accepted=transferQuiz[transferQuestionIndex].answers.map(normalizeQuizAnswer);
   if(!accepted.includes(normalizeQuizAnswer(entered))){
@@ -1223,11 +1253,13 @@ function moveTransferQuestion(){
   }
   transferQuizAnswers[transferQuestionIndex]=entered;
   localStorage.setItem(transferQuizKey(),JSON.stringify(transferQuizAnswers));
-  if(transferQuestionIndex<transferQuiz.length-1){transferQuestionIndex++;renderTransferQuizQuestion();return}
-  if(!done.includes("transfer"))done.push("transfer");
-  localStorage.setItem(participantDoneKey(),JSON.stringify(done));
-  localStorage.removeItem(transferQuizKey());
-  closeModal();render();showSequenceNotice("여섯 퀴즈를 모두 맞혀 환승센터역 스탬프를 받았어요!");
+  if(transferQuiz.every((item,index)=>String(transferQuizAnswers[index]||"").trim())){
+    if(!done.includes("transfer"))done.push("transfer");
+    localStorage.setItem(participantDoneKey(),JSON.stringify(done));
+    closeModal();render();showSequenceNotice("여섯 퀴즈를 모두 맞혀 환승센터역 스탬프를 받았어요!");return;
+  }
+  const nextAnswered=Array.from({length:transferQuiz.length},(_,offset)=>(transferQuestionIndex+offset+1)%transferQuiz.length).find(index=>!String(transferQuizAnswers[index]||"").trim());
+  transferQuestionIndex=nextAnswered;renderTransferQuizQuestion();
 }
 let sequenceNoticeTimer=null;
 function showSequenceNotice(message){
@@ -1240,8 +1272,31 @@ function canOpenStationInSequence(id){
   if(!required||done.includes(required))return true;
   showSequenceNotice(`먼저 ${stations[required].title} 질문에 답해 주세요.`);return false;
 }
+function openTransferQuiz(index){
+  if(!canOpenStationInSequence("transfer"))return;
+  if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
+  loadTransferQuizProgress();
+  transferQuestionIndex=Math.max(0,Math.min(transferQuiz.length-1,Number(index)||0));
+  current="transfer";selected=null;answerMode="essay";
+  document.getElementById("modalBg").classList.remove("essay-station","station-question-spaced");
+  document.getElementById("modalBg").classList.add("essay-station","station-question-spaced");
+  document.getElementById("stationQuestionStep").hidden=false;
+  document.getElementById("question").hidden=false;
+  document.getElementById("essayAnswer").hidden=false;
+  document.getElementById("answers").hidden=true;
+  document.querySelector(".answer-mode").hidden=true;
+  document.getElementById("selfFlow").hidden=true;
+  document.getElementById("complete").hidden=true;
+  document.getElementById("transferQuizNav").hidden=false;
+  renderTransferQuizQuestion();
+  document.getElementById("modalBg").classList.add("show");
+}
 function openStation(id){
-  if(id==="transfer"&&done.includes("transfer")){showSequenceNotice("환승센터역 스탬프를 이미 받았어요.");return}
+  if(id==="transfer"){
+    loadTransferQuizProgress();
+    const firstUnanswered=firstUnansweredTransferQuestion();
+    openTransferQuiz(firstUnanswered<0?0:firstUnanswered);return;
+  }
   if(!canOpenStationInSequence(id))return;
   current=id;selected=null;
   document.getElementById("modalBg").classList.remove("essay-station","station-question-spaced");
@@ -1263,24 +1318,6 @@ function openStation(id){
     complete.textContent="답변 저장하고 스탬프 받기";
     complete.hidden=true;
     resetSelfExploration();
-    document.getElementById("modalBg").classList.add("show");
-    return;
-  }
-  if(id==="transfer"){
-    selfFlow.hidden=true;
-    try{transferQuizAnswers=JSON.parse(localStorage.getItem(transferQuizKey())||"[]")}catch(error){transferQuizAnswers=[]}
-    if(!Array.isArray(transferQuizAnswers))transferQuizAnswers=[];
-    transferQuizAnswers=transferQuizAnswers.slice(0,transferQuiz.length);
-    transferQuestionIndex=transferQuizAnswers.findIndex(answer=>!String(answer||"").trim());
-    if(transferQuestionIndex<0)transferQuestionIndex=transferQuiz.length-1;
-    document.getElementById("question").hidden=false;
-    document.querySelector(".answer-mode").hidden=true;
-    document.getElementById("answers").hidden=true;
-    document.getElementById("essayAnswer").hidden=false;
-    document.getElementById("stationQuestionStep").hidden=false;
-    document.getElementById("modalBg").classList.add("essay-station","station-question-spaced");
-    answerMode="essay";transferQuizNav.hidden=false;
-    renderTransferQuizQuestion();
     document.getElementById("modalBg").classList.add("show");
     return;
   }
