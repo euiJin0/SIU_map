@@ -90,7 +90,7 @@ button{font:inherit}
 .close-map{width:39px;height:39px;border:0;border-radius:50%;background:#f5f5f6;font-size:27px;line-height:1}
 .meta{font-size:13px;color:#777;margin:8px 0 14px}
 .meta b{color:#333}
-.route-summary{display:grid;grid-template-columns:minmax(0,.45fr) minmax(0,1.35fr) minmax(0,.45fr) minmax(0,1.45fr) minmax(0,.45fr);align-items:center;gap:3px;overflow:hidden;padding-bottom:15px;min-width:0;max-width:100%}
+.route-summary{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.65fr) minmax(0,.55fr) minmax(0,2.2fr);align-items:center;gap:3px;overflow:hidden;padding-bottom:15px;min-width:0;max-width:100%}
 .segment{height:31px;border-radius:7px;display:flex;align-items:center;justify-content:center;gap:5px;color:#fff;font-size:11px;font-weight:900;white-space:nowrap}
 .segment.walk{background:#e8e9ed;color:#555;width:auto;min-width:0;overflow:hidden}
 .segment.senior{background:var(--purple);width:auto;min-width:0;overflow:hidden}
@@ -285,6 +285,10 @@ button{font:inherit}
 #modalBg.station-question-spaced .modal h2{margin-bottom:14px}
 #modalBg.station-question-spaced .station-question-step{margin:0 0 10px}
 #modalBg.station-question-spaced #question{line-height:1.9}
+.transfer-focus{align-items:center;gap:10px;margin:4px 0 14px;padding:11px 13px;border:1px solid #e7def8;border-radius:14px;background:#f6f2ff}
+.transfer-focus:not([hidden]){display:flex}
+.transfer-focus-label{flex:none;color:#7358ad;font-size:12px;font-weight:800}
+.transfer-focus-value{color:#29243e;font-size:14px;font-weight:800;line-height:1.55;overflow-wrap:anywhere}
 .close{border:0;background:#f1f2f4;border-radius:50%;width:42px;height:42px;font-size:23px}
 .answers{display:grid;gap:10px}
 .answer{display:flex;align-items:center;justify-content:center;min-height:68px;border:1px solid #e5e0f0;background:linear-gradient(145deg,#fff,#faf8ff);border-radius:16px;text-align:center;padding:17px 18px;font-size:15px;font-weight:750;line-height:1.5;box-shadow:0 3px 10px #3420640a;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
@@ -402,8 +406,6 @@ body{background:#f2f3f5;overflow-y:hidden}
 .train-icon{display:none}
 .station-row{width:100%;min-width:0;max-width:100%;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:start;min-height:62px;padding:14px 0}
 .station-row .plus{justify-self:start;transform:translateX(-18px)}
-.station-row.quiz-topic-row{grid-template-columns:34px minmax(0,1fr)!important;align-items:center;gap:6px;min-height:46px;padding:5px 0}
-.station-row.quiz-topic-row .station-title{font-size:13px;line-height:18px}
 .destination-route .plus{justify-self:start;transform:translateX(-18px)}
 .station-dot,.station-dot.transfer{justify-self:center;margin-top:1px}
 .station-title{font-size:15px;line-height:20px}
@@ -425,9 +427,6 @@ body{background:#f2f3f5;overflow-y:hidden}
 .mode-btn.active{background:#111;border-color:#111;color:#fff}
 .essay-answer{width:90%;max-width:520px;min-height:110px;margin:0 auto;resize:vertical;border:1px solid #ddd;border-radius:15px;padding:15px;font:inherit;font-size:16px;line-height:1.5}
 .essay-answer:focus{outline:2px solid #7654e855;border-color:#7654e8}
-#modalBg.transfer-two-answer .essay-answer{height:12dvh;max-height:105px;min-height:64px;margin:0 auto 7px}
-.quiz-feedback{margin:10px 2px 0!important;padding:10px 12px;border-radius:12px;background:#fff0ef;color:#b42318!important;font-size:13px!important;font-weight:800}
-.quiz-feedback.correct{background:#eaf8ef;color:#14753e!important}
 .self-flow{padding:10px 0}
 .self-step{font-size:12px;font-weight:900;color:var(--purple);background:#f3efff;border-radius:999px;padding:8px 12px;width:max-content}
 .self-flow #selfStepPrompt{font-size:18px;font-weight:850;color:#222;margin:16px 0}
@@ -443,7 +442,6 @@ body{background:#f2f3f5;overflow-y:hidden}
 .self-note{font-size:13px;color:#777;margin:0 0 11px}
 .self-nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
 .self-nav button{flex:1}
-.transfer-quiz-nav .mode-btn,.transfer-quiz-nav .mode-btn:disabled{background:#111;border-color:#111;color:#fff}
 .self-flow+.complete{margin-top:8px}
 .intro-screen,.loading-screen{position:fixed;inset:0;z-index:250;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#f3efff,#fff 55%,#f4f5f8)}
 .intro-card,.loading-content{width:min(100%,390px);text-align:center}
@@ -644,7 +642,6 @@ body{background:#f2f3f5;overflow-y:hidden}
     <div class="segment career">나를발견행</div>
     <div class="segment walk">🚶</div>
     <div class="segment senior">가능성을 확장행</div>
-    <div class="segment walk">🚶</div>
   </div>
 
   <div class="route-card">
@@ -664,7 +661,7 @@ body{background:#f2f3f5;overflow-y:hidden}
       <!-- 출발역에서 나를발견행 열차까지 걷는 구간 -->
       <div class="walk-block origin-walk">
         <div class="walk-person">🚶</div>
-        <div class="walk-text"><b>자기탐색역까지 도보 이동</b></div>
+        <div class="walk-text"><b>나를발견행 열차까지 도보 이동</b></div>
       </div>
 
       <!-- 진로 탐색행 -->
@@ -689,7 +686,7 @@ body{background:#f2f3f5;overflow-y:hidden}
       <!-- 걷기 -->
       <div class="walk-block">
         <div class="walk-person">🚶</div>
-        <div class="walk-text"><b>가능성발견역까지 도보 이동</b></div>
+        <div class="walk-text"><b>가능성발견역까지 도보 이동</b> <span>(환승통로 이용)</span></div>
       </div>
 
       <!-- 가능성을 확장행 -->
@@ -697,7 +694,7 @@ body{background:#f2f3f5;overflow-y:hidden}
         <div class="train-head">
           <span class="line-badge">가</span>
           <div class="train-bar senior">
-            <b>가능성을 확장행 열차</b><span class="train-note">2개 역</span>
+            <b>가능성을 확장행 열차</b><span class="train-note">9개 역</span>
           </div>
         </div>
 
@@ -718,38 +715,62 @@ body{background:#f2f3f5;overflow-y:hidden}
           <button class="plus" data-station="seniorBusiness" aria-label="스탬프" onclick="event.stopPropagation();openStation('seniorBusiness')">＋</button>
         </div>
 
-      </div>
-
-      <div class="walk-block transfer-walk">
-        <div class="walk-person">🚶</div>
-        <div class="walk-text"><b>환승센터역까지 도보 이동</b> <span>(갈아타는 곳 이용)</span></div>
-      </div>
-
-      <div class="station-row transfer-destination">
+        <div class="station-row clickable" onclick="openStation('transfer')">
           <div class="station-dot transfer"></div>
           <div>
             <div class="station-title-line"><div class="station-title">환승센터역</div></div>
-            <div class="station-desc">여섯 퀴즈를 모두 맞히면 스탬프를 받아요.</div>
+            <div class="station-desc">나의 관심 분야와 시니어비즈니스를 연결</div>
           </div>
-          <button class="plus" data-station="transfer" aria-label="환승센터역 퀴즈 시작" onclick="event.stopPropagation();openStation('transfer')">＋</button>
-      </div>
-      <div class="station-row quiz-topic-row">
-        <div class="station-dot"></div><div><div class="station-title">금융 X 시비즈역</div></div>
-      </div>
-      <div class="station-row quiz-topic-row">
-        <div class="station-dot"></div><div><div class="station-title">사회복지 X 시비즈역</div></div>
-      </div>
-      <div class="station-row quiz-topic-row">
-        <div class="station-dot"></div><div><div class="station-title">문화콘텐츠 X 시비즈역</div></div>
-      </div>
-      <div class="station-row quiz-topic-row">
-        <div class="station-dot"></div><div><div class="station-title">체육 X 시비즈역</div></div>
-      </div>
-      <div class="station-row quiz-topic-row">
-        <div class="station-dot"></div><div><div class="station-title">교육 X 시비즈역</div></div>
-      </div>
-      <div class="station-row quiz-topic-row">
-        <div class="station-dot"></div><div><div class="station-title">부동산건설 X 시비즈역</div></div>
+          <button class="plus" data-station="transfer" aria-label="AI 학점 로드맵 둘러보기" onclick="event.stopPropagation();openTransferJourney()">＋</button>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('finance')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">금융 X 시비즈역</div>
+            <div class="station-desc">고객을 이해하는 힘, 금융시장의 경쟁력이 되다</div>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('welfare')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">사회복지 X 시비즈역</div>
+            <div class="station-desc">복지 전문성에 비즈니스 감각을 더하다</div>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('culture')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">문화콘텐츠 X 시비즈역</div>
+            <div class="station-desc">시니어, 콘텐츠 시장의 새로운 주인공</div>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('sports')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">체육 X 시비즈역</div>
+            <div class="station-desc">스포츠, 여가 시장의 흐름을 바꾸는 액티브 시니어</div>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('education')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">교육 X 시비즈역</div>
+            <div class="station-desc">평생학습 시대, 교육 시장의 진짜 타겟이 뒤바뀌다</div>
+          </div>
+        </div>
+
+        <div class="station-row clickable" onclick="openStation('realestate')">
+          <div class="station-dot"></div>
+          <div>
+            <div class="station-title">부동산건설 X 시비즈역</div>
+            <div class="station-desc">시니어 주거, 공간을 넘어 삶을 설계하다</div>
+          </div>
+        </div>
       </div>
 
       <!-- 도착 -->
@@ -797,15 +818,11 @@ body{background:#f2f3f5;overflow-y:hidden}
       <button class="close" onclick="closeModal()">×</button>
     </div>
     <div class="self-step station-question-step" id="stationQuestionStep" hidden>질문 1 / 1</div>
+    <div class="transfer-focus" id="transferFocus" hidden><span class="transfer-focus-label">내가 고른 분야</span><strong class="transfer-focus-value" id="transferFocusValue"></strong></div>
     <p id="question"></p>
     <div class="answer-mode"><button class="mode-btn active" id="choiceMode" onclick="setAnswerMode('choice')">선택 답변</button><button class="mode-btn" id="essayMode" onclick="setAnswerMode('essay')">서술 답변</button></div>
     <div class="answers" id="answers"></div>
     <textarea class="essay-answer" id="essayAnswer" placeholder="답변을 자유롭게 적어 주세요." hidden></textarea>
-    <textarea class="essay-answer" id="essayAnswer2" placeholder="두 번째 정답을 입력해 주세요." aria-label="두 번째 정답" hidden></textarea>
-    <p class="quiz-feedback" id="quizFeedback" role="status" aria-live="polite" hidden></p>
-    <div class="self-nav transfer-quiz-nav" id="transferQuizNav" hidden>
-      <button class="mode-btn" id="transferQuizNext" onclick="moveTransferQuestion()">정답 확인하고 다음</button>
-    </div>
     <div class="self-flow" id="selfFlow" hidden>
       <div class="self-step" id="selfStepLabel"></div>
       <p id="selfStepPrompt"></p>
@@ -931,26 +948,45 @@ const stations={
   },
   transfer:{
     title:"환승센터역",tag:"TRANSFER STATION",
-    q:"여섯 분야 퀴즈를 차례로 풀어 보세요.",
+    q:"내가 관심 있는 분야와 시니어비즈니스를 연결한다면 어디에서 만날 수 있을까요?",
     a:[],answerMode:"essay",answerType:"서술형"
+  },
+  finance:{
+    title:"금융 X 시비즈역",tag:"FINANCE & SENIOR BUSINESS",
+    q:"고객을 이해하는 힘을 금융시장의 경쟁력으로 어떻게 이어갈 수 있을까요?",
+    a:["시니어의 금융 생활을 돕는 서비스","이해하기 쉬운 금융 정보와 교육","생활에 맞춘 금융 상품","안심하고 이용할 수 있는 금융 경험"]
+  },
+  welfare:{
+    title:"사회복지 X 시비즈역",tag:"SENIOR BUSINESS LINE",
+    q:"사회복지와 비즈니스가 만날 수 있는 지점은 무엇일까요?",
+    a:["일상 속 불편을 해결하는 서비스","지역사회와 연결하는 서비스","누구나 이용하기 쉬운 서비스","삶의 선택과 경험을 넓혀주는 서비스"]
+  },
+  culture:{
+    title:"문화콘텐츠 X 시비즈역",tag:"SENIOR BUSINESS LINE",
+    q:"시니어에게 새로운 문화콘텐츠 경험을 만든다면 어떤 모습일까요?",
+    a:["취향을 발견하는 콘텐츠","함께 참여하는 문화 프로그램","이야기를 기록하고 공유하는 콘텐츠","세대가 함께 즐기는 콘텐츠"]
+  },
+  sports:{
+    title:"체육 X 시비즈역",tag:"SPORTS & WELLNESS",
+    q:"시니어가 즐겁고 건강하게 운동할 수 있도록 무엇을 만들 수 있을까요?",
+    a:["함께 즐기는 생활 체육","건강 상태에 맞춘 운동 프로그램","쉽게 참여할 수 있는 지역 활동","운동을 돕는 새로운 서비스"]
+  },
+  education:{
+    title:"교육 X 시비즈역",tag:"LIFELONG LEARNING",
+    q:"앞으로 새롭게 배우거나 다른 사람과 나누고 싶은 것은 무엇인가요?",
+    a:["디지털 기기와 기술","취미와 문화 활동","일과 진로에 필요한 지식","경험과 지혜를 나누는 수업"]
+  },
+  realestate:{
+    title:"부동산건설 X 시비즈역",tag:"HOUSING & SPACE",
+    q:"다양한 세대가 편안하게 살아갈 공간에는 무엇이 필요할까요?",
+    a:["이동하기 편한 무장애 설계","안전하고 관리하기 쉬운 주거","이웃과 교류할 수 있는 공용 공간","생활에 맞춘 주거 서비스"]
   },
   nextStation:{title:"나의 다음 역",tag:"MY NEXT STATION",q:"내 관심이 시니어비즈니스와 만난다면 어떤 가능성이 열릴까요?",a:[]}
 };
 
-const transferQuiz=[
-  {title:"금융 X 시비즈역",question:"연금과 자산 관리뿐 아니라 주거비, 의료, 돌봄 비용, 상속과 자산 이전 등 시니어의 생애주기에 따른 다양한 금융 ㅅㅇ가 나타나고 있습니다.",answers:["수요"]},
-  {title:"사회복지 X 시비즈역",question:"복지관의 여가 프로그램부터 요양시설의 생활 서비스까지, 시니어를 더 깊이 ㅇㅎ하고 실제로 원하는 서비스를 설계한다는 점에서 두 분야는 만날 수 있습니다.",answers:["이해"]},
-  {title:"문화콘텐츠 X 시비즈역",question:"오늘날의 액티브 시니어는 트로트를 넘어 여행, 경제, 라이프 스타일 등 다채로운 콘텐츠를 적극적으로 소비하는 까다로운 ㅅㅊㅈ이면서 매력적인 콘텐츠의 ㅈㅇㄱ이 되기도 합니다.",answers:["시청자","주인공"]},
-  {title:"체육 X 시비즈역",question:"최근에는 스마트 워치나 체형 분석기 등 다양한 헬스케어 기기를 활용해 노인성 질환을 ㅇㅂ하고 관리하는 서비스가 크게 주목받고 있습니다.",answers:["예방"]},
-  {title:"교육 X 시비즈역",question:"동시에 초고령사회 진입으로 ㅍㅅㅎㅅ의 중요성이 더욱 커지며, 교육의 대상도 아동을 넘어 생애 전반으로 확장되고 있습니다.",answers:["평생학습"]},
-  {title:"부동산건설 X 시비즈역",question:"또한 익숙한 집과 지역사회에서 계속 살아가는 것을 뜻하는 개념을 무엇이라고 하나요? (영문 약어)",answers:["AIP"]}
-];
-
 let participantId="";
 let done=[];
 let current=null,currentQuestion="",selected=null,answerMode="choice";
-let transferQuestionIndex=0;
-let transferQuizAnswers=[];
 let flushingResponses=false;
 
 // 응답을 보낼 Google Apps Script 웹 앱 URL을 여기에 입력하세요. 빈 문자열이면 브라우저에만 저장합니다.
@@ -962,6 +998,7 @@ const SELF_STATE_KEY_PREFIX="siuMetroSelfProgress:";
 const ANSWERS_KEY_PREFIX="siuMetroAnswers:";
 const NEXT_STATION_KEY_PREFIX="siuMetroNextStation:";
 const ORIGIN_KEY_PREFIX="siuMetroOrigin:";
+const GRADE_CALCULATOR_URL="https://siu-study-roadmap.agnesmarketing.chatgpt.site/";
 const SHEET_FOCUS_KEY="siuMetroSheetFocus";
 function participantDoneKey(){return DONE_KEY_PREFIX+participantId.trim()}
 function selfProgressKey(){return SELF_STATE_KEY_PREFIX+participantId.trim()}
@@ -980,7 +1017,7 @@ function setParticipant(name,origin=""){
   const departmentTag=document.getElementById("firstStationDepartment");
   departmentTag.textContent=savedOrigin?`나의 현재 위치 : ${savedOrigin}`:"";departmentTag.hidden=!savedOrigin;
   const savedStamps=JSON.parse(localStorage.getItem(participantDoneKey())||"[]");
-  done=[...new Set(savedStamps.filter(id=>id!=="transfer"&&Object.prototype.hasOwnProperty.call(stations,id)))];
+  done=[...new Set(savedStamps.filter(id=>Object.prototype.hasOwnProperty.call(stations,id)))];
   localStorage.setItem(participantDoneKey(),JSON.stringify(done));
 }
 function restoreParticipant(){
@@ -1087,7 +1124,8 @@ function render(){
   const hasNextLine=!!(localStorage.getItem(participantNextStationKey())||"").trim();
   reportButton.disabled=!done.includes("nextStation")||!hasNextLine;
   reportButton.title=reportButton.disabled?"나의 다음 역 한 줄을 저장해 스탬프를 받으면 활성화됩니다":"나의 관심 지도를 확인합니다";
-  document.getElementById("stampGrid").innerHTML=Object.entries(stations).map(([id,s])=>`
+  const hiddenStampStations=new Set(["finance","culture","welfare","sports","realestate","education"]);
+  document.getElementById("stampGrid").innerHTML=Object.entries(stations).filter(([id])=>!hiddenStampStations.has(id)).map(([id,s])=>`
     <div class="stamp ${done.includes(id)?"on":""}">
       <div class="s-circle">${done.includes(id)?'<img src="stamp-display.png" alt="획득한 스탬프">':"＋"}</div>
       <small>${s.title}</small>
@@ -1215,55 +1253,17 @@ async function completeSelfExploration(){
   localStorage.setItem(participantDoneKey(),JSON.stringify(done));
   closeModal();render();
 }
-function transferQuizKey(){return `siuTransferQuizProgressV4:${participantId.trim()}`}
-function normalizeQuizAnswer(value){return String(value||"").toLocaleLowerCase().replace(/[\s\p{P}\p{S}]/gu,"")}
-function loadTransferQuizProgress(){
-  try{transferQuizAnswers=JSON.parse(localStorage.getItem(transferQuizKey())||"[]")}catch(error){transferQuizAnswers=[]}
-  if(!Array.isArray(transferQuizAnswers))transferQuizAnswers=[];
-  transferQuizAnswers=transferQuizAnswers.slice(0,transferQuiz.length);
-  return transferQuizAnswers;
+function getTransferFieldLabels(){
+  const answers=latestAnswers();
+  const fieldAnswer=String(answers["career:어떤 분야에 새로운 가능성 펼치기"]||"").trim();
+  const selected=fieldAnswer.split(" / ").filter(Boolean);
+  return selected.map(field=>{
+    const i=careerFields.indexOf(field);
+    return ["문화·콘텐츠","기업·비즈니스","금융·경제","건강·의료","기술·제품","교육·학습","부동산·건설","지역사회","새로운 분야"][i]||field;
+  }).filter(Boolean);
 }
-function transferQuizAnswerValues(index){const saved=transferQuizAnswers[index];return Array.isArray(saved)?saved:(saved?[String(saved)]:[])}
-function hasTransferQuizAnswer(index){const item=transferQuiz[index],values=transferQuizAnswerValues(index);return item.answers.every((_,answerIndex)=>!!String(values[answerIndex]||"").trim())}
-function firstUnansweredTransferQuestion(){return transferQuiz.findIndex((_,index)=>!hasTransferQuizAnswer(index))}
-function renderTransferQuizQuestion(){
-  const item=transferQuiz[transferQuestionIndex];
-  document.getElementById("tag").textContent=`TRANSFER QUIZ · ${transferQuestionIndex+1} / ${transferQuiz.length}`;
-  document.getElementById("modalTitle").textContent=item.title;
-  document.getElementById("stationQuestionStep").textContent=`퀴즈 ${transferQuestionIndex+1} / ${transferQuiz.length}`;
-  document.getElementById("question").textContent=item.question;
-  const answer=document.getElementById("essayAnswer"),answer2=document.getElementById("essayAnswer2"),values=transferQuizAnswerValues(transferQuestionIndex),alreadyAnswered=hasTransferQuizAnswer(transferQuestionIndex),hasSecondAnswer=item.answers.length>1;
-  document.getElementById("modalBg").classList.toggle("transfer-two-answer",hasSecondAnswer);
-  answer.value=values[0]||"";answer.placeholder=hasSecondAnswer?"첫 번째 정답을 입력해 주세요.":"정답을 입력해 주세요.";answer.readOnly=alreadyAnswered||done.includes("transfer");
-  answer2.value=values[1]||"";answer2.hidden=!hasSecondAnswer;answer2.readOnly=alreadyAnswered||done.includes("transfer");
-  const feedback=document.getElementById("quizFeedback");feedback.hidden=true;feedback.textContent="";feedback.classList.remove("correct");
-  const next=document.getElementById("transferQuizNext");
-  next.textContent=done.includes("transfer")?"닫기":(alreadyAnswered?"다음 미완료 질문":(transferQuestionIndex===transferQuiz.length-1?"정답 확인하고 스탬프 받기":"정답 확인하고 다음"));
-  next.disabled=!alreadyAnswered&&!done.includes("transfer");
-  document.getElementById("complete").hidden=true;
-}
-function moveTransferQuestion(){
-  if(done.includes("transfer")){closeModal();return}
-  if(hasTransferQuizAnswer(transferQuestionIndex)){
-    const nextAnswered=Array.from({length:transferQuiz.length},(_,offset)=>(transferQuestionIndex+offset+1)%transferQuiz.length).find(index=>!hasTransferQuizAnswer(index));
-    if(nextAnswered===undefined)return;
-    transferQuestionIndex=nextAnswered;renderTransferQuizQuestion();return;
-  }
-  const item=transferQuiz[transferQuestionIndex],entered=[document.getElementById("essayAnswer").value.trim()];
-  if(item.answers.length>1)entered.push(document.getElementById("essayAnswer2").value.trim());
-  if(entered.some(answer=>!answer))return;
-  if(!item.answers.every((answer,index)=>normalizeQuizAnswer(answer)===normalizeQuizAnswer(entered[index]))){
-    const feedback=document.getElementById("quizFeedback");feedback.textContent="정답이 아니에요. 다시 생각해 보고 입력해 주세요.";feedback.hidden=false;feedback.classList.remove("correct");return;
-  }
-  transferQuizAnswers[transferQuestionIndex]=entered;
-  localStorage.setItem(transferQuizKey(),JSON.stringify(transferQuizAnswers));
-  if(transferQuiz.every((_,index)=>hasTransferQuizAnswer(index))){
-    if(!done.includes("transfer"))done.push("transfer");
-    localStorage.setItem(participantDoneKey(),JSON.stringify(done));
-    closeModal();render();showSequenceNotice("여섯 퀴즈를 모두 맞혀 환승센터역 스탬프를 받았어요!");return;
-  }
-  const nextAnswered=Array.from({length:transferQuiz.length},(_,offset)=>(transferQuestionIndex+offset+1)%transferQuiz.length).find(index=>!hasTransferQuizAnswer(index));
-  transferQuestionIndex=nextAnswered;renderTransferQuizQuestion();
+function getTransferQuestion(){
+  return "이 분야와\n시니어비즈니스를 어떻게 연결 지을 수 있을까요?";
 }
 let sequenceNoticeTimer=null;
 function showSequenceNotice(message){
@@ -1271,48 +1271,25 @@ function showSequenceNotice(message){
   clearTimeout(sequenceNoticeTimer);sequenceNoticeTimer=setTimeout(()=>notice.classList.remove("show"),2600);
 }
 function canOpenStationInSequence(id){
-  const prerequisites={seniorBusiness:"career",transfer:"seniorBusiness",nextStation:"transfer"};
+  const prerequisites={seniorBusiness:"career",transfer:"seniorBusiness",finance:"transfer",welfare:"transfer",culture:"transfer",sports:"transfer",education:"transfer",realestate:"transfer",nextStation:"transfer"};
   const required=prerequisites[id];
   if(!required||done.includes(required))return true;
   showSequenceNotice(`먼저 ${stations[required].title} 질문에 답해 주세요.`);return false;
 }
-function openTransferQuiz(index){
-  if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
-  loadTransferQuizProgress();
-  transferQuestionIndex=Math.max(0,Math.min(transferQuiz.length-1,Number(index)||0));
-  current="transfer";selected=null;answerMode="essay";
-  document.getElementById("modalBg").classList.remove("essay-station","station-question-spaced");
-  document.getElementById("modalBg").classList.add("essay-station","station-question-spaced");
-  document.getElementById("stationQuestionStep").hidden=false;
-  document.getElementById("question").hidden=false;
-  document.getElementById("essayAnswer").hidden=false;
-  document.getElementById("answers").hidden=true;
-  document.querySelector(".answer-mode").hidden=true;
-  document.getElementById("selfFlow").hidden=true;
-  document.getElementById("complete").hidden=true;
-  document.getElementById("transferQuizNav").hidden=false;
-  renderTransferQuizQuestion();
-  document.getElementById("modalBg").classList.add("show");
-}
 function openStation(id){
-  if(id==="transfer"){
-    loadTransferQuizProgress();
-    const firstUnanswered=firstUnansweredTransferQuestion();
-    openTransferQuiz(firstUnanswered<0?0:firstUnanswered);return;
-  }
   if(!canOpenStationInSequence(id))return;
   current=id;selected=null;
-  document.getElementById("modalBg").classList.remove("essay-station","station-question-spaced","transfer-two-answer");
-  document.getElementById("essayAnswer2").hidden=true;
+  document.getElementById("modalBg").classList.remove("essay-station","station-question-spaced");
   const stationQuestionStep=document.getElementById("stationQuestionStep");
   stationQuestionStep.hidden=id!=="seniorBusiness"&&id!=="transfer";
   const s=stations[id];
   document.getElementById("tag").textContent=s.tag;
   document.getElementById("modalTitle").textContent=s.title;
+  const transferFocus=document.getElementById("transferFocus");
+  transferFocus.hidden=id!=="transfer";
+  document.getElementById("transferFocusValue").textContent=id==="transfer"?(getTransferFieldLabels().join(" · ")||"선택한 분야를 확인할 수 없어요."):"";
   const selfFlow=document.getElementById("selfFlow");
   const complete=document.getElementById("complete");
-  const transferQuizNav=document.getElementById("transferQuizNav");transferQuizNav.hidden=true;
-  const quizFeedback=document.getElementById("quizFeedback");quizFeedback.hidden=true;quizFeedback.textContent="";
   if(id==="career"){
     document.getElementById("question").hidden=true;
     document.querySelector(".answer-mode").hidden=true;
@@ -1332,17 +1309,48 @@ function openStation(id){
   document.getElementById("modalBg").classList.toggle("essay-station",essayOnly);
   document.getElementById("modalBg").classList.toggle("station-question-spaced",id==="seniorBusiness"||id==="transfer");
   document.querySelector(".answer-mode").hidden=essayOnly;
-  currentQuestion=s.q;
+  currentQuestion=id==="transfer"?getTransferQuestion():s.q;
   document.getElementById("question").textContent=currentQuestion;
   document.getElementById("answers").innerHTML=s.a.map((a,i)=>
     `<button class="answer" onclick="selectAnswer(this,${i})">${a}</button>`).join("");
   answerMode=essayOnly?"essay":"choice";document.getElementById("essayAnswer").value="";document.getElementById("essayAnswer").hidden=!essayOnly;
-  document.getElementById("essayAnswer").placeholder=id==="seniorBusiness"?"시니어비즈니스역이나 시니어비즈니스에 대해 새롭게 발견한 점을 적어 주세요.":"답변을 자유롭게 적어 주세요.";
+  document.getElementById("essayAnswer").placeholder=id==="transfer"?"선택한 분야와 시니어비즈니스를 연결할 아이디어를 적어 주세요.":(id==="seniorBusiness"?"시니어비즈니스역이나 시니어비즈니스에 대해 새롭게 발견한 점을 적어 주세요.":"답변을 자유롭게 적어 주세요.");
   document.getElementById("answers").hidden=essayOnly;document.getElementById("choiceMode").classList.toggle("active",!essayOnly);document.getElementById("essayMode").classList.toggle("active",essayOnly);
   const b=complete;b.hidden=false;
   b.disabled=done.includes(id)||essayOnly;
   b.textContent=done.includes(id)?"이미 획득한 스탬프":"답변하고 스탬프 받기";
   document.getElementById("modalBg").classList.add("show");
+}
+function openTransferJourney(){
+  if(!canOpenStationInSequence("transfer"))return;
+  if(!participantId){document.getElementById("welcomeScreen").hidden=false;return}
+  closeModal();
+  const screen=document.getElementById("loadingScreen");
+  document.getElementById("loadingTitle").textContent="AI 학점 로드맵으로 이동합니다.";
+  document.getElementById("loadingMessage").textContent="";
+  screen.hidden=false;
+  document.querySelectorAll(".train-loading-fill,.loading-train").forEach(element=>{
+    element.style.animation="none";void element.offsetWidth;element.style.animation="";
+  });
+  playTrainSound();
+  window.setTimeout(()=>{
+    screen.hidden=true;
+    const overlay=document.createElement("section");
+    overlay.id="gradeCalculatorOverlay";
+    overlay.setAttribute("aria-label","AI 학점 로드맵");
+    overlay.style.cssText="position:fixed;inset:0;z-index:1000;width:100%;height:100vh;height:100dvh;overflow:hidden;background:#fff;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif";
+    const header=document.createElement("header");
+    header.style.cssText="position:absolute;z-index:2;top:env(safe-area-inset-top);left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;pointer-events:none;background:linear-gradient(#ffffffee,#ffffffcc);box-sizing:border-box";
+    const title=document.createElement("b");title.textContent="AI 학점 로드맵";title.style.cssText="font-size:13px;flex:1;pointer-events:none";
+    const back=document.createElement("button");back.type="button";back.textContent="← SIU MAP으로 돌아가기";back.style.cssText="border:0;border-radius:999px;background:#7654e8;color:#fff;padding:9px 12px;font-size:12px;font-weight:800;white-space:nowrap;touch-action:manipulation;pointer-events:auto";
+    header.append(title,back);
+    const frame=document.createElement("iframe");frame.title="AI 학점 로드맵";frame.src=GRADE_CALCULATOR_URL;frame.setAttribute("allow","clipboard-read; clipboard-write");frame.referrerPolicy="strict-origin-when-cross-origin";frame.style.cssText="position:absolute;inset:0;width:100%;height:100%;min-height:0;border:0;background:#fff;display:block;transform-origin:top left";
+    // 외부 계산기 화면의 첫 질문과 하단 추천 버튼이 작은 휴대폰에서도 함께 보이도록 뷰포트를 넓혀 축소 표시합니다.
+    const fitCalculatorFrame=()=>{const scale=window.innerWidth<=600?0.86:1;frame.style.width=`${100/scale}%`;frame.style.height=`${100/scale}%`;frame.style.transform=`scale(${scale})`};
+    fitCalculatorFrame();window.addEventListener("resize",fitCalculatorFrame);
+    back.addEventListener("click",()=>{window.removeEventListener("resize",fitCalculatorFrame);overlay.remove();openStation("transfer")});
+    overlay.append(header,frame);document.body.appendChild(overlay);
+  },5200);
 }
 function selectAnswer(el,i){
   selected=i;
@@ -1355,17 +1363,7 @@ function setAnswerMode(mode){
   document.getElementById("choiceMode").classList.toggle("active",mode==="choice");document.getElementById("essayMode").classList.toggle("active",mode==="essay");
   document.getElementById("complete").disabled=mode==="choice"?selected===null:!document.getElementById("essayAnswer").value.trim();
 }
-function updateTransferQuizNextButton(){
-  const item=transferQuiz[transferQuestionIndex],values=[document.getElementById("essayAnswer").value];
-  if(item.answers.length>1)values.push(document.getElementById("essayAnswer2").value);
-  document.getElementById("transferQuizNext").disabled=!item.answers.every((_,index)=>!!String(values[index]||"").trim());
-}
-function handleEssayAnswerInput(){
-  if(current==="transfer")updateTransferQuizNextButton();
-  else if(answerMode==="essay")document.getElementById("complete").disabled=!document.getElementById("essayAnswer").value.trim();
-}
-document.getElementById("essayAnswer").addEventListener("input",handleEssayAnswerInput);
-document.getElementById("essayAnswer2").addEventListener("input",handleEssayAnswerInput);
+document.getElementById("essayAnswer").addEventListener("input",()=>{if(answerMode==="essay")document.getElementById("complete").disabled=!document.getElementById("essayAnswer").value.trim()});
 async function submitResponse(response){
   const record={participantId,origin:localStorage.getItem(participantOriginKey())||"",stationId:response.stationId,stationTitle:response.stationTitle,summaryColumn:response.summaryColumn||"",question:response.question,answerType:response.answerType,answer:response.answer,submittedAt:new Date().toISOString()};
   const saved=JSON.parse(localStorage.getItem(participantAnswersKey())||"[]");saved.push(record);localStorage.setItem(participantAnswersKey(),JSON.stringify(saved));
